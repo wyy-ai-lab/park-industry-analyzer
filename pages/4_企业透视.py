@@ -177,7 +177,7 @@ if selected_id:
         st.markdown(f"**是否小巨人**：{'是' if selected_enterprise.get('little_giant') else '否'}")
         st.markdown(f"**硕博占比**：{selected_enterprise.get('master_doctor_ratio', 0) * 100:.1f}%")
         st.markdown(f"**领军人才**：{selected_enterprise.get('leading_talents', 0)} 人")
-        st.markdown(f"**主要产品的**：{selected_enterprise.get('main_products', '')}")
+        st.markdown(f"**主要产品**：{selected_enterprise.get('main_products', '')}")
         if selected_enterprise.get("university_cooperation"):
             st.markdown(f"**产学研合作**：{'、'.join(selected_enterprise['university_cooperation'])}")
 

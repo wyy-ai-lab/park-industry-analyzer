@@ -44,8 +44,13 @@ SEGMENT_LAYER_MAP = {
 # 参考环节（用于完整度计算）
 REFERENCE_SEGMENTS = list(SEGMENT_LAYER_MAP.keys())
 
-# 强弱缺失环节定义
-STRONG_SEGMENTS = ["正极材料", "负极材料", "动力电池电芯", "电池包集成", "整车制造", "充换电设施"]
+# 强弱缺失环节定义（与演示数据中的 niche 字段对齐）
+STRONG_SEGMENTS = [
+    "正极材料", "负极材料",
+    "动力电池电芯", "电池包集成",
+    "乘用车制造", "商用车制造",
+    "充电桩", "换电站", "运营平台",
+]
 WEAK_SEGMENTS = ["电解液", "车载芯片", "激光雷达", "电机控制器"]
 MISSING_SEGMENTS = ["锂盐/锂矿", "动力电池隔膜", "高精度传感器"]
 
