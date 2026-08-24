@@ -1,0 +1,207 @@
+[
+  {
+    "policy_id": "HF-001",
+    "policy_name": "国家高新技术企业认定",
+    "level": "国家级",
+    "region": ["全国"],
+    "category": "资质认定",
+    "deadline": "2026-09-30",
+    "hard_conditions": {
+      "years_in_operation": {"min": 1, "desc": "成立1年以上"},
+      "is_high_tech_field": {"required": true, "desc": "属于高新技术领域"},
+      "rd_team_ratio": {"min": 0.10, "desc": "科技人员占比≥10%"},
+      "rd_ratio": {"min": 0.04, "desc": "研发费用占比≥4%（营收5000万-2亿档）"},
+      "high_tech_income_ratio": {"min": 0.60, "desc": "高新技术产品收入占比≥60%"},
+      "invention_patents": {"min": 0, "desc": "拥有核心知识产权"},
+      "has_major_accident": {"required": false, "desc": "近一年无重大安全/质量/环保事故"}
+    },
+    "benefit": "企业所得税15%；合肥市奖励10万",
+    "priority": "高"
+  },
+  {
+    "policy_id": "HF-002",
+    "policy_name": "安徽省专精特新中小企业认定",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "资质认定",
+    "deadline": "2026-10-31",
+    "hard_conditions": {
+      "years_in_segment": {"min": 2, "desc": "从事细分市场2年以上"},
+      "revenue": {"min": 1000, "desc": "上年度营收≥1000万"},
+      "revenue_growth_2yr": {"min": 0.05, "desc": "近两年营收或净利润平均增长率≥5%"},
+      "rd_ratio": {"min": 0.03, "desc": "研发投入占比≥3%"},
+      "invention_patents": {"min": 1, "desc": "至少1项有效发明专利"},
+      "has_major_accident": {"required": false, "desc": "近三年无重大安全/质量/环保事故"}
+    },
+    "benefit": "省级一次性奖补约20万；各市配套",
+    "priority": "高"
+  },
+  {
+    "policy_id": "HF-003",
+    "policy_name": "国家级专精特新“小巨人”企业认定",
+    "level": "国家级",
+    "region": ["全国"],
+    "category": "资质认定",
+    "deadline": "2026-06-05",
+    "hard_conditions": {
+      "qualifications": {"contains": ["安徽省专精特新中小企业"], "desc": "已是省级专精特新"},
+      "revenue": {"min": 5000, "desc": "上年度营收≥5000万"},
+      "rd_ratio": {"min": 0.03, "desc": "研发投入占比≥3%"},
+      "invention_patents": {"min": 2, "desc": "至少2项有效发明专利"},
+      "market_share_proof": {"required": true, "desc": "细分市场占有率证明"},
+      "has_major_accident": {"required": false, "desc": "近三年无重大安全/质量/环保事故"}
+    },
+    "benefit": "省级奖补100万；市级配套最高100万",
+    "priority": "高"
+  },
+  {
+    "policy_id": "HF-004",
+    "policy_name": "科技型中小企业评价",
+    "level": "国家级",
+    "region": ["全国"],
+    "category": "资质认定",
+    "deadline": "2026-10-31",
+    "hard_conditions": {
+      "employees": {"max": 500, "desc": "职工总数不超过500人"},
+      "revenue": {"max": 20000, "desc": "年销售收入不超过2亿元"},
+      "total_assets": {"max": 20000, "desc": "资产总额不超过2亿元"},
+      "is_high_tech_field": {"required": true, "desc": "属于高新技术领域"},
+      "has_major_accident": {"required": false, "desc": "无重大安全/质量/环保事故"}
+    },
+    "benefit": "合肥市按加计扣除研发费15%补助，最高100万",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-005",
+    "policy_name": "合肥市新增研发费用补助",
+    "level": "市级",
+    "region": ["合肥市"],
+    "category": "研发创新",
+    "deadline": "2026-09-30",
+    "hard_conditions": {
+      "rd_accounting_system": {"required": true, "desc": "建立研发准备金制度并在科技部门备案"},
+      "rd_investment": {"min": 500, "desc": "研发费用500万元以上"},
+      "rd_investment_growth": {"min": 100, "desc": "新增研发费用100万元以上"},
+      "is_high_tech_enterprise": {"or": ["国家高新技术企业", "科技型中小企业"], "desc": "高企或科技型中小企业"}
+    },
+    "benefit": "按新增研发费10%补助，最高500万",
+    "priority": "高"
+  },
+  {
+    "policy_id": "HF-006",
+    "policy_name": "安徽省企业技术中心认定",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "研发创新",
+    "deadline": "2026-08-31",
+    "hard_conditions": {
+      "years_in_operation": {"min": 2, "desc": "成立2年以上"},
+      "rd_investment": {"min": 300, "desc": "年度研发投入300万元以上"},
+      "rd_team_ratio": {"min": 0.10, "desc": "研发人员占比≥10%"},
+      "rd_equipment": {"min": 200, "desc": "研发设备原值200万元以上"},
+      "invention_patents": {"min": 1, "desc": "拥有有效发明专利"}
+    },
+    "benefit": "省级资质；优先推荐国家级企业技术中心",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-007",
+    "policy_name": "合肥市智能工厂认定",
+    "level": "市级",
+    "region": ["合肥市"],
+    "category": "智能制造",
+    "deadline": "2026-06-09",
+    "hard_conditions": {
+      "industry": {"in": ["制造业", "医疗器械制造"], "desc": "制造业企业"},
+      "scale": {"in": ["规模以上", "小型企业"], "desc": "规模以上工业企业或优质中小企业"},
+      "smart_equipment_investment": {"min": 500, "desc": "智能化设备投资500万元以上"},
+      "equipment_networking_rate": {"min": 0.60, "desc": "设备联网率≥60%"},
+      "has_mes_erp": {"required": true, "desc": "部署MES/ERP等系统"}
+    },
+    "benefit": "设备投资（含软件）20%奖补",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-008",
+    "policy_name": "合肥市数字化车间认定",
+    "level": "市级",
+    "region": ["合肥市"],
+    "category": "智能制造",
+    "deadline": "2026-06-09",
+    "hard_conditions": {
+      "industry": {"in": ["制造业", "医疗器械制造"], "desc": "制造业企业"},
+      "smart_equipment_investment": {"min": 300, "desc": "整车间智能化设备投资300万元以上"},
+      "equipment_networking_rate": {"min": 0.50, "desc": "设备联网率≥50%"},
+      "has_mes": {"required": true, "desc": "部署MES系统"}
+    },
+    "benefit": "设备投资（含软件）15%奖补",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-009",
+    "policy_name": "合肥市技术改造补贴",
+    "level": "市级",
+    "region": ["合肥市"],
+    "category": "智能制造",
+    "deadline": "2026-09-30",
+    "hard_conditions": {
+      "industry": {"in": ["制造业", "医疗器械制造"], "desc": "制造业企业"},
+      "total_project_investment": {"min": 200, "desc": "机器换人项目总投资≥200万；普通技改按设备投资额"},
+      "self_funding_ratio": {"min": 0.20, "desc": "自有资金比例≥20%"},
+      "project_completion": {"required": true, "desc": "项目已完工"}
+    },
+    "benefit": "设备投资10%-12%奖补",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-010",
+    "policy_name": "安徽省首台（套）重大技术装备认定",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "产业扶持",
+    "deadline": "2026-08-31",
+    "hard_conditions": {
+      "industry": {"in": ["制造业", "高端装备", "医疗器械制造"], "desc": "装备制造业企业"},
+      "invention_patents": {"min": 1, "desc": "拥有自主知识产权"},
+      "is_first_application": {"required": true, "desc": "产品首次应用"},
+      "has_test_report": {"required": true, "desc": "具备检测报告或鉴定意见"},
+      "has_sales_contract": {"required": true, "desc": "有销售合同或用户证明"}
+    },
+    "benefit": "保险补偿、应用奖励、资金补助",
+    "priority": "高"
+  },
+  {
+    "policy_id": "HF-011",
+    "policy_name": "安徽省制造业单项冠军培育",
+    "level": "省级/国家级",
+    "region": ["安徽省"],
+    "category": "产业扶持",
+    "deadline": "2026-07-31",
+    "hard_conditions": {
+      "years_in_segment": {"min": 10, "desc": "从事相关领域10年以上"},
+      "revenue": {"min": 40000, "desc": "上年度营收≥4亿元（省级）"},
+      "market_share_proof": {"required": true, "desc": "细分市场全国领先证明"},
+      "invention_patents": {"min": 3, "desc": "拥有核心发明专利"}
+    },
+    "benefit": "省级冠军奖补；国家级单项冠军200万",
+    "priority": "低"
+  },
+  {
+    "policy_id": "HF-012",
+    "policy_name": "合肥市高层次人才团队项目",
+    "level": "市级",
+    "region": ["合肥市"],
+    "category": "人才引育",
+    "deadline": "2026-12-31",
+    "hard_conditions": {
+      "years_in_operation": {"max": 3, "desc": "注册成立不超过3年"},
+      "revenue": {"max": 2000, "desc": "年销售额不超过2000万"},
+      "rd_team_ratio": {"min": 0.20, "desc": "研发人员占比≥20%"},
+      "rd_ratio": {"min": 0.10, "desc": "研发费用占销售额≥10%"},
+      "invention_patents": {"min": 1, "desc": "拥有自主知识产权"},
+      "team_core_members": {"min": 3, "desc": "团队核心成员≥3人"}
+    },
+    "benefit": "市天使基金最高1000万投资；人才贷最高500万",
+    "priority": "低"
+  }
+]

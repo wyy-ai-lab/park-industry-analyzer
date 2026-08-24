@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+
+# Streamlit secrets
+.streamlit/secrets.toml
+
+# Generated data / reports
+data/*.json
+output/*.json
+output/
+
+# Keep default policy library, enterprise profile and demo park enterprises
+!data/policies.json
+!data/enterprise.json
+!data/park_enterprises.json
+*.docx
+*.pdf
+!README.md
+*.html
+
+# OS
+.DS_Store
+Thumbs.db

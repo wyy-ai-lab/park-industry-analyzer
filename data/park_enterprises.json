@@ -1,0 +1,2093 @@
+{
+  "park_name": "合肥高新区新能源汽车产业园",
+  "total_enterprises": 50,
+  "generated_at": "2026-08-24 14:32:37",
+  "strong_segments": [
+    "充换电设施",
+    "动力电池电芯",
+    "整车制造",
+    "正极材料",
+    "电池包集成",
+    "负极材料"
+  ],
+  "weak_segments": [
+    "激光雷达",
+    "电机控制器",
+    "电解液",
+    "车载芯片"
+  ],
+  "missing_segments": [
+    "动力电池隔膜",
+    "锂盐/锂矿",
+    "高精度传感器"
+  ],
+  "enterprises": [
+    {
+      "enterprise_id": "ENT001",
+      "name": "经开动力电池有限公司",
+      "founded_year": 2004,
+      "registered_capital": 293266,
+      "employees": 2712,
+      "annual_revenue": 64.19,
+      "net_profit": 5.63,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "动力电池电芯",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "链主企业",
+      "core_technology": "长循环寿命电芯技术",
+      "rd_investment_ratio": 0.06,
+      "patents": 209,
+      "invention_patents": 92,
+      "software_copyrights": 17,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "半固态电池、磷酸铁锂电池",
+      "upstream_suppliers": [
+        "合肥石墨负极科技有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "合肥鑫源电池系统有限公司"
+      ],
+      "local_suppliers": [
+        "合肥石墨负极科技有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [],
+      "rd_personnel": 67,
+      "master_doctor_ratio": 0.08,
+      "leading_talents": 1,
+      "university_cooperation": [
+        "中国科学技术大学",
+        "中科院合肥物质科学研究院"
+      ]
+    },
+    {
+      "enterprise_id": "ENT002",
+      "name": "安徽新能源电池有限公司",
+      "founded_year": 2013,
+      "registered_capital": 77325,
+      "employees": 661,
+      "annual_revenue": 16.49,
+      "net_profit": 0.54,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "动力电池电芯",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "骨干企业",
+      "core_technology": "快充动力电池技术",
+      "rd_investment_ratio": 0.06,
+      "patents": 103,
+      "invention_patents": 28,
+      "software_copyrights": 1,
+      "high_tech_enterprise": true,
+      "little_giant": true,
+      "main_products": "磷酸铁锂电池、三元锂电池",
+      "upstream_suppliers": [
+        "安徽正极新材料有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司",
+        "合肥鑫源电池系统有限公司"
+      ],
+      "local_suppliers": [
+        "安徽正极新材料有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [],
+      "rd_personnel": 29,
+      "master_doctor_ratio": 0.24,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "中国科学技术大学",
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT003",
+      "name": "合肥锂电科技有限公司",
+      "founded_year": 2014,
+      "registered_capital": 25564,
+      "employees": 430,
+      "annual_revenue": 7.92,
+      "net_profit": 0.67,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "动力电池电芯",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "长循环寿命电芯技术",
+      "rd_investment_ratio": 0.07,
+      "patents": 59,
+      "invention_patents": 19,
+      "software_copyrights": 2,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "半固态电池、磷酸铁锂电池",
+      "upstream_suppliers": [
+        "皖能电解液有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司",
+        "合肥鑫源电池系统有限公司"
+      ],
+      "local_suppliers": [
+        "合肥本地供应商"
+      ],
+      "local_customers": [],
+      "rd_personnel": 21,
+      "master_doctor_ratio": 0.07,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院",
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT004",
+      "name": "皖动力电池有限公司",
+      "founded_year": 2022,
+      "registered_capital": 4001,
+      "employees": 485,
+      "annual_revenue": 1.14,
+      "net_profit": 0.04,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "动力电池电芯",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "快充动力电池技术",
+      "rd_investment_ratio": 0.1,
+      "patents": 37,
+      "invention_patents": 15,
+      "software_copyrights": 0,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "三元锂电池、磷酸铁锂电池",
+      "upstream_suppliers": [
+        "合肥石墨负极科技有限公司",
+        "安徽正极新材料有限公司",
+        "皖能电解液有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 30,
+      "master_doctor_ratio": 0.17,
+      "leading_talents": 4,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT005",
+      "name": "皖新能源材料有限公司",
+      "founded_year": 2007,
+      "registered_capital": 270529,
+      "employees": 6344,
+      "annual_revenue": 65.75,
+      "net_profit": 4.86,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "正极材料",
+      "chain_position": "上游",
+      "chain_position_detail": "核心零部件材料",
+      "enterprise_role": "链主企业",
+      "core_technology": "高电压钴酸锂技术",
+      "rd_investment_ratio": 0.08,
+      "patents": 172,
+      "invention_patents": 94,
+      "software_copyrights": 9,
+      "high_tech_enterprise": true,
+      "little_giant": true,
+      "main_products": "钴酸锂正极材料、三元正极材料",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "安徽智行电机科技有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 324,
+      "master_doctor_ratio": 0.2,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT006",
+      "name": "高新新能源材料有限公司",
+      "founded_year": 2013,
+      "registered_capital": 28158,
+      "employees": 445,
+      "annual_revenue": 7.49,
+      "net_profit": 0.72,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "正极材料",
+      "chain_position": "上游",
+      "chain_position_detail": "核心零部件材料",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "高镍三元正极材料技术",
+      "rd_investment_ratio": 0.07,
+      "patents": 41,
+      "invention_patents": 15,
+      "software_copyrights": 1,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "磷酸铁锂正极材料、三元正极材料",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "合肥电控先锋有限公司",
+        "合肥鑫源电池系统有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 24,
+      "master_doctor_ratio": 0.24,
+      "leading_talents": 3,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT007",
+      "name": "经开新能源材料有限公司",
+      "founded_year": 2015,
+      "registered_capital": 4815,
+      "employees": 189,
+      "annual_revenue": 1.31,
+      "net_profit": 0.06,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "正极材料",
+      "chain_position": "上游",
+      "chain_position_detail": "核心零部件材料",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "高电压钴酸锂技术",
+      "rd_investment_ratio": 0.09,
+      "patents": 38,
+      "invention_patents": 11,
+      "software_copyrights": 3,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "三元正极材料、钴酸锂正极材料",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "安徽智行电机科技有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "安徽智行电机科技有限公司"
+      ],
+      "rd_personnel": 11,
+      "master_doctor_ratio": 0.31,
+      "leading_talents": 4,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院",
+        "安徽大学",
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT008",
+      "name": "经开石墨材料有限公司",
+      "founded_year": 2014,
+      "registered_capital": 46733,
+      "employees": 1418,
+      "annual_revenue": 26.54,
+      "net_profit": 1.19,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "负极材料",
+      "chain_position": "上游",
+      "chain_position_detail": "核心零部件材料",
+      "enterprise_role": "骨干企业",
+      "core_technology": "硅碳复合负极技术",
+      "rd_investment_ratio": 0.04,
+      "patents": 86,
+      "invention_patents": 44,
+      "software_copyrights": 8,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "中间相碳微球、人造石墨负极",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "合肥鑫源电池系统有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 26,
+      "master_doctor_ratio": 0.19,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院",
+        "合肥工业大学",
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT009",
+      "name": "安徽负极材料有限公司",
+      "founded_year": 2022,
+      "registered_capital": 24422,
+      "employees": 454,
+      "annual_revenue": 6.45,
+      "net_profit": 0.31,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "负极材料",
+      "chain_position": "上游",
+      "chain_position_detail": "核心零部件材料",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "快充负极材料技术",
+      "rd_investment_ratio": 0.12,
+      "patents": 20,
+      "invention_patents": 6,
+      "software_copyrights": 0,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "中间相碳微球、人造石墨负极",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "安徽创能动力电池有限公司",
+        "安徽智行电机科技有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "安徽创能动力电池有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 33,
+      "master_doctor_ratio": 0.27,
+      "leading_talents": 1,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT010",
+      "name": "安徽创负极材料有限公司",
+      "founded_year": 2016,
+      "registered_capital": 3295,
+      "employees": 384,
+      "annual_revenue": 1.66,
+      "net_profit": 0.18,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "负极材料",
+      "chain_position": "上游",
+      "chain_position_detail": "核心零部件材料",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "人造石墨负极技术",
+      "rd_investment_ratio": 0.05,
+      "patents": 41,
+      "invention_patents": 13,
+      "software_copyrights": 2,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "中间相碳微球、硅碳负极材料",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 8,
+      "master_doctor_ratio": 0.25,
+      "leading_talents": 4,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院",
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT011",
+      "name": "安徽电池集成有限公司",
+      "founded_year": 2010,
+      "registered_capital": 48892,
+      "employees": 640,
+      "annual_revenue": 10.33,
+      "net_profit": 0.48,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "电池包集成",
+      "chain_position": "中游",
+      "chain_position_detail": "系统集成",
+      "enterprise_role": "骨干企业",
+      "core_technology": "轻量化电池包设计",
+      "rd_investment_ratio": 0.07,
+      "patents": 120,
+      "invention_patents": 38,
+      "software_copyrights": 12,
+      "high_tech_enterprise": true,
+      "little_giant": true,
+      "main_products": "储能电池包、商用车电池系统",
+      "upstream_suppliers": [
+        "安徽正极新材料有限公司",
+        "皖能电解液有限公司",
+        "合肥石墨负极科技有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥石墨负极科技有限公司",
+        "安徽正极新材料有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [],
+      "rd_personnel": 24,
+      "master_doctor_ratio": 0.1,
+      "leading_talents": 4,
+      "university_cooperation": [
+        "合肥工业大学",
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT012",
+      "name": "皖动力电池系统有限公司",
+      "founded_year": 2020,
+      "registered_capital": 3905,
+      "employees": 474,
+      "annual_revenue": 3.85,
+      "net_profit": 0.18,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "电池包集成",
+      "chain_position": "中游",
+      "chain_position_detail": "系统集成",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "CTP无模组集成技术",
+      "rd_investment_ratio": 0.06,
+      "patents": 43,
+      "invention_patents": 20,
+      "software_copyrights": 4,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "乘用车电池包、储能电池包",
+      "upstream_suppliers": [
+        "安徽正极新材料有限公司",
+        "合肥石墨负极科技有限公司",
+        "皖能电解液有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "合肥鑫源电池系统有限公司"
+      ],
+      "local_suppliers": [
+        "合肥石墨负极科技有限公司"
+      ],
+      "local_customers": [],
+      "rd_personnel": 22,
+      "master_doctor_ratio": 0.1,
+      "leading_talents": 3,
+      "university_cooperation": [
+        "合肥工业大学",
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT013",
+      "name": "经开电池系统有限公司",
+      "founded_year": 2013,
+      "registered_capital": 29829,
+      "employees": 291,
+      "annual_revenue": 7.03,
+      "net_profit": 0.83,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "电池包集成",
+      "chain_position": "中游",
+      "chain_position_detail": "系统集成",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "轻量化电池包设计",
+      "rd_investment_ratio": 0.05,
+      "patents": 59,
+      "invention_patents": 27,
+      "software_copyrights": 5,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "商用车电池系统、乘用车电池包",
+      "upstream_suppliers": [
+        "安徽正极新材料有限公司",
+        "合肥石墨负极科技有限公司",
+        "皖能电解液有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "合肥鑫源电池系统有限公司"
+      ],
+      "local_suppliers": [
+        "合肥石墨负极科技有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [],
+      "rd_personnel": 10,
+      "master_doctor_ratio": 0.15,
+      "leading_talents": 3,
+      "university_cooperation": [
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT014",
+      "name": "合肥驱动电机有限公司",
+      "founded_year": 2007,
+      "registered_capital": 103614,
+      "employees": 1598,
+      "annual_revenue": 21.04,
+      "net_profit": 1.26,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "驱动电机",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "骨干企业",
+      "core_technology": "油冷电机散热技术",
+      "rd_investment_ratio": 0.05,
+      "patents": 52,
+      "invention_patents": 22,
+      "software_copyrights": 2,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "异步感应电机、轮毂电机",
+      "upstream_suppliers": [
+        "皖江精密铸造有限公司",
+        "合肥磁材科技有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 32,
+      "master_doctor_ratio": 0.31,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT015",
+      "name": "安徽电驱动有限公司",
+      "founded_year": 2021,
+      "registered_capital": 26700,
+      "employees": 247,
+      "annual_revenue": 7.28,
+      "net_profit": 0.51,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "驱动电机",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "油冷电机散热技术",
+      "rd_investment_ratio": 0.08,
+      "patents": 50,
+      "invention_patents": 28,
+      "software_copyrights": 5,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "永磁同步电机、异步感应电机",
+      "upstream_suppliers": [
+        "皖江精密铸造有限公司",
+        "合肥磁材科技有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥磁材科技有限公司"
+      ],
+      "local_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "rd_personnel": 10,
+      "master_doctor_ratio": 0.09,
+      "leading_talents": 3,
+      "university_cooperation": [
+        "合肥工业大学",
+        "安徽大学",
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT016",
+      "name": "新站电驱动有限公司",
+      "founded_year": 2020,
+      "registered_capital": 4832,
+      "employees": 103,
+      "annual_revenue": 3.04,
+      "net_profit": 0.31,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "驱动电机",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "油冷电机散热技术",
+      "rd_investment_ratio": 0.07,
+      "patents": 37,
+      "invention_patents": 13,
+      "software_copyrights": 1,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "异步感应电机、轮毂电机",
+      "upstream_suppliers": [
+        "合肥磁材科技有限公司",
+        "皖江精密铸造有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥磁材科技有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 4,
+      "master_doctor_ratio": 0.3,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT017",
+      "name": "合肥源驱动电机有限公司",
+      "founded_year": 2022,
+      "registered_capital": 27993,
+      "employees": 338,
+      "annual_revenue": 7.22,
+      "net_profit": 0.59,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "驱动电机",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "扁线电机绕组技术",
+      "rd_investment_ratio": 0.08,
+      "patents": 55,
+      "invention_patents": 29,
+      "software_copyrights": 3,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "永磁同步电机、异步感应电机",
+      "upstream_suppliers": [
+        "皖江精密铸造有限公司",
+        "合肥磁材科技有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥磁材科技有限公司",
+        "皖江精密铸造有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "rd_personnel": 20,
+      "master_doctor_ratio": 0.18,
+      "leading_talents": 1,
+      "university_cooperation": [
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT018",
+      "name": "高新车联网有限公司",
+      "founded_year": 2008,
+      "registered_capital": 16575,
+      "employees": 1360,
+      "annual_revenue": 13.27,
+      "net_profit": 0.88,
+      "industry": "新能源汽车",
+      "sub_industry": "智能网联",
+      "niche": "车载操作系统",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "骨干企业",
+      "core_technology": "智能座舱OS",
+      "rd_investment_ratio": 0.15,
+      "patents": 103,
+      "invention_patents": 36,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": true,
+      "main_products": "车机OS、T-BOX终端",
+      "upstream_suppliers": [
+        "合肥传感器科技有限公司"
+      ],
+      "downstream_customers": [
+        "安徽智驾系统集成有限公司"
+      ],
+      "local_suppliers": [
+        "合肥传感器科技有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "安徽智驾系统集成有限公司"
+      ],
+      "rd_personnel": 144,
+      "master_doctor_ratio": 0.33,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院"
+      ]
+    },
+    {
+      "enterprise_id": "ENT019",
+      "name": "新站车联网有限公司",
+      "founded_year": 2011,
+      "registered_capital": 15458,
+      "employees": 105,
+      "annual_revenue": 5.43,
+      "net_profit": 0.18,
+      "industry": "新能源汽车",
+      "sub_industry": "智能网联",
+      "niche": "车载操作系统",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "智能座舱OS",
+      "rd_investment_ratio": 0.12,
+      "patents": 56,
+      "invention_patents": 30,
+      "software_copyrights": 8,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "车机OS、T-BOX终端",
+      "upstream_suppliers": [
+        "合肥传感器科技有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥传感器科技有限公司"
+      ],
+      "local_customers": [],
+      "rd_personnel": 6,
+      "master_doctor_ratio": 0.19,
+      "leading_talents": 2,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT020",
+      "name": "合肥智能科技有限公司",
+      "founded_year": 2017,
+      "registered_capital": 10520,
+      "employees": 438,
+      "annual_revenue": 5.62,
+      "net_profit": 0.43,
+      "industry": "新能源汽车",
+      "sub_industry": "智能网联",
+      "niche": "车载操作系统",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "AUTOSAR基础软件",
+      "rd_investment_ratio": 0.12,
+      "patents": 53,
+      "invention_patents": 13,
+      "software_copyrights": 5,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "智能座舱系统、T-BOX终端",
+      "upstream_suppliers": [
+        "合肥晶圆电子有限公司",
+        "合肥传感器科技有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "安徽智驾系统集成有限公司"
+      ],
+      "local_suppliers": [
+        "合肥晶圆电子有限公司",
+        "合肥传感器科技有限公司"
+      ],
+      "local_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 28,
+      "master_doctor_ratio": 0.23,
+      "leading_talents": 5,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT021",
+      "name": "新站能源服务有限公司",
+      "founded_year": 2002,
+      "registered_capital": 37317,
+      "employees": 1241,
+      "annual_revenue": 26.24,
+      "net_profit": 2.68,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "换电站",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "骨干企业",
+      "core_technology": "电池集中充电管理",
+      "rd_investment_ratio": 0.06,
+      "patents": 52,
+      "invention_patents": 25,
+      "software_copyrights": 5,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "重卡换电站、乘用车换电站",
+      "upstream_suppliers": [
+        "合肥电控先锋有限公司",
+        "安徽创能动力电池有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "安徽创能动力电池有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 54,
+      "master_doctor_ratio": 0.26,
+      "leading_talents": 3,
+      "university_cooperation": [
+        "中国科学技术大学",
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT022",
+      "name": "合肥能源服务有限公司",
+      "founded_year": 2014,
+      "registered_capital": 15030,
+      "employees": 85,
+      "annual_revenue": 7.14,
+      "net_profit": 0.64,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "换电站",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "换电运营调度系统",
+      "rd_investment_ratio": 0.09,
+      "patents": 39,
+      "invention_patents": 16,
+      "software_copyrights": 1,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "重卡换电站、乘用车换电站",
+      "upstream_suppliers": [
+        "安徽创能动力电池有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 3,
+      "master_doctor_ratio": 0.12,
+      "leading_talents": 3,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院",
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT023",
+      "name": "皖充电桩有限公司",
+      "founded_year": 2013,
+      "registered_capital": 207,
+      "employees": 78,
+      "annual_revenue": 0.14,
+      "net_profit": 0.01,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "充电桩",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "充电桩智能调度",
+      "rd_investment_ratio": 0.05,
+      "patents": 7,
+      "invention_patents": 2,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "直流快充桩、液冷超充桩",
+      "upstream_suppliers": [
+        "安徽创能动力电池有限公司",
+        "合肥电控先锋有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "中国科学技术大学",
+        "中科院合肥物质科学研究院"
+      ]
+    },
+    {
+      "enterprise_id": "ENT024",
+      "name": "皖新能源科技有限公司",
+      "founded_year": 2019,
+      "registered_capital": 614,
+      "employees": 16,
+      "annual_revenue": 0.26,
+      "net_profit": 0.02,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "充电桩",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "V2G双向充电技术",
+      "rd_investment_ratio": 0.02,
+      "patents": 6,
+      "invention_patents": 2,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "直流快充桩、液冷超充桩",
+      "upstream_suppliers": [
+        "安徽创能动力电池有限公司",
+        "合肥电控先锋有限公司"
+      ],
+      "downstream_customers": [
+        "合肥新能源出租车公司"
+      ],
+      "local_suppliers": [
+        "安徽创能动力电池有限公司"
+      ],
+      "local_customers": [
+        "合肥新能源出租车公司"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.03,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "安徽大学",
+        "中科院合肥物质科学研究院",
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT025",
+      "name": "新站新能源科技有限公司",
+      "founded_year": 2020,
+      "registered_capital": 651,
+      "employees": 37,
+      "annual_revenue": 0.4,
+      "net_profit": 0.03,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "充电桩",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "大功率液冷超充技术",
+      "rd_investment_ratio": 0.11,
+      "patents": 17,
+      "invention_patents": 5,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "交流充电桩、液冷超充桩",
+      "upstream_suppliers": [
+        "安徽创能动力电池有限公司",
+        "合肥电控先锋有限公司"
+      ],
+      "downstream_customers": [
+        "合肥新能源出租车公司",
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "安徽创能动力电池有限公司"
+      ],
+      "local_customers": [
+        "合肥新能源出租车公司",
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.07,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT026",
+      "name": "合肥新能源汽车有限公司",
+      "founded_year": 2003,
+      "registered_capital": 125595,
+      "employees": 4230,
+      "annual_revenue": 48.12,
+      "net_profit": 2.43,
+      "industry": "新能源汽车",
+      "sub_industry": "整车制造",
+      "niche": "乘用车制造",
+      "chain_position": "下游",
+      "chain_position_detail": "终端应用",
+      "enterprise_role": "链主企业",
+      "core_technology": "整车轻量化平台",
+      "rd_investment_ratio": 0.06,
+      "patents": 190,
+      "invention_patents": 93,
+      "software_copyrights": 19,
+      "high_tech_enterprise": true,
+      "little_giant": true,
+      "main_products": "纯电动乘用车、增程式乘用车",
+      "upstream_suppliers": [
+        "安徽创能动力电池有限公司",
+        "合肥鑫源电池系统有限公司",
+        "合肥电控先锋有限公司",
+        "安徽智行电机科技有限公司",
+        "安徽智驾系统集成有限公司"
+      ],
+      "downstream_customers": [
+        "安徽二手车回收有限公司"
+      ],
+      "local_suppliers": [
+        "安徽智行电机科技有限公司"
+      ],
+      "local_customers": [
+        "安徽二手车回收有限公司"
+      ],
+      "rd_personnel": 151,
+      "master_doctor_ratio": 0.07,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "安徽大学",
+        "合肥工业大学",
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT027",
+      "name": "皖新能源汽车有限公司",
+      "founded_year": 2017,
+      "registered_capital": 322,
+      "employees": 66,
+      "annual_revenue": 0.22,
+      "net_profit": 0.01,
+      "industry": "新能源汽车",
+      "sub_industry": "整车制造",
+      "niche": "乘用车制造",
+      "chain_position": "下游",
+      "chain_position_detail": "终端应用",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "智能制造总装技术",
+      "rd_investment_ratio": 0.14,
+      "patents": 16,
+      "invention_patents": 5,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "增程式乘用车、纯电动乘用车",
+      "upstream_suppliers": [
+        "合肥电控先锋有限公司",
+        "安徽创能动力电池有限公司",
+        "安徽智驾系统集成有限公司",
+        "合肥鑫源电池系统有限公司",
+        "安徽智行电机科技有限公司"
+      ],
+      "downstream_customers": [
+        "安徽汽车金融服务有限公司",
+        "安徽二手车回收有限公司"
+      ],
+      "local_suppliers": [
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "安徽汽车金融服务有限公司",
+        "安徽二手车回收有限公司"
+      ],
+      "rd_personnel": 6,
+      "master_doctor_ratio": 0.02,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "中国科学技术大学",
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT028",
+      "name": "安徽商用车有限公司",
+      "founded_year": 2009,
+      "registered_capital": 108229,
+      "employees": 1350,
+      "annual_revenue": 28.32,
+      "net_profit": 1.39,
+      "industry": "新能源汽车",
+      "sub_industry": "整车制造",
+      "niche": "商用车制造",
+      "chain_position": "下游",
+      "chain_position_detail": "终端应用",
+      "enterprise_role": "骨干企业",
+      "core_technology": "专用车底盘设计",
+      "rd_investment_ratio": 0.07,
+      "patents": 48,
+      "invention_patents": 16,
+      "software_copyrights": 4,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "电动轻卡、电动客车",
+      "upstream_suppliers": [
+        "安徽智行电机科技有限公司",
+        "安徽智驾系统集成有限公司",
+        "安徽创能动力电池有限公司",
+        "合肥鑫源电池系统有限公司"
+      ],
+      "downstream_customers": [
+        "安徽汽车金融服务有限公司",
+        "安徽二手车回收有限公司",
+        "合肥充电科技运营平台"
+      ],
+      "local_suppliers": [
+        "合肥鑫源电池系统有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "合肥充电科技运营平台",
+        "安徽二手车回收有限公司"
+      ],
+      "rd_personnel": 74,
+      "master_doctor_ratio": 0.12,
+      "leading_talents": 4,
+      "university_cooperation": [
+        "安徽大学",
+        "中国科学技术大学",
+        "中科院合肥物质科学研究院"
+      ]
+    },
+    {
+      "enterprise_id": "ENT029",
+      "name": "高新电池管理有限公司",
+      "founded_year": 2021,
+      "registered_capital": 36558,
+      "employees": 485,
+      "annual_revenue": 7.38,
+      "net_profit": 0.43,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "BMS系统",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "电池安全预警技术",
+      "rd_investment_ratio": 0.11,
+      "patents": 16,
+      "invention_patents": 6,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "电池安全监控终端、电池管理系统",
+      "upstream_suppliers": [
+        "合肥石墨负极科技有限公司",
+        "安徽正极新材料有限公司",
+        "皖能电解液有限公司"
+      ],
+      "downstream_customers": [
+        "合肥鑫源电池系统有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 42,
+      "master_doctor_ratio": 0.2,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "中国科学技术大学",
+        "合肥工业大学",
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT030",
+      "name": "经开智能驾驶有限公司",
+      "founded_year": 2013,
+      "registered_capital": 26645,
+      "employees": 462,
+      "annual_revenue": 5.34,
+      "net_profit": 0.6,
+      "industry": "新能源汽车",
+      "sub_industry": "智能网联",
+      "niche": "激光雷达",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "1550nm激光发射技术",
+      "rd_investment_ratio": 0.1,
+      "patents": 14,
+      "invention_patents": 5,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "固态激光雷达、混合固态激光雷达",
+      "upstream_suppliers": [
+        "合肥传感器科技有限公司"
+      ],
+      "downstream_customers": [
+        "安徽智驾系统集成有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "安徽智驾系统集成有限公司"
+      ],
+      "rd_personnel": 36,
+      "master_doctor_ratio": 0.28,
+      "leading_talents": 5,
+      "university_cooperation": [
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT031",
+      "name": "新站汽车电子有限公司",
+      "founded_year": 2013,
+      "registered_capital": 1516,
+      "employees": 16,
+      "annual_revenue": 0.75,
+      "net_profit": 0.03,
+      "industry": "新能源汽车",
+      "sub_industry": "智能网联",
+      "niche": "车载芯片",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "功能安全芯片架构",
+      "rd_investment_ratio": 0.23,
+      "patents": 7,
+      "invention_patents": 1,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "传感器芯片、功率半导体模块",
+      "upstream_suppliers": [
+        "合肥晶圆电子有限公司",
+        "合肥传感器科技有限公司"
+      ],
+      "downstream_customers": [
+        "安徽智驾系统集成有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥传感器科技有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "安徽大学",
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT032",
+      "name": "高新汽车电子有限公司",
+      "founded_year": 2014,
+      "registered_capital": 5007,
+      "employees": 43,
+      "annual_revenue": 1.19,
+      "net_profit": 0.05,
+      "industry": "新能源汽车",
+      "sub_industry": "智能网联",
+      "niche": "车载芯片",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "功能安全芯片架构",
+      "rd_investment_ratio": 0.19,
+      "patents": 6,
+      "invention_patents": 2,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "功率半导体模块、传感器芯片",
+      "upstream_suppliers": [
+        "合肥晶圆电子有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "安徽智驾系统集成有限公司"
+      ],
+      "local_suppliers": [
+        "合肥晶圆电子有限公司"
+      ],
+      "local_customers": [],
+      "rd_personnel": 5,
+      "master_doctor_ratio": 0.11,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT033",
+      "name": "皖智能控制有限公司",
+      "founded_year": 2017,
+      "registered_capital": 6498,
+      "employees": 29,
+      "annual_revenue": 1.45,
+      "net_profit": 0.07,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "电机控制器",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "SiC功率器件应用技术",
+      "rd_investment_ratio": 0.1,
+      "patents": 14,
+      "invention_patents": 8,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "电机控制器、逆变器",
+      "upstream_suppliers": [
+        "安徽半导体器件有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [
+        "安徽半导体器件有限公司"
+      ],
+      "local_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.12,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院"
+      ]
+    },
+    {
+      "enterprise_id": "ENT034",
+      "name": "新站智能控制有限公司",
+      "founded_year": 2020,
+      "registered_capital": 2761,
+      "employees": 67,
+      "annual_revenue": 1.25,
+      "net_profit": 0.14,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "电机控制器",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "电机矢量控制算法",
+      "rd_investment_ratio": 0.07,
+      "patents": 5,
+      "invention_patents": 1,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "逆变器、多合一电驱控制器",
+      "upstream_suppliers": [
+        "皖江精密铸造有限公司",
+        "安徽半导体器件有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [
+        "皖江精密铸造有限公司",
+        "安徽半导体器件有限公司"
+      ],
+      "local_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.02,
+      "leading_talents": 1,
+      "university_cooperation": [
+        "合肥工业大学",
+        "中科院合肥物质科学研究院"
+      ]
+    },
+    {
+      "enterprise_id": "ENT035",
+      "name": "合肥电机控制有限公司",
+      "founded_year": 2010,
+      "registered_capital": 983,
+      "employees": 73,
+      "annual_revenue": 0.66,
+      "net_profit": 0.03,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "电机控制器",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "电机矢量控制算法",
+      "rd_investment_ratio": 0.07,
+      "patents": 3,
+      "invention_patents": 1,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "电机控制器、多合一电驱控制器",
+      "upstream_suppliers": [
+        "皖江精密铸造有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥本地供应商"
+      ],
+      "local_customers": [],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.1,
+      "leading_talents": 0,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT036",
+      "name": "合肥传动系统有限公司",
+      "founded_year": 2020,
+      "registered_capital": 3187,
+      "employees": 45,
+      "annual_revenue": 1.31,
+      "net_profit": 0.04,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "减速器",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "低噪声齿轮设计",
+      "rd_investment_ratio": 0.11,
+      "patents": 15,
+      "invention_patents": 6,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "两挡变速器、电驱总成",
+      "upstream_suppliers": [
+        "皖江精密铸造有限公司",
+        "合肥磁材科技有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [
+        "合肥磁材科技有限公司",
+        "皖江精密铸造有限公司"
+      ],
+      "local_customers": [],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.05,
+      "leading_talents": 0,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT037",
+      "name": "高新减速器有限公司",
+      "founded_year": 2011,
+      "registered_capital": 828,
+      "employees": 56,
+      "annual_revenue": 0.55,
+      "net_profit": 0.02,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "减速器",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "高传动效率减速器",
+      "rd_investment_ratio": 0.09,
+      "patents": 15,
+      "invention_patents": 3,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "电驱总成、单级减速器",
+      "upstream_suppliers": [
+        "安徽半导体器件有限公司",
+        "合肥磁材科技有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [
+        "合肥磁材科技有限公司"
+      ],
+      "local_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 3,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "安徽大学",
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT038",
+      "name": "经开减速器有限公司",
+      "founded_year": 2016,
+      "registered_capital": 1019,
+      "employees": 22,
+      "annual_revenue": 0.24,
+      "net_profit": 0.02,
+      "industry": "新能源汽车",
+      "sub_industry": "电机电控",
+      "niche": "减速器",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "低噪声齿轮设计",
+      "rd_investment_ratio": 0.11,
+      "patents": 15,
+      "invention_patents": 5,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "电驱总成、单级减速器",
+      "upstream_suppliers": [
+        "皖江精密铸造有限公司",
+        "安徽半导体器件有限公司"
+      ],
+      "downstream_customers": [
+        "蔚来合肥制造基地",
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 0,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT039",
+      "name": "新站高精地图有限公司",
+      "founded_year": 2022,
+      "registered_capital": 2849,
+      "employees": 18,
+      "annual_revenue": 0.7,
+      "net_profit": 0.05,
+      "industry": "新能源汽车",
+      "sub_industry": "智能网联",
+      "niche": "高精地图",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "多源融合导航算法",
+      "rd_investment_ratio": 0.18,
+      "patents": 7,
+      "invention_patents": 2,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "定位引擎SDK、高精地图数据",
+      "upstream_suppliers": [
+        "安徽半导体器件有限公司"
+      ],
+      "downstream_customers": [
+        "安徽智驾系统集成有限公司"
+      ],
+      "local_suppliers": [
+        "合肥本地供应商"
+      ],
+      "local_customers": [],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.11,
+      "leading_talents": 0,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT040",
+      "name": "新站导航科技有限公司",
+      "founded_year": 2012,
+      "registered_capital": 2547,
+      "employees": 25,
+      "annual_revenue": 0.62,
+      "net_profit": 0.06,
+      "industry": "新能源汽车",
+      "sub_industry": "智能网联",
+      "niche": "高精地图",
+      "chain_position": "中游",
+      "chain_position_detail": "关键平台",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "众源高精地图更新",
+      "rd_investment_ratio": 0.23,
+      "patents": 4,
+      "invention_patents": 1,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "定位引擎SDK、高精地图数据",
+      "upstream_suppliers": [
+        "合肥传感器科技有限公司",
+        "安徽半导体器件有限公司"
+      ],
+      "downstream_customers": [
+        "安徽智驾系统集成有限公司"
+      ],
+      "local_suppliers": [
+        "合肥传感器科技有限公司",
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "安徽智驾系统集成有限公司"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.12,
+      "leading_talents": 0,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT041",
+      "name": "高新电解液有限公司",
+      "founded_year": 2022,
+      "registered_capital": 671,
+      "employees": 15,
+      "annual_revenue": 0.29,
+      "net_profit": 0.01,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "电解液",
+      "chain_position": "上游",
+      "chain_position_detail": "核心零部件材料",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "固态电解质前驱体技术",
+      "rd_investment_ratio": 0.1,
+      "patents": 9,
+      "invention_patents": 3,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "动力电池电解液、功能添加剂",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "安徽创能动力电池有限公司",
+        "安徽智行电机科技有限公司",
+        "合肥电控先锋有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "安徽创能动力电池有限公司"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院",
+        "安徽大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT042",
+      "name": "经开汽车科技有限公司",
+      "founded_year": 2010,
+      "registered_capital": 3689,
+      "employees": 68,
+      "annual_revenue": 0.77,
+      "net_profit": 0.03,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "售后服务",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "数字化服务平台",
+      "rd_investment_ratio": 0.04,
+      "patents": 3,
+      "invention_patents": 1,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "钣金喷漆、新能源维保",
+      "upstream_suppliers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "downstream_customers": [
+        "终端用户",
+        "物流企业",
+        "个人消费者"
+      ],
+      "local_suppliers": [
+        "合肥本地供应商"
+      ],
+      "local_customers": [],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.03,
+      "leading_talents": 0,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT043",
+      "name": "经开汽车服务有限公司",
+      "founded_year": 2015,
+      "registered_capital": 2556,
+      "employees": 40,
+      "annual_revenue": 0.6,
+      "net_profit": 0.06,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "售后服务",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "三电系统检测技术",
+      "rd_investment_ratio": 0.01,
+      "patents": 10,
+      "invention_patents": 2,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "三电检测、钣金喷漆",
+      "upstream_suppliers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "downstream_customers": [
+        "终端用户",
+        "物流企业",
+        "个人消费者"
+      ],
+      "local_suppliers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_customers": [
+        "物流企业",
+        "个人消费者"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 0,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT044",
+      "name": "新站汽车金融有限公司",
+      "founded_year": 2010,
+      "registered_capital": 1181,
+      "employees": 21,
+      "annual_revenue": 0.33,
+      "net_profit": 0.02,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "金融服务",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "绿色金融产品",
+      "rd_investment_ratio": 0.03,
+      "patents": 0,
+      "invention_patents": 0,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "订单融资、绿色信贷",
+      "upstream_suppliers": [
+        "蔚来合肥制造基地"
+      ],
+      "downstream_customers": [
+        "终端用户",
+        "物流企业",
+        "个人消费者"
+      ],
+      "local_suppliers": [
+        "蔚来合肥制造基地"
+      ],
+      "local_customers": [
+        "个人消费者"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.08,
+      "leading_talents": 2,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT045",
+      "name": "经开汽车回收有限公司",
+      "founded_year": 2018,
+      "registered_capital": 1096,
+      "employees": 46,
+      "annual_revenue": 0.44,
+      "net_profit": 0.02,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "二手车/回收",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "二手车残值评估",
+      "rd_investment_ratio": 0.03,
+      "patents": 10,
+      "invention_patents": 4,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "动力电池回收、二手车交易",
+      "upstream_suppliers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地"
+      ],
+      "downstream_customers": [
+        "终端用户",
+        "物流企业",
+        "个人消费者"
+      ],
+      "local_suppliers": [
+        "安徽瑞驰商用车有限公司",
+        "蔚来合肥制造基地",
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "终端用户",
+        "物流企业"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.11,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院",
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT046",
+      "name": "经开新汽车回收有限公司",
+      "founded_year": 2012,
+      "registered_capital": 4113,
+      "employees": 26,
+      "annual_revenue": 1.04,
+      "net_profit": 0.11,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "二手车/回收",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "二手车残值评估",
+      "rd_investment_ratio": 0.12,
+      "patents": 11,
+      "invention_patents": 2,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "动力电池回收、梯次利用产品",
+      "upstream_suppliers": [
+        "蔚来合肥制造基地"
+      ],
+      "downstream_customers": [
+        "终端用户",
+        "物流企业",
+        "个人消费者"
+      ],
+      "local_suppliers": [
+        "合肥本地供应商"
+      ],
+      "local_customers": [
+        "终端用户"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.07,
+      "leading_talents": 1,
+      "university_cooperation": []
+    },
+    {
+      "enterprise_id": "ENT047",
+      "name": "皖精密机械有限公司",
+      "founded_year": 2012,
+      "registered_capital": 665,
+      "employees": 31,
+      "annual_revenue": 0.19,
+      "net_profit": 0.02,
+      "industry": "新能源汽车",
+      "sub_industry": "其他配套",
+      "niche": "生产设备",
+      "chain_position": "上游",
+      "chain_position_detail": "生产设备",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "卷绕/叠片设备",
+      "rd_investment_ratio": 0.04,
+      "patents": 3,
+      "invention_patents": 1,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "分条机、卷绕机",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "合肥电控先锋有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.07,
+      "leading_talents": 2,
+      "university_cooperation": [
+        "中科院合肥物质科学研究院",
+        "中国科学技术大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT048",
+      "name": "经开质量检测有限公司",
+      "founded_year": 2018,
+      "registered_capital": 1920,
+      "employees": 87,
+      "annual_revenue": 0.45,
+      "net_profit": 0.05,
+      "industry": "新能源汽车",
+      "sub_industry": "其他配套",
+      "niche": "检测设备",
+      "chain_position": "上游",
+      "chain_position_detail": "生产设备",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "电芯分选测试系统",
+      "rd_investment_ratio": 0.02,
+      "patents": 8,
+      "invention_patents": 4,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "模组检测设备、电芯测试系统",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "蔚来合肥制造基地"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.1,
+      "leading_talents": 1,
+      "university_cooperation": [
+        "中国科学技术大学",
+        "中科院合肥物质科学研究院",
+        "合肥工业大学"
+      ]
+    },
+    {
+      "enterprise_id": "ENT049",
+      "name": "安徽充电运营有限公司",
+      "founded_year": 2013,
+      "registered_capital": 645,
+      "employees": 50,
+      "annual_revenue": 0.34,
+      "net_profit": 0.01,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "运营平台",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "充电网络智能运营",
+      "rd_investment_ratio": 0.05,
+      "patents": 2,
+      "invention_patents": 0,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "充电运营平台、换电调度平台",
+      "upstream_suppliers": [
+        "安徽创能动力电池有限公司",
+        "合肥电控先锋有限公司"
+      ],
+      "downstream_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "安徽瑞驰商用车有限公司"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.1,
+      "leading_talents": 0,
+      "university_cooperation": [
+        "合肥工业大学",
+        "中科院合肥物质科学研究院"
+      ]
+    },
+    {
+      "enterprise_id": "ENT050",
+      "name": "安徽科技服务有限公司",
+      "founded_year": 2011,
+      "registered_capital": 2138,
+      "employees": 90,
+      "annual_revenue": 0.68,
+      "net_profit": 0.05,
+      "industry": "新能源汽车",
+      "sub_industry": "其他配套",
+      "niche": "其他配套",
+      "chain_position": "上游",
+      "chain_position_detail": "服务支撑",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "企业孵化服务",
+      "rd_investment_ratio": 0.03,
+      "patents": 0,
+      "invention_patents": 0,
+      "software_copyrights": 0,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "物流仓储、企业咨询",
+      "upstream_suppliers": [],
+      "downstream_customers": [
+        "安徽创能动力电池有限公司"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "安徽创能动力电池有限公司"
+      ],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 1,
+      "university_cooperation": []
+    }
+  ]
+}
