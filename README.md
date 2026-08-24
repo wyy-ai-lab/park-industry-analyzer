@@ -94,6 +94,12 @@ python -m streamlit run app.py
 2. 填入 `ANTHROPIC_API_KEY` 或 `OPENAI_API_KEY`
 3. 在对应页面关闭演示模式或保持默认（无 Key 时自动使用模板/演示模式）
 
+## 在线访问
+
+项目已部署至 Streamlit Cloud：
+
+👉 **`https://park-industry-analyzer.streamlit.app`**
+
 ## 在线部署（Streamlit Cloud）
 
 1. 将本项目内容推送到 GitHub 仓库（仓库根目录包含 `app.py`、`pages/`、`engine/` 等）
