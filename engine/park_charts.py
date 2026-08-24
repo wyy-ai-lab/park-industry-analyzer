@@ -3,51 +3,71 @@
 提供园区产业分析所需的 Plotly 图表组件。
 """
 
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 
-# Apple 风格配色
-APPLE_BLUE = "#0071e3"
-APPLE_GREEN = "#34c759"
-APPLE_ORANGE = "#ff9500"
-APPLE_RED = "#ff3b30"
-APPLE_GRAY = "#8e8e93"
+# 投影增强配色（高对比度）
+DEEP_BLUE = "#0056b3"   # 强势
+BRIGHT_GREEN = "#34c759"  # 正常
+ORANGE = "#ff9500"      # 薄弱
+RED = "#ff3b30"         # 缺失
+APPLE_GRAY = "#8e8e93"  # 服务支撑/未知
 APPLE_PURPLE = "#af52de"
 APPLE_TEAL = "#5ac8fa"
 
 SEGMENT_STATUS_COLORS = {
-    "强势": APPLE_BLUE,
-    "正常": APPLE_GREEN,
-    "薄弱": APPLE_ORANGE,
-    "缺失": APPLE_RED,
+    "强势": DEEP_BLUE,
+    "正常": BRIGHT_GREEN,
+    "薄弱": ORANGE,
+    "缺失": RED,
     "服务支撑": APPLE_GRAY,
 }
 
 SUB_INDUSTRY_COLORS = {
-    "动力电池": APPLE_BLUE,
-    "电机电控": APPLE_GREEN,
+    "动力电池": DEEP_BLUE,
+    "电机电控": BRIGHT_GREEN,
     "智能网联": APPLE_PURPLE,
-    "整车制造": APPLE_RED,
-    "充换电设施": APPLE_ORANGE,
+    "整车制造": RED,
+    "充换电设施": ORANGE,
     "汽车服务": APPLE_TEAL,
     "其他配套": APPLE_GRAY,
 }
 
 
-def _apple_layout(fig: go.Figure, title: str, height: int = 420) -> go.Figure:
-    """统一应用 Apple 风格布局"""
+def _apple_layout(
+    fig: go.Figure,
+    title: str,
+    height: int = 420,
+    annotation_text: Optional[str] = None,
+) -> go.Figure:
+    """统一应用 Apple 风格布局（投影优化版：大字、高对比）"""
+    annotations = []
+    if annotation_text:
+        annotations.append(
+            dict(
+                text=annotation_text,
+                x=0.5,
+                y=-0.22,
+                xref="paper",
+                yref="paper",
+                showarrow=False,
+                font=dict(size=13, color="#6e6e73"),
+            )
+        )
+
     fig.update_layout(
-        title=dict(text=title, font=dict(size=16, color="#1d1d1f")),
+        title=dict(text=title, font=dict(size=19, color="#1d1d1f", family="Arial, sans-serif")),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(
             family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif",
+            size=13,
             color="#1d1d1f",
         ),
-        margin=dict(l=24, r=24, t=60, b=32),
+        margin=dict(l=28, r=28, t=72, b=44 if annotation_text else 32),
         height=height,
         legend=dict(
             orientation="h",
@@ -56,12 +76,18 @@ def _apple_layout(fig: go.Figure, title: str, height: int = 420) -> go.Figure:
             xanchor="center",
             x=0.5,
             bgcolor="rgba(255,255,255,0.5)",
+            font=dict(size=13),
         ),
+        annotations=annotations,
     )
     return fig
 
 
-def build_industry_pie_chart(sub_industry_dist: Dict[str, int]) -> go.Figure:
+def build_industry_pie_chart(
+    sub_industry_dist: Dict[str, int],
+    height: int = 420,
+    annotation_text: Optional[str] = None,
+) -> go.Figure:
     """产业分布饼图"""
     labels = list(sub_industry_dist.keys())
     values = list(sub_industry_dist.values())
@@ -74,17 +100,22 @@ def build_industry_pie_chart(sub_industry_dist: Dict[str, int]) -> go.Figure:
             hole=0.55,
             marker=dict(colors=colors, line=dict(color="#ffffff", width=2)),
             textinfo="label+value",
-            textfont=dict(size=12),
+            textfont=dict(size=14),
             hovertemplate="%{label}<br>企业数：%{value}<extra></extra>",
         )
     )
     fig.update_layout(
-        annotations=[dict(text="产业<br>分布", x=0.5, y=0.5, font_size=16, showarrow=False)],
+        annotations=[
+            dict(text="产业<br>分布", x=0.5, y=0.5, font_size=18, showarrow=False, font_color="#1d1d1f")
+        ],
     )
-    return _apple_layout(fig, "产业领域分布", height=400)
+    return _apple_layout(fig, "产业领域分布", height=height, annotation_text=annotation_text)
 
 
-def build_industry_bar_chart(sub_industry_dist: Dict[str, int]) -> go.Figure:
+def build_industry_bar_chart(
+    sub_industry_dist: Dict[str, int],
+    height: int = 400,
+) -> go.Figure:
     """产业分布横向条形图"""
     labels = list(sub_industry_dist.keys())
     values = list(sub_industry_dist.values())
@@ -98,21 +129,25 @@ def build_industry_bar_chart(sub_industry_dist: Dict[str, int]) -> go.Figure:
             marker=dict(color=colors, line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[str(v) for v in values],
             textposition="outside",
-            textfont=dict(size=12),
+            textfont=dict(size=13),
             hovertemplate="%{y}：%{x} 家<extra></extra>",
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
-    fig.update_yaxes(showgrid=False, zeroline=False)
-    return _apple_layout(fig, "产业领域企业数量", height=380)
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13), title=dict(text="企业数量", font=dict(size=14)))
+    fig.update_yaxes(showgrid=False, zeroline=False, tickfont=dict(size=13))
+    return _apple_layout(fig, "产业领域企业数量", height=height)
 
 
-def build_tier_pyramid_chart(tier_dist: Dict[str, int]) -> go.Figure:
+def build_tier_pyramid_chart(
+    tier_dist: Dict[str, int],
+    height: int = 380,
+    annotation_text: Optional[str] = None,
+) -> go.Figure:
     """企业梯队金字塔（倒序条形图，链主在顶部）"""
     order = ["配套服务企业", "科技型中小企业", "高新技术企业", "骨干企业", "链主企业"]
     labels = [t for t in order if tier_dist.get(t, 0) > 0]
     values = [tier_dist[t] for t in labels]
-    colors = [APPLE_GRAY, APPLE_TEAL, APPLE_BLUE, APPLE_GREEN, APPLE_RED]
+    colors = [APPLE_GRAY, APPLE_TEAL, DEEP_BLUE, BRIGHT_GREEN, RED]
 
     fig = go.Figure(
         data=go.Bar(
@@ -126,20 +161,24 @@ def build_tier_pyramid_chart(tier_dist: Dict[str, int]) -> go.Figure:
             ),
             text=[str(v) for v in values],
             textposition="outside",
-            textfont=dict(size=12),
+            textfont=dict(size=13),
             hovertemplate="%{y}：%{x} 家<extra></extra>",
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
-    fig.update_yaxes(showgrid=False, zeroline=False, categoryorder="total ascending")
-    return _apple_layout(fig, "企业梯队金字塔", height=360)
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13))
+    fig.update_yaxes(showgrid=False, zeroline=False, categoryorder="total ascending", tickfont=dict(size=13))
+    return _apple_layout(fig, "企业梯队金字塔", height=height, annotation_text=annotation_text)
 
 
-def build_chain_layer_chart(chain_dist: Dict[str, int]) -> go.Figure:
+def build_chain_layer_chart(
+    chain_dist: Dict[str, int],
+    height: int = 380,
+    annotation_text: Optional[str] = None,
+) -> go.Figure:
     """产业链层级分布图"""
     labels = ["上游", "中游", "下游"]
     values = [chain_dist.get(k, 0) for k in labels]
-    colors = [APPLE_GREEN, APPLE_BLUE, APPLE_ORANGE]
+    colors = [BRIGHT_GREEN, DEEP_BLUE, ORANGE]
 
     fig = go.Figure(
         data=go.Bar(
@@ -148,18 +187,20 @@ def build_chain_layer_chart(chain_dist: Dict[str, int]) -> go.Figure:
             marker=dict(color=colors, line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[str(v) for v in values],
             textposition="outside",
-            textfont=dict(size=12),
+            textfont=dict(size=13),
             hovertemplate="%{x}：%{y} 家<extra></extra>",
         )
     )
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)")
-    fig.update_xaxes(showgrid=False, zeroline=False)
-    return _apple_layout(fig, "产业链层级分布", height=360)
+    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13), title=dict(text="企业数量", font=dict(size=14)))
+    fig.update_xaxes(showgrid=False, zeroline=False, tickfont=dict(size=13))
+    return _apple_layout(fig, "产业链层级分布", height=height, annotation_text=annotation_text)
 
 
 def build_segment_strength_chart(
     segment_dist: Dict[str, Dict[str, Any]],
     segment_status: Dict[str, str],
+    height: int = 520,
+    annotation_text: Optional[str] = None,
 ) -> go.Figure:
     """产业链环节强度横向条形图"""
     # 按上中下游排序
@@ -181,16 +222,24 @@ def build_segment_strength_chart(
             marker=dict(color=colors, line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[str(v) for v in values],
             textposition="outside",
-            textfont=dict(size=11),
+            textfont=dict(size=12),
             hovertemplate="%{y}<br>企业数：%{x}<extra></extra>",
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", title="企业数量")
-    fig.update_yaxes(showgrid=False, zeroline=False)
-    return _apple_layout(fig, "产业链环节布局与强度", height=480)
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor="rgba(0,0,0,0.06)",
+        title=dict(text="企业数量", font=dict(size=14)),
+        tickfont=dict(size=13),
+    )
+    fig.update_yaxes(showgrid=False, zeroline=False, tickfont=dict(size=13))
+    return _apple_layout(fig, "产业链环节布局与强度", height=height, annotation_text=annotation_text)
 
 
-def build_revenue_rd_scatter(enterprises: List[Dict[str, Any]]) -> go.Figure:
+def build_revenue_rd_scatter(
+    enterprises: List[Dict[str, Any]],
+    height: int = 440,
+) -> go.Figure:
     """营收 vs 研发投入散点图"""
     x = [e.get("annual_revenue", 0) for e in enterprises]
     y = [e.get("rd_investment_ratio", 0) * 100 for e in enterprises]
@@ -213,12 +262,25 @@ def build_revenue_rd_scatter(enterprises: List[Dict[str, Any]]) -> go.Figure:
             hovertemplate="%{text}<br>营收：%{x} 亿元<br>研发占比：%{y:.1f}%<extra></extra>",
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", title="年产值（亿元）", type="log")
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", title="研发投入占比（%）")
-    return _apple_layout(fig, "营收与创新投入分布", height=420)
+    fig.update_xaxes(
+        showgrid=True, gridcolor="rgba(0,0,0,0.06)",
+        title=dict(text="年产值（亿元）", font=dict(size=14)),
+        tickfont=dict(size=13), type="log",
+    )
+    fig.update_yaxes(
+        showgrid=True, gridcolor="rgba(0,0,0,0.06)",
+        title=dict(text="研发投入占比（%）", font=dict(size=14)),
+        tickfont=dict(size=13),
+    )
+    return _apple_layout(fig, "营收与创新投入分布", height=height)
 
 
-def build_top_enterprises_bar(enterprises: List[Dict[str, Any]], top_n: int = 10) -> go.Figure:
+def build_top_enterprises_bar(
+    enterprises: List[Dict[str, Any]],
+    top_n: int = 10,
+    height: int = 440,
+    annotation_text: Optional[str] = None,
+) -> go.Figure:
     """头部企业产值条形图"""
     sorted_ents = sorted(enterprises, key=lambda x: x.get("annual_revenue", 0), reverse=True)[:top_n]
     names = [e.get("name", "") for e in sorted_ents]
@@ -233,16 +295,23 @@ def build_top_enterprises_bar(enterprises: List[Dict[str, Any]], top_n: int = 10
             marker=dict(color=colors, line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[f"{v:.2f}" for v in revenues],
             textposition="outside",
-            textfont=dict(size=11),
+            textfont=dict(size=12),
             hovertemplate="%{y}<br>营收：%{x} 亿元<extra></extra>",
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", title="年产值（亿元）")
-    fig.update_yaxes(showgrid=False, zeroline=False, categoryorder="total ascending")
-    return _apple_layout(fig, f"TOP{top_n} 企业年产值", height=420)
+    fig.update_xaxes(
+        showgrid=True, gridcolor="rgba(0,0,0,0.06)",
+        title=dict(text="年产值（亿元）", font=dict(size=14)),
+        tickfont=dict(size=13),
+    )
+    fig.update_yaxes(showgrid=False, zeroline=False, categoryorder="total ascending", tickfont=dict(size=12))
+    return _apple_layout(fig, f"TOP{top_n} 企业年产值", height=height, annotation_text=annotation_text)
 
 
-def build_innovation_density_chart(enterprises: List[Dict[str, Any]]) -> go.Figure:
+def build_innovation_density_chart(
+    enterprises: List[Dict[str, Any]],
+    height: int = 440,
+) -> go.Figure:
     """产业创新密度气泡图：X=营收，Y=专利数，气泡大小=研发人员"""
     x = [e.get("annual_revenue", 0) for e in enterprises]
     y = [e.get("patents", 0) for e in enterprises]
@@ -265,9 +334,17 @@ def build_innovation_density_chart(enterprises: List[Dict[str, Any]]) -> go.Figu
             hovertemplate="%{text}<br>营收：%{x} 亿元<br>专利：%{y} 项<extra></extra>",
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", title="年产值（亿元）", type="log")
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", title="专利数量（项）")
-    return _apple_layout(fig, "产业创新密度", height=420)
+    fig.update_xaxes(
+        showgrid=True, gridcolor="rgba(0,0,0,0.06)",
+        title=dict(text="年产值（亿元）", font=dict(size=14)),
+        tickfont=dict(size=13), type="log",
+    )
+    fig.update_yaxes(
+        showgrid=True, gridcolor="rgba(0,0,0,0.06)",
+        title=dict(text="专利数量（项）", font=dict(size=14)),
+        tickfont=dict(size=13),
+    )
+    return _apple_layout(fig, "产业创新密度", height=height)
 
 
 def build_chain_sankey(segment_dist: Dict[str, Dict[str, Any]]) -> go.Figure:
@@ -283,14 +360,12 @@ def build_chain_sankey(segment_dist: Dict[str, Dict[str, Any]]) -> go.Figure:
     targets = []
     values = []
 
-    # 节点：上游 + 中游 + 下游
     layer_nodes = {}
     for layer in ["上游", "中游", "下游"]:
         for seg, count in layers[layer]:
             layer_nodes[seg] = len(labels)
             labels.append(seg)
 
-    # 简单连接：上游 -> 中游，中游 -> 下游
     for seg, count in layers["上游"]:
         for target_seg, target_count in layers["中游"]:
             sources.append(layer_nodes[seg])
@@ -305,15 +380,22 @@ def build_chain_sankey(segment_dist: Dict[str, Dict[str, Any]]) -> go.Figure:
 
     fig = go.Figure(
         data=go.Sankey(
-            node=dict(
-                pad=15,
-                thickness=20,
-                line=dict(color="black", width=0.5),
-                label=labels,
-                color=[APPLE_BLUE] * len(labels),
-            ),
-            link=dict(source=sources, target=targets, value=values),
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=labels,
+            color=[DEEP_BLUE] * len(labels),
         )
     )
-    fig.update_layout(title_text="产业链层级流向", font_size=12, height=500)
+    fig.update_layout(title_text="产业链层级流向", font_size=13, height=500)
     return fig
+
+
+def fig_to_image_bytes(fig, format: str = "png", width: int = 900, scale: int = 2) -> bytes:
+    """
+    将 Plotly 图表转为图片 bytes
+
+    依赖 kaleido。若未安装会抛出 ImportError，调用方需自行处理 fallback。
+    """
+    import plotly.io as pio
+    return pio.to_image(fig, format=format, engine="kaleido", width=width, scale=scale)
