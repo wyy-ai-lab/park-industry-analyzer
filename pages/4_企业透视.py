@@ -204,7 +204,7 @@ if selected_id:
             "utility_models": max(0, selected_enterprise.get("patents", 0) - selected_enterprise.get("invention_patents", 0) - selected_enterprise.get("software_copyrights", 0)),
             "software_copyrights": selected_enterprise.get("software_copyrights", 0),
             "trademarks": 0,
-            "qualifications": ["高新技术企业"] if selected_enterprise.get("high_tech_enterprise") else [],
+            "qualifications": ["国家高新技术企业"] if selected_enterprise.get("high_tech_enterprise") else [],
             "is_high_tech_enterprise": selected_enterprise.get("high_tech_enterprise", False),
             "is_high_tech_field": True,
             "high_tech_income_ratio": 0.6,

@@ -135,7 +135,10 @@ with tab_profile:
             invention_patents = st.number_input("发明专利数量", min_value=0, value=int(ep.get("invention_patents", 0)))
         with c2:
             sub_industry = st.text_input("细分行业", value=ep.get("sub_industry", "动力电池"))
-            scale = st.selectbox("企业规模", ["小型企业", "中型企业", "大型企业", "规模以上"], index=0 if ep.get("scale") is None else ["小型企业", "中型企业", "大型企业", "规模以上"].index(ep.get("scale", "小型企业")))
+            scale_options = ["小型企业", "中型企业", "大型企业", "规模以上"]
+            current_scale = ep.get("scale", "小型企业")
+            scale_index = scale_options.index(current_scale) if current_scale in scale_options else 0
+            scale = st.selectbox("企业规模", scale_options, index=scale_index)
             city = st.text_input("城市", value=ep.get("city", "合肥市"))
             region = st.text_input("所在地区", value=ep.get("region", "安徽省合肥市高新区"))
             profit = st.number_input("上年度利润（万元）", min_value=0.0, value=float(ep.get("profit", 0)))
@@ -154,14 +157,20 @@ with tab_profile:
             rd_accounting_system = st.checkbox("建立研发准备金制度", value=ep.get("rd_accounting_system", False))
             has_major_accident = st.checkbox("近三年有重大事故", value=ep.get("has_major_accident", False))
 
+        qualification_options = [
+            "国家高新技术企业", "国家级专精特新小巨人", "安徽省专精特新中小企业",
+            "科技型中小企业", "创新型中小企业", "ISO9001", "ISO13485",
+            "CE认证", "医疗器械生产许可证", "医疗器械产品注册证"
+        ]
+        default_qualifications = ep.get("qualifications", []) or []
+        if not isinstance(default_qualifications, list):
+            default_qualifications = []
+        default_qualifications = [q for q in default_qualifications if q in qualification_options]
+
         qualifications = st.multiselect(
             "已获资质",
-            options=[
-                "国家高新技术企业", "国家级专精特新小巨人", "安徽省专精特新中小企业",
-                "科技型中小企业", "创新型中小企业", "ISO9001", "ISO13485",
-                "CE认证", "医疗器械生产许可证", "医疗器械产品注册证"
-            ],
-            default=ep.get("qualifications", []),
+            options=qualification_options,
+            default=default_qualifications,
         )
 
         submitted = st.form_submit_button("💾 保存企业画像", type="primary", use_container_width=True)
