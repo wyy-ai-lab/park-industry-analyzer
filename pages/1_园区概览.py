@@ -228,7 +228,9 @@ if presentation_mode:
     st.markdown(f'<div class="conclusion-bar">{conclusion}</div>', unsafe_allow_html=True)
 
 # 编辑园区信息
-with st.expander("✏️ 编辑园区信息（当前为演示案例，修改后仅影响本页展示）", expanded=False):
+st.markdown('<div class="section-title">✏️ 编辑园区信息</div>', unsafe_allow_html=True)
+st.caption("当前已预填演示案例数据，修改后仅影响本页展示。")
+with st.container(border=True):
     with st.form("park_profile_form"):
         edit_col1, edit_col2 = st.columns(2)
         with edit_col1:
