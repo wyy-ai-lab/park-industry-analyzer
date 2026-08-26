@@ -1,3 +1,5 @@
+import textwrap
+
 import streamlit as st
 from engine.ui_helpers import inject_apple_theme
 from engine.park_metrics import load_park_enterprises, compute_metrics
@@ -203,13 +205,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # 侧边栏品牌头
-st.sidebar.markdown("""
+st.sidebar.markdown(textwrap.dedent("""
 <div class="sidebar-brand">
     <div class="sidebar-brand-icon">🏭</div>
     <div class="sidebar-brand-title">园区产业分析</div>
     <div class="sidebar-brand-tagline">智能体 v1.0 · Demo</div>
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 # 加载园区指标，用于首页数据看板
 try:
@@ -223,7 +225,7 @@ completeness = park_metrics.get("completeness_score", 85.7)
 local_support = park_metrics.get("local_support_rate", 68.0)
 
 # Hero
-st.markdown(f"""
+st.markdown(textwrap.dedent(f"""
 <div class="home-hero">
     <div class="home-hero-badge">🚀 内部汇报版</div>
     <div class="home-hero-title">🏭 园区产业分析智能体</div>
@@ -232,10 +234,10 @@ st.markdown(f"""
         为园区管委会提供数据驱动的产业洞察与招商培育建议
     </div>
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 # 核心数据条
-st.markdown(f"""
+st.markdown(textwrap.dedent(f"""
 <div class="home-stats">
     <div class="home-stat-card">
         <div class="home-stat-value">{total_enterprises}</div>
@@ -254,7 +256,7 @@ st.markdown(f"""
         <div class="home-stat-label">本地配套率</div>
     </div>
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 # CTA
 st.markdown('<div class="cta-bar">', unsafe_allow_html=True)
@@ -291,13 +293,13 @@ for row in rows:
         with col:
             if st.button(f"{icon} {title}", help=desc, use_container_width=True):
                 st.switch_page(page)
-            st.markdown(f"""
+            st.markdown(textwrap.dedent(f"""
             <div class="home-card" style="margin-top:0.5rem;">
                 <div class="home-card-icon">{icon}</div>
                 <div class="home-card-title">{title}</div>
                 <div class="home-card-desc">{desc}</div>
             </div>
-            """, unsafe_allow_html=True)
+            """), unsafe_allow_html=True)
 
 st.divider()
 
@@ -317,23 +319,23 @@ capabilities = [
 
 capability_html = '<div class="capability-grid">'
 for icon, title, desc, color in capabilities:
-    capability_html += f"""
-    <div class="capability-grid-item" style="border-top: 3px solid {color};">
-        <div class="capability-grid-icon" style="background: {color}15;">{icon}</div>
-        <div>
-            <div style="font-weight:600;color:var(--apple-text);margin-bottom:0.2rem;">{title}</div>
-            <div class="capability-grid-text">{desc}</div>
-        </div>
-    </div>
-    """
+    capability_html += (
+        f'<div class="capability-grid-item" style="border-top:3px solid {color};">'
+        f'<div class="capability-grid-icon" style="background:{color}15;">{icon}</div>'
+        f'<div>'
+        f'<div style="font-weight:600;color:var(--apple-text);margin-bottom:0.2rem;">{title}</div>'
+        f'<div class="capability-grid-text">{desc}</div>'
+        f'</div>'
+        f'</div>'
+    )
 capability_html += '</div>'
 
 st.markdown(capability_html, unsafe_allow_html=True)
 
 # Footer
-st.markdown("""
+st.markdown(textwrap.dedent("""
 <div class="home-footer">
     园区产业分析智能体 · Demo 版本 · 基于 Streamlit 构建<br>
     数据为演示数据，仅供内部汇报使用
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
