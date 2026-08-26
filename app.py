@@ -1,5 +1,6 @@
 import streamlit as st
 from engine.ui_helpers import inject_apple_theme
+from engine.park_metrics import load_park_enterprises, compute_metrics
 
 st.set_page_config(
     page_title="园区产业分析智能体",
@@ -19,10 +20,22 @@ st.markdown("""
 
 .home-hero {
     text-align: center;
-    padding: 3rem 1rem 2.5rem;
+    padding: 2.5rem 1rem 1.5rem;
+}
+.home-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+    background: var(--apple-blue-light);
+    color: var(--apple-blue);
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
 }
 .home-hero-title {
-    font-size: 3.2rem;
+    font-size: 3rem;
     font-weight: 700;
     letter-spacing: -0.03em;
     margin-bottom: 0.75rem;
@@ -32,57 +45,106 @@ st.markdown("""
     background-clip: text;
 }
 .home-hero-subtitle {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 400;
     color: var(--apple-muted);
     letter-spacing: 0.02em;
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.home-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    max-width: 900px;
+    margin: 1.5rem auto 2rem;
+}
+.home-stat-card {
+    background: var(--apple-card-solid);
+    border: 1px solid var(--apple-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 0.75rem;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+}
+@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
+    .home-stat-card {
+        background: var(--apple-card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+}
+.home-stat-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--apple-blue);
+    letter-spacing: -0.02em;
+}
+.home-stat-label {
+    font-size: 0.82rem;
+    color: var(--apple-muted);
+    margin-top: 0.35rem;
+    font-weight: 500;
+}
+
+.cta-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
 }
 
 .home-card {
     background: var(--apple-card-solid);
     border: 1px solid var(--apple-border);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    padding: 2rem 1.5rem;
+    box-shadow: var(--shadow-sm);
+    padding: 1.5rem;
     height: 100%;
-    transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
-@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
-    .home-card {
-        background: var(--apple-card);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-    }
+.home-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--apple-blue), var(--apple-teal));
 }
 .home-card:hover {
-    transform: translateY(-6px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
 }
 .home-card-icon {
-    font-size: 2.5rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
     margin-bottom: 1rem;
+    background: var(--apple-blue-light);
 }
 .home-card-title {
-    font-size: 1.25rem;
+    font-size: 1.15rem;
     font-weight: 600;
     color: var(--apple-text);
     margin-bottom: 0.5rem;
     letter-spacing: -0.01em;
-    text-decoration: none;
-    display: inline-block;
-    transition: color 0.25s ease;
-}
-a.home-card-title:hover,
-a.home-card-title:focus {
-    color: var(--apple-blue);
-    text-decoration: none;
 }
 .home-card-desc {
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     color: var(--apple-muted);
-    margin-bottom: 1.25rem;
     line-height: 1.55;
 }
+
 .capability-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -99,20 +161,19 @@ a.home-card-title:focus {
     gap: 0.75rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
-    .capability-grid-item {
-        background: var(--apple-card);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-    }
-}
 .capability-grid-item:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
 .capability-grid-icon {
-    font-size: 1.4rem;
-    line-height: 1;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
 }
 .capability-grid-text {
     font-size: 0.92rem;
@@ -121,92 +182,154 @@ a.home-card-title:focus {
     font-weight: 500;
 }
 
-@media (max-width: 640px) {
-    .home-hero-title { font-size: 2.1rem; }
+.home-footer {
+    text-align: center;
+    color: var(--apple-muted);
+    font-size: 0.8rem;
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid var(--apple-border);
+}
+
+@media (max-width: 768px) {
+    .home-hero-title { font-size: 2.2rem; }
     .home-hero-subtitle { font-size: 1rem; }
-    .capability-grid { grid-template-columns: 1fr; }
-    .home-card { padding: 1.5rem 1.25rem; }
+    .home-stats { grid-template-columns: repeat(2, 1fr); }
+    .home-stat-value { font-size: 1.5rem; }
+    .cta-bar { flex-direction: column; align-items: stretch; }
+    .home-card { padding: 1.25rem; }
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Hero
-st.markdown("""
-<div class="home-hero">
-    <div class="home-hero-title">🏭 园区产业分析智能体</div>
-    <div class="home-hero-subtitle">看清园区产业全局 · 识别产业链强弱 · 下钻企业诊断</div>
+# 侧边栏品牌头
+st.sidebar.markdown("""
+<div class="sidebar-brand">
+    <div class="sidebar-brand-icon">🏭</div>
+    <div class="sidebar-brand-title">园区产业分析</div>
+    <div class="sidebar-brand-tagline">智能体 v1.0 · Demo</div>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("<div style='text-align: center; margin-bottom: 0.5rem;'></div>", unsafe_allow_html=True)
+# 加载园区指标，用于首页数据看板
+try:
+    park_data = load_park_enterprises()
+    park_metrics = compute_metrics(park_data) if park_data else {}
+except Exception:
+    park_metrics = {}
+
+total_enterprises = park_metrics.get("total_enterprises", 50)
+completeness = park_metrics.get("completeness_score", 85.7)
+local_support = park_metrics.get("local_support_rate", 68.0)
+
+# Hero
+st.markdown(f"""
+<div class="home-hero">
+    <div class="home-hero-badge">🚀 内部汇报版</div>
+    <div class="home-hero-title">🏭 园区产业分析智能体</div>
+    <div class="home-hero-subtitle">
+        看清园区产业全局 · 识别产业链强弱 · 下钻企业诊断<br>
+        为园区管委会提供数据驱动的产业洞察与招商培育建议
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# 核心数据条
+st.markdown(f"""
+<div class="home-stats">
+    <div class="home-stat-card">
+        <div class="home-stat-value">{total_enterprises}</div>
+        <div class="home-stat-label">园区企业</div>
+    </div>
+    <div class="home-stat-card">
+        <div class="home-stat-value">6</div>
+        <div class="home-stat-label">分析模块</div>
+    </div>
+    <div class="home-stat-card">
+        <div class="home-stat-value">{completeness:.1f}</div>
+        <div class="home-stat-label">产业链完整度</div>
+    </div>
+    <div class="home-stat-card">
+        <div class="home-stat-value">{local_support:.1f}%</div>
+        <div class="home-stat-label">本地配套率</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# CTA
+st.markdown('<div class="cta-bar">', unsafe_allow_html=True)
+c1, c2, c3 = st.columns([1, 1, 1])
+with c1:
+    st.page_link("pages/1_园区概览.py", label="🏞️ 进入园区概览", type="primary", use_container_width=True)
+with c2:
+    st.page_link("pages/5_发展建议.py", label="💡 查看发展建议", type="secondary", use_container_width=True)
+with c3:
+    st.page_link("pages/6_企业诊断辅导.py", label="🩺 企业诊断辅导", type="secondary", use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+st.divider()
 
 # 快速入口
-st.markdown('<div class="home-quick-links">', unsafe_allow_html=True)
+st.subheader("🚀 快速入口")
 
-cards = [
-    ("🏞️", "1_园区概览", "园区概览", "掌握园区核心经济指标、企业总数、产值与高新技术企业分布。"),
-    ("🗺️", "2_产业地图", "产业地图", "产业领域分布、企业梯队金字塔、创新密度与主导产业识别。"),
-    ("🕸️", "3_产业链图谱", "产业链图谱", "产业链环节布局、强弱缺失分析、断链风险与补链建议。"),
-    ("🔍", "4_企业透视", "企业透视", "搜索筛选园区企业，查看详情并一键进入单个企业诊断辅导。"),
-    ("💡", "5_发展建议", "发展建议", "基于园区数据生成结构化诊断结论、招商与培育建议。"),
-    ("🩺", "6_企业诊断辅导", "企业诊断辅导", "复用企业政策诊断能力：画像、诊断、报告、培育路线图。"),
+quick_links = [
+    ("🏞️", "pages/1_园区概览.py", "园区概览", "核心经济指标、产业分布、头部企业一览"),
+    ("🗺️", "pages/2_产业地图.py", "产业地图", "梯队金字塔、产业链层级、创新密度"),
+    ("🕸️", "pages/3_产业链图谱.py", "产业链图谱", "完整度、本地配套率、强弱缺失分析"),
+    ("🔍", "pages/4_企业透视.py", "企业透视", "50 家演示企业搜索、筛选、下钻诊断"),
+    ("💡", "pages/5_发展建议.py", "发展建议", "LLM / 模板生成招商补链与培育建议"),
+    ("🩺", "pages/6_企业诊断辅导.py", "企业诊断辅导", "单企业画像、政策诊断、报告导出"),
 ]
 
-rows = [cards[i:i+3] for i in range(0, len(cards), 3)]
+rows = [quick_links[i:i+3] for i in range(0, len(quick_links), 3)]
 for row in rows:
     cols = st.columns(len(row))
     for col, (icon, page, title, desc) in zip(cols, row):
         with col:
+            st.page_link(page, label=f"{icon} {title}", help=desc, use_container_width=True)
             st.markdown(f"""
-            <div class="home-card">
+            <div class="home-card" style="margin-top:0.5rem;">
                 <div class="home-card-icon">{icon}</div>
-                <a href="{page}" class="home-card-title">{title}</a>
+                <div class="home-card-title">{title}</div>
                 <div class="home-card-desc">{desc}</div>
             </div>
             """, unsafe_allow_html=True)
-
-st.markdown('</div>', unsafe_allow_html=True)
 
 st.divider()
 
 # 当前能力
 st.subheader("✅ 当前能力")
 
+capabilities = [
+    ("🏞️", "园区产业概览", "核心指标、产业分布、头部企业", "#0071e3"),
+    ("🗺️", "产业地图", "梯队金字塔、产业链层级、创新密度", "#34c759"),
+    ("🕸️", "产业链图谱", "完整度、本地配套率、强弱缺失分析", "#af52de"),
+    ("🔍", "企业透视", "50 家演示企业搜索、筛选、下钻诊断", "#ff9500"),
+    ("💡", "发展建议", "LLM / 模板生成招商补链与培育建议", "#5ac8fa"),
+    ("🩺", "企业诊断辅导", "硬条件 + LLM 软条件综合诊断与报告导出", "#ff3b30"),
+    ("📊", "可视化", "Plotly 交互图表，Apple 风格主题", "#5856d6"),
+    ("🌐", "LLM 可选", "支持 Anthropic / OpenAI，演示模式免 API Key", "#8e8e93"),
+]
+
+capability_html = '<div class="capability-grid">'
+for icon, title, desc, color in capabilities:
+    capability_html += f"""
+    <div class="capability-grid-item" style="border-top: 3px solid {color};">
+        <div class="capability-grid-icon" style="background: {color}15;">{icon}</div>
+        <div>
+            <div style="font-weight:600;color:var(--apple-text);margin-bottom:0.2rem;">{title}</div>
+            <div class="capability-grid-text">{desc}</div>
+        </div>
+    </div>
+    """
+capability_html += '</div>'
+
+st.markdown(capability_html, unsafe_allow_html=True)
+
+# Footer
 st.markdown("""
-<div class="capability-grid">
-    <div class="capability-grid-item">
-        <div class="capability-grid-icon">🏞️</div>
-        <div class="capability-grid-text">园区产业概览：核心指标、产业分布、头部企业</div>
-    </div>
-    <div class="capability-grid-item">
-        <div class="capability-grid-icon">🗺️</div>
-        <div class="capability-grid-text">产业地图：梯队金字塔、产业链层级、创新密度</div>
-    </div>
-    <div class="capability-grid-item">
-        <div class="capability-grid-icon">🕸️</div>
-        <div class="capability-grid-text">产业链图谱：完整度、本地配套率、强弱缺失分析</div>
-    </div>
-    <div class="capability-grid-item">
-        <div class="capability-grid-icon">🔍</div>
-        <div class="capability-grid-text">企业透视：50 家演示企业搜索、筛选、下钻诊断</div>
-    </div>
-    <div class="capability-grid-item">
-        <div class="capability-grid-icon">💡</div>
-        <div class="capability-grid-text">发展建议：LLM / 模板生成招商补链与培育建议</div>
-    </div>
-    <div class="capability-grid-item">
-        <div class="capability-grid-icon">🩺</div>
-        <div class="capability-grid-text">企业诊断辅导：硬条件 + LLM 软条件综合诊断与报告导出</div>
-    </div>
-    <div class="capability-grid-item">
-        <div class="capability-grid-icon">📊</div>
-        <div class="capability-grid-text">可视化：Plotly 交互图表，Apple 风格主题</div>
-    </div>
-    <div class="capability-grid-item">
-        <div class="capability-grid-icon">🌐</div>
-        <div class="capability-grid-text">LLM 可选：支持 Anthropic / OpenAI，演示模式免 API Key</div>
-    </div>
+<div class="home-footer">
+    园区产业分析智能体 · Demo 版本 · 基于 Streamlit 构建<br>
+    数据为演示数据，仅供内部汇报使用
 </div>
 """, unsafe_allow_html=True)
-
-st.info("👈 也可以直接点击左侧菜单栏进入各页面")

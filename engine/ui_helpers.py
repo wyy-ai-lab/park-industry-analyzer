@@ -173,10 +173,66 @@ APPLE_THEME_CSS = """
 
 /* 侧边栏 */
 [data-testid="stSidebar"] {
-    background: rgba(255, 255, 255, 0.72) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
+    background: rgba(255, 255, 255, 0.78) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
     border-right: 1px solid var(--apple-border) !important;
+}
+
+/* 侧边栏品牌头 */
+.sidebar-brand {
+    text-align: center;
+    padding: 1.5rem 1rem 1.25rem;
+    border-bottom: 1px solid var(--apple-border);
+    margin-bottom: 0.75rem;
+}
+.sidebar-brand-icon {
+    font-size: 2.4rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+.sidebar-brand-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--apple-text);
+    letter-spacing: -0.01em;
+}
+.sidebar-brand-tagline {
+    font-size: 0.78rem;
+    color: var(--apple-muted);
+    margin-top: 0.25rem;
+}
+
+/* 默认导航美化 */
+[data-testid="stSidebarNav"] ul {
+    padding: 0 0.5rem !important;
+}
+[data-testid="stSidebarNav"] a {
+    border-radius: var(--radius-md) !important;
+    padding: 0.55rem 0.85rem !important;
+    margin: 0.15rem 0 !important;
+    color: var(--apple-text) !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+[data-testid="stSidebarNav"] a:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+    text-decoration: none !important;
+}
+[data-testid="stSidebarNav"] a[aria-current="page"] {
+    background: var(--apple-blue-light) !important;
+    color: var(--apple-blue) !important;
+    font-weight: 600 !important;
+}
+/* 把第一个导航项 app 改名为首页 */
+[data-testid="stSidebarNav"] ul li:first-child a {
+    font-size: 0 !important;
+}
+[data-testid="stSidebarNav"] ul li:first-child a::before {
+    content: "🏭 首页";
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    color: inherit !important;
 }
 
 /* 通用标题 */
