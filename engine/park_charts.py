@@ -393,9 +393,14 @@ def build_chain_sankey(segment_dist: Dict[str, Dict[str, Any]]) -> go.Figure:
 
 def fig_to_image_bytes(fig, format: str = "png", width: int = 900, scale: int = 2) -> bytes:
     """
-    将 Plotly 图表转为图片 bytes
+    将 Plotly 图表转为图片 bytes。
 
-    依赖 kaleido。若未安装会抛出 ImportError，调用方需自行处理 fallback。
+    默认使用已安装的 kaleido。部分 Plotly/Kaleido 版本组合不支持 engine 参数，
+    因此先尝试不传 engine，失败后再尝试显式指定 kaleido。
     """
     import plotly.io as pio
-    return pio.to_image(fig, format=format, engine="kaleido", width=width, scale=scale)
+
+    try:
+        return pio.to_image(fig, format=format, width=width, scale=scale)
+    except TypeError:
+        return pio.to_image(fig, format=format, width=width, scale=scale, engine="kaleido")
