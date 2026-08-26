@@ -260,11 +260,14 @@ st.markdown(f"""
 st.markdown('<div class="cta-bar">', unsafe_allow_html=True)
 c1, c2, c3 = st.columns([1, 1, 1])
 with c1:
-    st.page_link("pages/1_园区概览.py", label="🏞️ 进入园区概览", type="primary", use_container_width=True)
+    if st.button("🏞️ 进入园区概览", type="primary", use_container_width=True):
+        st.switch_page("pages/1_园区概览.py")
 with c2:
-    st.page_link("pages/5_发展建议.py", label="💡 查看发展建议", type="secondary", use_container_width=True)
+    if st.button("💡 查看发展建议", type="secondary", use_container_width=True):
+        st.switch_page("pages/5_发展建议.py")
 with c3:
-    st.page_link("pages/6_企业诊断辅导.py", label="🩺 企业诊断辅导", type="secondary", use_container_width=True)
+    if st.button("🩺 企业诊断辅导", type="secondary", use_container_width=True):
+        st.switch_page("pages/6_企业诊断辅导.py")
 st.markdown('</div>', unsafe_allow_html=True)
 
 st.divider()
@@ -286,7 +289,8 @@ for row in rows:
     cols = st.columns(len(row))
     for col, (icon, page, title, desc) in zip(cols, row):
         with col:
-            st.page_link(page, label=f"{icon} {title}", help=desc, use_container_width=True)
+            if st.button(f"{icon} {title}", help=desc, use_container_width=True):
+                st.switch_page(page)
             st.markdown(f"""
             <div class="home-card" style="margin-top:0.5rem;">
                 <div class="home-card-icon">{icon}</div>
