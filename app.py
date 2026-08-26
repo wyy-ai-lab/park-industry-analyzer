@@ -1,3 +1,4 @@
+import re
 import textwrap
 
 import streamlit as st
@@ -120,6 +121,15 @@ st.markdown("""
     background: linear-gradient(90deg, var(--apple-blue), var(--apple-teal));
 }
 .home-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+a.home-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+a.home-card-link:hover .home-card {
     transform: translateY(-5px);
     box-shadow: var(--shadow-md);
 }
@@ -291,14 +301,15 @@ for row in rows:
     cols = st.columns(len(row))
     for col, (icon, page, title, desc) in zip(cols, row):
         with col:
-            if st.button(f"{icon} {title}", help=desc, use_container_width=True):
-                st.switch_page(page)
+            page_label = re.sub(r"^\d+_", "", page.rsplit("/", 1)[-1].replace(".py", ""))
             st.markdown(textwrap.dedent(f"""
-            <div class="home-card" style="margin-top:0.5rem;">
-                <div class="home-card-icon">{icon}</div>
-                <div class="home-card-title">{title}</div>
-                <div class="home-card-desc">{desc}</div>
-            </div>
+            <a href="{page_label}" class="home-card-link">
+                <div class="home-card">
+                    <div class="home-card-icon">{icon}</div>
+                    <div class="home-card-title">{title}</div>
+                    <div class="home-card-desc">{desc}</div>
+                </div>
+            </a>
             """), unsafe_allow_html=True)
 
 st.divider()
