@@ -509,4 +509,4 @@ elif active_tab == "roadmap":
     md_roadmap = build_roadmap_markdown(roadmap)
     st.download_button("下载培育路线图 Markdown", md_roadmap, file_name=f"{roadmap.get('enterprise_name', '企业')}_政策培育路线图.md", mime="text/markdown", use_container_width=True)
 
-st.info("💡 提示：本页面复用了原有「企业政策诊断辅导」能力，可对单个企业进行画像、诊断、报告导出与培育路线规划。")
+st.info("💡 提示：本页面支持对单个企业进行画像、政策诊断、报告导出与培育路线规划。")
