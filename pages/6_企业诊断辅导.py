@@ -88,6 +88,12 @@ st.markdown("""
 }
 .action-title { font-weight: 600; margin-bottom: 0.35rem; }
 .action-meta { color: var(--apple-muted); font-size: 0.85rem; margin-bottom: 0.5rem; }
+.tab-bar {
+    margin-bottom: 1.25rem;
+}
+.next-step-btn {
+    margin-top: 0.75rem;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -111,13 +117,39 @@ if "diagnosis_result" not in st.session_state and os.path.exists(DIAGNOSIS_FILE)
     except Exception:
         st.session_state["diagnosis_result"] = None
 
-# 标签页
-tab_profile, tab_diagnosis, tab_report, tab_roadmap = st.tabs([
-    "🏢 企业画像", "🔍 政策诊断", "📋 诊断报告", "🌱 培育路线图"
-])
+TABS = [
+    {"key": "profile", "label": "🏢 企业画像"},
+    {"key": "diagnosis", "label": "🔍 政策诊断"},
+    {"key": "report", "label": "📋 诊断报告"},
+    {"key": "roadmap", "label": "🌱 培育路线图"},
+]
+
+if "enterprise_active_tab" not in st.session_state:
+    st.session_state["enterprise_active_tab"] = "profile"
+
+active_tab = st.session_state["enterprise_active_tab"]
+
+
+def _switch_tab(tab_key: str):
+    st.session_state["enterprise_active_tab"] = tab_key
+    st.rerun()
+
+
+def _render_tab_bar():
+    """渲染顶部可点击标签栏"""
+    cols = st.columns(len(TABS))
+    for col, tab in zip(cols, TABS):
+        with col:
+            btn_type = "primary" if tab["key"] == active_tab else "secondary"
+            if st.button(tab["label"], key=f"tab_btn_{tab['key']}", type=btn_type, use_container_width=True):
+                _switch_tab(tab["key"])
+
+
+_render_tab_bar()
+
 
 # ========== 企业画像 ==========
-with tab_profile:
+if active_tab == "profile":
     st.markdown('<div class="section-title" style="margin-top:0">🏢 企业画像录入</div>', unsafe_allow_html=True)
 
     ep = st.session_state["enterprise_profile"]
@@ -215,14 +247,20 @@ with tab_profile:
             json.dump(profile, f, ensure_ascii=False, indent=2)
         st.session_state["enterprise_profile"] = profile
         st.success("✅ 企业画像已保存")
-        st.info("请切换到页面顶部的「🔍 政策诊断」标签页运行诊断。")
+        st.info("请点击下方「下一步」按钮，进入政策诊断。")
+
+        if st.button("下一步：运行政策诊断 →", type="primary", use_container_width=True):
+            _switch_tab("diagnosis")
+
 
 # ========== 政策诊断 ==========
-with tab_diagnosis:
+elif active_tab == "diagnosis":
     st.markdown('<div class="section-title" style="margin-top:0">🔍 政策诊断</div>', unsafe_allow_html=True)
 
     if not os.path.exists(ENTERPRISE_FILE):
-        st.warning("⚠️ 请先前往「企业画像」标签页填写并保存企业画像。")
+        st.warning("⚠️ 请先填写并保存企业画像。")
+        if st.button("前往企业画像", type="primary", use_container_width=True):
+            _switch_tab("profile")
         st.stop()
 
     enterprise = st.session_state["enterprise_profile"]
@@ -247,7 +285,14 @@ with tab_diagnosis:
                 json.dump(result, f, ensure_ascii=False, indent=2)
             st.session_state["diagnosis_result"] = result
             status.update(label="诊断完成", state="complete")
-        st.success("✅ 诊断完成，请切换到「诊断报告」或「培育路线图」查看结果。")
+        st.success("✅ 诊断完成，请选择下一步：")
+        c1, c2 = st.columns(2)
+        with c1:
+            if st.button("查看诊断报告", type="primary", use_container_width=True):
+                _switch_tab("report")
+        with c2:
+            if st.button("查看培育路线图", type="primary", use_container_width=True):
+                _switch_tab("roadmap")
 
     result = st.session_state.get("diagnosis_result")
     if not result:
@@ -339,13 +384,16 @@ with tab_diagnosis:
                         for section in outline["outline"]:
                             st.markdown(f"- **{section.get('section', '')}**：{'; '.join(section.get('content', []))}")
 
+
 # ========== 诊断报告 ==========
-with tab_report:
+elif active_tab == "report":
     st.markdown('<div class="section-title" style="margin-top:0">📋 诊断报告</div>', unsafe_allow_html=True)
 
     result = st.session_state.get("diagnosis_result")
     if not result:
-        st.warning("⚠️ 请先前往「政策诊断」标签页运行诊断。")
+        st.warning("⚠️ 请先运行政策诊断。")
+        if st.button("前往政策诊断", type="primary", use_container_width=True):
+            _switch_tab("diagnosis")
         st.stop()
 
     enterprise = st.session_state["enterprise_profile"]
@@ -387,13 +435,16 @@ with tab_report:
     with e3:
         st.download_button("下载 PDF", pdf_bytes, file_name=f"{enterprise.get('name', '企业')}_政策诊断报告.pdf", mime="application/pdf", use_container_width=True)
 
+
 # ========== 培育路线图 ==========
-with tab_roadmap:
+elif active_tab == "roadmap":
     st.markdown('<div class="section-title" style="margin-top:0">🌱 培育路线图</div>', unsafe_allow_html=True)
 
     result = st.session_state.get("diagnosis_result")
     if not result:
-        st.warning("⚠️ 请先前往「政策诊断」标签页运行诊断。")
+        st.warning("⚠️ 请先运行政策诊断。")
+        if st.button("前往政策诊断", type="primary", use_container_width=True):
+            _switch_tab("diagnosis")
         st.stop()
 
     if "roadmap" not in st.session_state:
