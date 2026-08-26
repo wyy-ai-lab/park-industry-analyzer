@@ -1,7 +1,7 @@
 """
 图表/导出的中文字体配置
 
-解决 Plotly 在 Linux/Streamlit Cloud 以及部分 Windows 浏览器下中文显示为
+解决 Plotly 在 Linux/Streamlit Cloud 以及部分浏览器下中文显示为
 方块（tofu）的问题。优先使用系统自带中文字体，Linux 环境自动下载并注册
 Noto Sans CJK SC 字体。
 """
@@ -18,6 +18,17 @@ FONT_FILENAME = "NotoSansCJKsc-Regular.otf"
 NOTO_URL = (
     "https://github.com/notofonts/noto-cjk/raw/main/"
     "Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Regular.otf"
+)
+
+# 通用中文字体回退栈：
+# 覆盖 Windows / macOS / Linux / iOS / Android 常见中文字体，
+# 最后回退到系统默认 sans-serif。
+CHART_FONT = (
+    "Noto Sans CJK SC, "
+    "PingFang SC, Heiti SC, Hiragino Sans GB, "
+    "Microsoft YaHei, SimHei, "
+    "WenQuanYi Micro Hei, "
+    "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif"
 )
 
 
@@ -76,36 +87,22 @@ def _ensure_linux_font() -> str:
     return target
 
 
+def ensure_cjk_font_for_export() -> None:
+    """
+    在 Linux 服务器/Streamlit Cloud 上预先安装中文字体，
+    供 kaleido 导出图片/PDF 使用。
+    """
+    if platform.system() == "Linux":
+        _ensure_linux_font()
+
+
 def get_chart_font_family() -> str:
     """
-    返回适合当前操作系统的中文字体 family 列表。
-    Plotly 会按顺序尝试，找不到则回退到系统默认 sans-serif。
+    返回 Plotly 图表使用的中文字体 family 列表。
+    调用时会尝试在 Linux 环境下预装字体。
     """
-    system = platform.system()
-
-    if system == "Windows":
-        # Windows 常见中文字体
-        return (
-            "Microsoft YaHei, SimHei, Noto Sans CJK SC, "
-            "PingFang SC, -apple-system, BlinkMacSystemFont, "
-            "'Segoe UI', Roboto, sans-serif"
-        )
-
-    if system == "Darwin":
-        # macOS/iOS
-        return (
-            "PingFang SC, Heiti SC, Noto Sans CJK SC, "
-            "Microsoft YaHei, -apple-system, BlinkMacSystemFont, "
-            "'Segoe UI', Roboto, sans-serif"
-        )
-
-    # Linux / Streamlit Cloud：先尝试安装 Noto 字体
-    _ensure_linux_font()
-    return (
-        "Noto Sans CJK SC, WenQuanYi Micro Hei, "
-        "Microsoft YaHei, SimHei, "
-        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-    )
+    ensure_cjk_font_for_export()
+    return CHART_FONT
 
 
 def get_pdf_font_path() -> str:

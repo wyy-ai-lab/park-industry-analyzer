@@ -5,6 +5,9 @@
 from typing import Dict, Any, List
 import plotly.graph_objects as go
 
+from engine.font_config import get_chart_font_family
+
+CHART_FONT = get_chart_font_family()
 
 # 能力维度定义：每个维度对应若干企业字段和打分规则
 DIMENSION_RULES = {
@@ -137,19 +140,20 @@ def build_radar_chart(scores: Dict[str, int], title: str = "企业综合能力�
             radialaxis=dict(
                 visible=True,
                 range=[0, 100],
-                tickfont=dict(size=10),
+                tickfont=dict(size=10, family=CHART_FONT),
             ),
             angularaxis=dict(
-                tickfont=dict(size=12),
+                tickfont=dict(size=12, family=CHART_FONT),
             ),
         ),
         title=dict(
             text=title,
-            font=dict(size=16)
+            font=dict(size=16, family=CHART_FONT)
         ),
         showlegend=False,
         margin=dict(l=60, r=60, t=60, b=40),
         height=450,
+        font=dict(family=CHART_FONT),
     )
     return fig
 

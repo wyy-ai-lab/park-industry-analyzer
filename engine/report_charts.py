@@ -14,6 +14,9 @@ from typing import Dict, List, Any, Optional
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from engine.font_config import get_chart_font_family
+
+CHART_FONT = get_chart_font_family()
 
 # Apple 主题色（与 UI 保持一致）
 DIAGNOSIS_COLORS = {
@@ -31,10 +34,10 @@ DIMENSION_COLORS = [
 def _apple_layout(fig: go.Figure, title: str, height: int = 420) -> go.Figure:
     """统一应用 Apple 风格布局"""
     fig.update_layout(
-        title=dict(text=title, font=dict(size=16, color="#1d1d1f")),
+        title=dict(text=title, font=dict(size=16, color="#1d1d1f", family=CHART_FONT)),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif", color="#1d1d1f"),
+        font=dict(family=CHART_FONT, color="#1d1d1f"),
         margin=dict(l=24, r=24, t=60, b=32),
         height=height,
         legend=dict(
@@ -44,6 +47,7 @@ def _apple_layout(fig: go.Figure, title: str, height: int = 420) -> go.Figure:
             xanchor="center",
             x=0.5,
             bgcolor="rgba(255,255,255,0.5)",
+            font=dict(family=CHART_FONT),
         ),
     )
     return fig
@@ -71,7 +75,7 @@ def build_diagnosis_pie_chart(summary_counts: Dict[str, int]) -> go.Figure:
             hole=0.58,
             marker=dict(colors=colors_f, line=dict(color="#ffffff", width=2)),
             textinfo="label+value",
-            textfont=dict(size=13),
+            textfont=dict(size=13, family=CHART_FONT),
             hovertemplate="%{label}<br>数量：%{value}<extra></extra>",
         )
     )
@@ -93,7 +97,7 @@ def build_timeline_chart(top3_policies: List[Dict[str, Any]]) -> go.Figure:
         fig.add_annotation(
             text="暂无推荐政策",
             x=0.5, y=0.5, showarrow=False,
-            font=dict(size=16, color="#6e6e73"),
+            font=dict(size=16, color="#6e6e73", family=CHART_FONT),
         )
         return _apple_layout(fig, "TOP3 政策申报时间线", height=280)
 
@@ -159,7 +163,7 @@ def build_timeline_chart(top3_policies: List[Dict[str, Any]]) -> go.Figure:
             marker=dict(color=color, size=12, symbol="diamond"),
             text=[task["deadline"] or "—"],
             textposition="middle right",
-            textfont=dict(size=11, color="#1d1d1f"),
+            textfont=dict(size=11, color="#1d1d1f", family=CHART_FONT),
             hoverinfo="skip",
             showlegend=False,
         ))
@@ -201,7 +205,7 @@ def build_capability_bar_chart(capability_scores: Dict[str, int]) -> go.Figure:
             ),
             text=[f"{s} 分" for s in scores],
             textposition="outside",
-            textfont=dict(size=12),
+            textfont=dict(size=12, family=CHART_FONT),
             hovertemplate="%{y}：%{x} 分<extra></extra>",
         )
     )
@@ -219,7 +223,7 @@ def build_gap_bar_chart(top_gaps: List[tuple]) -> go.Figure:
         fig.add_annotation(
             text="未发现显著高频差距项",
             x=0.5, y=0.5, showarrow=False,
-            font=dict(size=16, color="#6e6e73"),
+            font=dict(size=16, color="#6e6e73", family=CHART_FONT),
         )
         return _apple_layout(fig, "高频差距/缺失项", height=260)
 
@@ -234,7 +238,7 @@ def build_gap_bar_chart(top_gaps: List[tuple]) -> go.Figure:
             marker=dict(color="#ff3b30", line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[str(c) for c in counts],
             textposition="outside",
-            textfont=dict(size=12),
+            textfont=dict(size=12, family=CHART_FONT),
             hovertemplate="%{y}：%{x} 项<extra></extra>",
         )
     )
