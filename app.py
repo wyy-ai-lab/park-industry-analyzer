@@ -92,14 +92,6 @@ st.markdown("""
     font-weight: 500;
 }
 
-.cta-bar {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
 .home-card {
     background: var(--apple-card-solid);
     border: 1px solid var(--apple-border);
@@ -208,7 +200,6 @@ a.home-card-link:hover .home-card {
     .home-hero-subtitle { font-size: 1rem; }
     .home-stats { grid-template-columns: repeat(2, 1fr); }
     .home-stat-value { font-size: 1.5rem; }
-    .cta-bar { flex-direction: column; align-items: stretch; }
     .home-card { padding: 1.25rem; }
 }
 </style>
@@ -267,20 +258,6 @@ st.markdown(textwrap.dedent(f"""
     </div>
 </div>
 """), unsafe_allow_html=True)
-
-# CTA
-st.markdown('<div class="cta-bar">', unsafe_allow_html=True)
-c1, c2, c3 = st.columns([1, 1, 1])
-with c1:
-    if st.button("🏞️ 进入园区概览", type="primary", use_container_width=True):
-        st.switch_page("pages/1_园区概览.py")
-with c2:
-    if st.button("💡 查看发展建议", type="secondary", use_container_width=True):
-        st.switch_page("pages/5_发展建议.py")
-with c3:
-    if st.button("🩺 企业诊断辅导", type="secondary", use_container_width=True):
-        st.switch_page("pages/6_企业诊断辅导.py")
-st.markdown('</div>', unsafe_allow_html=True)
 
 st.divider()
 
