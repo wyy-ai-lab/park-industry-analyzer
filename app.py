@@ -314,35 +314,6 @@ for row in rows:
 
 st.divider()
 
-# 当前能力
-st.subheader("✅ 当前能力")
-
-capabilities = [
-    ("🏞️", "园区产业概览", "核心指标、产业分布、头部企业", "#0071e3"),
-    ("🗺️", "产业地图", "梯队金字塔、产业链层级、创新密度", "#34c759"),
-    ("🕸️", "产业链图谱", "完整度、本地配套率、强弱缺失分析", "#af52de"),
-    ("🔍", "企业透视", "50 家演示企业搜索、筛选、下钻诊断", "#ff9500"),
-    ("💡", "发展建议", "LLM / 模板生成招商补链与培育建议", "#5ac8fa"),
-    ("🩺", "企业诊断辅导", "硬条件 + LLM 软条件综合诊断与报告导出", "#ff3b30"),
-    ("📊", "可视化", "Plotly 交互图表，Apple 风格主题", "#5856d6"),
-    ("🌐", "LLM 可选", "支持 Anthropic / OpenAI，演示模式免 API Key", "#8e8e93"),
-]
-
-capability_html = '<div class="capability-grid">'
-for icon, title, desc, color in capabilities:
-    capability_html += (
-        f'<div class="capability-grid-item" style="border-top:3px solid {color};">'
-        f'<div class="capability-grid-icon" style="background:{color}15;">{icon}</div>'
-        f'<div>'
-        f'<div style="font-weight:600;color:var(--apple-text);margin-bottom:0.2rem;">{title}</div>'
-        f'<div class="capability-grid-text">{desc}</div>'
-        f'</div>'
-        f'</div>'
-    )
-capability_html += '</div>'
-
-st.markdown(capability_html, unsafe_allow_html=True)
-
 # Footer
 st.markdown(textwrap.dedent("""
 <div class="home-footer">
