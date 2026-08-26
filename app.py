@@ -25,18 +25,6 @@ st.markdown("""
     text-align: center;
     padding: 2.5rem 1rem 1.5rem;
 }
-.home-hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.35rem 0.9rem;
-    border-radius: var(--radius-pill);
-    background: var(--apple-blue-light);
-    color: var(--apple-blue);
-    font-size: 0.82rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
 .home-hero-title {
     font-size: 3rem;
     font-weight: 700;
@@ -228,7 +216,6 @@ local_support = park_metrics.get("local_support_rate", 68.0)
 # Hero
 st.markdown(textwrap.dedent(f"""
 <div class="home-hero">
-    <div class="home-hero-badge">🚀 内部汇报版</div>
     <div class="home-hero-title">🏭 园区产业分析智能体</div>
     <div class="home-hero-subtitle">
         看清园区产业全局 · 识别产业链强弱 · 下钻企业诊断<br>
