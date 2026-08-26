@@ -185,6 +185,26 @@ if not data or not data.get("enterprises"):
 metrics = compute_metrics(data)
 park_name = metrics.get("park_name", "未知园区")
 
+# 园区信息可编辑，默认填充当前案例数据
+default_profile = {
+    "park_name": park_name,
+    "dominant_industry": "新能源汽车",
+    "park_intro": (
+        f"**{park_name}** 是以新能源汽车为主导产业的园区，涵盖动力电池、电机电控、智能网联、"
+        "整车制造、充换电设施及汽车服务等全产业链环节。园区依托合肥市汽车产业基础，"
+        "形成了以动力电池电芯、整车制造为核心的产业格局，是区域新能源汽车产业的重要承载地。"
+    ),
+    "total_enterprises": int(metrics.get("total_enterprises", 0)),
+    "total_revenue": float(metrics["totals"]["total_revenue"]),
+    "total_employees": int(metrics["totals"]["total_employees"]),
+    "high_tech_count": int(metrics["totals"]["high_tech_count"]),
+    "little_giant_count": int(metrics["totals"]["little_giant_count"]),
+}
+if "park_profile" not in st.session_state:
+    st.session_state["park_profile"] = default_profile
+
+profile = st.session_state["park_profile"]
+
 # 汇报模式：获取或生成诊断结论
 if presentation_mode:
     if "park_diagnosis" not in st.session_state or st.session_state.get("regenerate_diagnosis"):
@@ -201,39 +221,65 @@ if presentation_mode:
     )[:2]
     core_sub = "、".join([k for k, _ in top_sub_industries]) if top_sub_industries else "主导产业"
     conclusion = (
-        f"{park_name}已形成以{core_sub}为核心的产业格局，"
+        f"{profile['park_name']}已形成以{core_sub}为核心的产业格局，"
         f"产业链完整度 {metrics.get('completeness_score', 0)} 分，"
         f"本地配套率 {metrics.get('local_support_rate', 0)}%。"
     )
     st.markdown(f'<div class="conclusion-bar">{conclusion}</div>', unsafe_allow_html=True)
 
+# 编辑园区信息
+with st.expander("✏️ 编辑园区信息（当前为演示案例，修改后仅影响本页展示）", expanded=False):
+    with st.form("park_profile_form"):
+        edit_col1, edit_col2 = st.columns(2)
+        with edit_col1:
+            new_name = st.text_input("园区名称", value=profile["park_name"])
+            new_industry = st.text_input("主导产业", value=profile["dominant_industry"])
+            new_total = st.number_input("企业总数", min_value=0, value=int(profile["total_enterprises"]))
+            new_revenue = st.number_input("年产值（亿元）", min_value=0.0, value=float(profile["total_revenue"]))
+        with edit_col2:
+            new_employees = st.number_input("员工总数", min_value=0, value=int(profile["total_employees"]))
+            new_high_tech = st.number_input("高新技术企业数", min_value=0, value=int(profile["high_tech_count"]))
+            new_little = st.number_input("小巨人企业数", min_value=0, value=int(profile["little_giant_count"]))
+        new_intro = st.text_area("园区简介", value=profile["park_intro"], height=120)
+
+        submitted = st.form_submit_button("💾 保存修改", type="primary", use_container_width=True)
+        if submitted:
+            st.session_state["park_profile"] = {
+                "park_name": new_name,
+                "dominant_industry": new_industry,
+                "park_intro": new_intro,
+                "total_enterprises": new_total,
+                "total_revenue": new_revenue,
+                "total_employees": new_employees,
+                "high_tech_count": new_high_tech,
+                "little_giant_count": new_little,
+            }
+            st.success("✅ 园区信息已更新")
+            st.rerun()
+
 # 园区简介
 with st.container(border=True):
-    st.markdown(f'<div class="section-title">📍 {park_name}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="section-title">📍 {profile["park_name"]}</div>', unsafe_allow_html=True)
     intro_col1, intro_col2 = st.columns([2, 1])
     with intro_col1:
-        st.markdown(f"""
-        **{park_name}** 是以新能源汽车为主导产业的园区，涵盖动力电池、电机电控、智能网联、
-        整车制造、充换电设施及汽车服务等全产业链环节。园区依托合肥市汽车产业基础，
-        形成了以动力电池电芯、整车制造为核心的产业格局，是区域新能源汽车产业的重要承载地。
-        """)
+        st.markdown(profile["park_intro"])
     with intro_col2:
         st.markdown(f"""
-        - **企业总数**：{metrics['total_enterprises']} 家
-        - **年产值**：约 {metrics['totals']['total_revenue']:.1f} 亿元
-        - **员工总数**：约 {metrics['totals']['total_employees']:,} 人
-        - **高新技术企业**：{metrics['totals']['high_tech_count']} 家
+        - **企业总数**：{profile['total_enterprises']} 家
+        - **年产值**：约 {profile['total_revenue']:.1f} 亿元
+        - **员工总数**：约 {profile['total_employees']:,} 人
+        - **高新技术企业**：{profile['high_tech_count']} 家
         """)
 
 # 核心指标卡片
 st.markdown('<div class="section-title">📊 核心指标</div>', unsafe_allow_html=True)
 c1, c2, c3, c4, c5 = st.columns(5)
 cards = [
-    ("企业总数", f"{metrics['totals']['enterprise_count']} 家", c1),
-    ("年产值", f"{metrics['totals']['total_revenue']:.1f} 亿元", c2),
-    ("员工总数", f"{metrics['totals']['total_employees']:,} 人", c3),
-    ("高新技术企业", f"{metrics['totals']['high_tech_count']} 家", c4),
-    ("小巨人企业", f"{metrics['totals']['little_giant_count']} 家", c5),
+    ("企业总数", f"{profile['total_enterprises']} 家", c1),
+    ("年产值", f"{profile['total_revenue']:.1f} 亿元", c2),
+    ("员工总数", f"{profile['total_employees']:,} 人", c3),
+    ("高新技术企业", f"{profile['high_tech_count']} 家", c4),
+    ("小巨人企业", f"{profile['little_giant_count']} 家", c5),
 ]
 for label, value, col in cards:
     with col:
