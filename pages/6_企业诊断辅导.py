@@ -130,9 +130,8 @@ if "enterprise_active_tab" not in st.session_state:
 active_tab = st.session_state["enterprise_active_tab"]
 
 
-def _switch_tab(tab_key: str):
+def _set_tab(tab_key: str):
     st.session_state["enterprise_active_tab"] = tab_key
-    st.rerun()
 
 
 def _render_tab_bar():
@@ -141,8 +140,14 @@ def _render_tab_bar():
     for col, tab in zip(cols, TABS):
         with col:
             btn_type = "primary" if tab["key"] == active_tab else "secondary"
-            if st.button(tab["label"], key=f"tab_btn_{tab['key']}", type=btn_type, use_container_width=True):
-                _switch_tab(tab["key"])
+            st.button(
+                tab["label"],
+                key=f"tab_btn_{tab['key']}",
+                type=btn_type,
+                use_container_width=True,
+                on_click=_set_tab,
+                args=(tab["key"],),
+            )
 
 
 _render_tab_bar()
@@ -248,9 +253,13 @@ if active_tab == "profile":
         st.session_state["enterprise_profile"] = profile
         st.success("✅ 企业画像已保存")
         st.info("请点击下方「下一步」按钮，进入政策诊断。")
-
-        if st.button("下一步：运行政策诊断 →", type="primary", use_container_width=True):
-            _switch_tab("diagnosis")
+        st.button(
+            "下一步：运行政策诊断 →",
+            type="primary",
+            use_container_width=True,
+            on_click=_set_tab,
+            args=("diagnosis",),
+        )
 
 
 # ========== 政策诊断 ==========
@@ -259,8 +268,13 @@ elif active_tab == "diagnosis":
 
     if not os.path.exists(ENTERPRISE_FILE):
         st.warning("⚠️ 请先填写并保存企业画像。")
-        if st.button("前往企业画像", type="primary", use_container_width=True):
-            _switch_tab("profile")
+        st.button(
+            "前往企业画像",
+            type="primary",
+            use_container_width=True,
+            on_click=_set_tab,
+            args=("profile",),
+        )
         st.stop()
 
     enterprise = st.session_state["enterprise_profile"]
@@ -288,11 +302,21 @@ elif active_tab == "diagnosis":
         st.success("✅ 诊断完成，请选择下一步：")
         c1, c2 = st.columns(2)
         with c1:
-            if st.button("查看诊断报告", type="primary", use_container_width=True):
-                _switch_tab("report")
+            st.button(
+                "查看诊断报告",
+                type="primary",
+                use_container_width=True,
+                on_click=_set_tab,
+                args=("report",),
+            )
         with c2:
-            if st.button("查看培育路线图", type="primary", use_container_width=True):
-                _switch_tab("roadmap")
+            st.button(
+                "查看培育路线图",
+                type="primary",
+                use_container_width=True,
+                on_click=_set_tab,
+                args=("roadmap",),
+            )
 
     result = st.session_state.get("diagnosis_result")
     if not result:
@@ -392,8 +416,13 @@ elif active_tab == "report":
     result = st.session_state.get("diagnosis_result")
     if not result:
         st.warning("⚠️ 请先运行政策诊断。")
-        if st.button("前往政策诊断", type="primary", use_container_width=True):
-            _switch_tab("diagnosis")
+        st.button(
+            "前往政策诊断",
+            type="primary",
+            use_container_width=True,
+            on_click=_set_tab,
+            args=("diagnosis",),
+        )
         st.stop()
 
     enterprise = st.session_state["enterprise_profile"]
@@ -443,8 +472,13 @@ elif active_tab == "roadmap":
     result = st.session_state.get("diagnosis_result")
     if not result:
         st.warning("⚠️ 请先运行政策诊断。")
-        if st.button("前往政策诊断", type="primary", use_container_width=True):
-            _switch_tab("diagnosis")
+        st.button(
+            "前往政策诊断",
+            type="primary",
+            use_container_width=True,
+            on_click=_set_tab,
+            args=("diagnosis",),
+        )
         st.stop()
 
     if "roadmap" not in st.session_state:
