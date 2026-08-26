@@ -8,6 +8,9 @@ from typing import Dict, List, Any, Optional
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from engine.font_config import get_chart_font_family
+
+CHART_FONT = get_chart_font_family()
 
 # 投影增强配色（高对比度）
 DEEP_BLUE = "#0056b3"   # 强势
@@ -54,16 +57,16 @@ def _apple_layout(
                 xref="paper",
                 yref="paper",
                 showarrow=False,
-                font=dict(size=13, color="#6e6e73"),
+                font=dict(size=13, color="#6e6e73", family=CHART_FONT),
             )
         )
 
     fig.update_layout(
-        title=dict(text=title, font=dict(size=19, color="#1d1d1f", family="Arial, sans-serif")),
+        title=dict(text=title, font=dict(size=19, color="#1d1d1f", family=CHART_FONT)),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(
-            family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif",
+            family=CHART_FONT,
             size=13,
             color="#1d1d1f",
         ),
@@ -76,7 +79,7 @@ def _apple_layout(
             xanchor="center",
             x=0.5,
             bgcolor="rgba(255,255,255,0.5)",
-            font=dict(size=13),
+            font=dict(size=13, family=CHART_FONT),
         ),
         annotations=annotations,
     )
@@ -100,13 +103,21 @@ def build_industry_pie_chart(
             hole=0.55,
             marker=dict(colors=colors, line=dict(color="#ffffff", width=2)),
             textinfo="label+value",
-            textfont=dict(size=14),
+            textfont=dict(size=14, family=CHART_FONT),
             hovertemplate="%{label}<br>企业数：%{value}<extra></extra>",
         )
     )
     fig.update_layout(
         annotations=[
-            dict(text="产业<br>分布", x=0.5, y=0.5, font_size=18, showarrow=False, font_color="#1d1d1f")
+            dict(
+                text="产业<br>分布",
+                x=0.5,
+                y=0.5,
+                font_size=18,
+                showarrow=False,
+                font_color="#1d1d1f",
+                font=dict(family=CHART_FONT),
+            )
         ],
     )
     return _apple_layout(fig, "产业领域分布", height=height, annotation_text=annotation_text)
@@ -129,12 +140,12 @@ def build_industry_bar_chart(
             marker=dict(color=colors, line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[str(v) for v in values],
             textposition="outside",
-            textfont=dict(size=13),
+            textfont=dict(size=13, family=CHART_FONT),
             hovertemplate="%{y}：%{x} 家<extra></extra>",
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13), title=dict(text="企业数量", font=dict(size=14)))
-    fig.update_yaxes(showgrid=False, zeroline=False, tickfont=dict(size=13))
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13, family=CHART_FONT), title=dict(text="企业数量", font=dict(size=14, family=CHART_FONT)))
+    fig.update_yaxes(showgrid=False, zeroline=False, tickfont=dict(size=13, family=CHART_FONT))
     return _apple_layout(fig, "产业领域企业数量", height=height)
 
 
@@ -161,12 +172,12 @@ def build_tier_pyramid_chart(
             ),
             text=[str(v) for v in values],
             textposition="outside",
-            textfont=dict(size=13),
+            textfont=dict(size=13, family=CHART_FONT),
             hovertemplate="%{y}：%{x} 家<extra></extra>",
         )
     )
-    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13))
-    fig.update_yaxes(showgrid=False, zeroline=False, categoryorder="total ascending", tickfont=dict(size=13))
+    fig.update_xaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13, family=CHART_FONT))
+    fig.update_yaxes(showgrid=False, zeroline=False, categoryorder="total ascending", tickfont=dict(size=13, family=CHART_FONT))
     return _apple_layout(fig, "企业梯队金字塔", height=height, annotation_text=annotation_text)
 
 
@@ -187,12 +198,12 @@ def build_chain_layer_chart(
             marker=dict(color=colors, line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[str(v) for v in values],
             textposition="outside",
-            textfont=dict(size=13),
+            textfont=dict(size=13, family=CHART_FONT),
             hovertemplate="%{x}：%{y} 家<extra></extra>",
         )
     )
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13), title=dict(text="企业数量", font=dict(size=14)))
-    fig.update_xaxes(showgrid=False, zeroline=False, tickfont=dict(size=13))
+    fig.update_yaxes(showgrid=True, gridcolor="rgba(0,0,0,0.06)", tickfont=dict(size=13, family=CHART_FONT), title=dict(text="企业数量", font=dict(size=14, family=CHART_FONT)))
+    fig.update_xaxes(showgrid=False, zeroline=False, tickfont=dict(size=13, family=CHART_FONT))
     return _apple_layout(fig, "产业链层级分布", height=height, annotation_text=annotation_text)
 
 
@@ -222,17 +233,17 @@ def build_segment_strength_chart(
             marker=dict(color=colors, line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[str(v) for v in values],
             textposition="outside",
-            textfont=dict(size=12),
+            textfont=dict(size=12, family=CHART_FONT),
             hovertemplate="%{y}<br>企业数：%{x}<extra></extra>",
         )
     )
     fig.update_xaxes(
         showgrid=True,
         gridcolor="rgba(0,0,0,0.06)",
-        title=dict(text="企业数量", font=dict(size=14)),
-        tickfont=dict(size=13),
+        title=dict(text="企业数量", font=dict(size=14, family=CHART_FONT)),
+        tickfont=dict(size=13, family=CHART_FONT),
     )
-    fig.update_yaxes(showgrid=False, zeroline=False, tickfont=dict(size=13))
+    fig.update_yaxes(showgrid=False, zeroline=False, tickfont=dict(size=13, family=CHART_FONT))
     return _apple_layout(fig, "产业链环节布局与强度", height=height, annotation_text=annotation_text)
 
 
@@ -264,13 +275,13 @@ def build_revenue_rd_scatter(
     )
     fig.update_xaxes(
         showgrid=True, gridcolor="rgba(0,0,0,0.06)",
-        title=dict(text="年产值（亿元）", font=dict(size=14)),
-        tickfont=dict(size=13), type="log",
+        title=dict(text="年产值（亿元）", font=dict(size=14, family=CHART_FONT)),
+        tickfont=dict(size=13, family=CHART_FONT), type="log",
     )
     fig.update_yaxes(
         showgrid=True, gridcolor="rgba(0,0,0,0.06)",
-        title=dict(text="研发投入占比（%）", font=dict(size=14)),
-        tickfont=dict(size=13),
+        title=dict(text="研发投入占比（%）", font=dict(size=14, family=CHART_FONT)),
+        tickfont=dict(size=13, family=CHART_FONT),
     )
     return _apple_layout(fig, "营收与创新投入分布", height=height)
 
@@ -295,16 +306,16 @@ def build_top_enterprises_bar(
             marker=dict(color=colors, line=dict(color="#ffffff", width=1), cornerradius=6),
             text=[f"{v:.2f}" for v in revenues],
             textposition="outside",
-            textfont=dict(size=12),
+            textfont=dict(size=12, family=CHART_FONT),
             hovertemplate="%{y}<br>营收：%{x} 亿元<extra></extra>",
         )
     )
     fig.update_xaxes(
         showgrid=True, gridcolor="rgba(0,0,0,0.06)",
-        title=dict(text="年产值（亿元）", font=dict(size=14)),
-        tickfont=dict(size=13),
+        title=dict(text="年产值（亿元）", font=dict(size=14, family=CHART_FONT)),
+        tickfont=dict(size=13, family=CHART_FONT),
     )
-    fig.update_yaxes(showgrid=False, zeroline=False, categoryorder="total ascending", tickfont=dict(size=12))
+    fig.update_yaxes(showgrid=False, zeroline=False, categoryorder="total ascending", tickfont=dict(size=12, family=CHART_FONT))
     return _apple_layout(fig, f"TOP{top_n} 企业年产值", height=height, annotation_text=annotation_text)
 
 
@@ -336,13 +347,13 @@ def build_innovation_density_chart(
     )
     fig.update_xaxes(
         showgrid=True, gridcolor="rgba(0,0,0,0.06)",
-        title=dict(text="年产值（亿元）", font=dict(size=14)),
-        tickfont=dict(size=13), type="log",
+        title=dict(text="年产值（亿元）", font=dict(size=14, family=CHART_FONT)),
+        tickfont=dict(size=13, family=CHART_FONT), type="log",
     )
     fig.update_yaxes(
         showgrid=True, gridcolor="rgba(0,0,0,0.06)",
-        title=dict(text="专利数量（项）", font=dict(size=14)),
-        tickfont=dict(size=13),
+        title=dict(text="专利数量（项）", font=dict(size=14, family=CHART_FONT)),
+        tickfont=dict(size=13, family=CHART_FONT),
     )
     return _apple_layout(fig, "产业创新密度", height=height)
 
@@ -387,7 +398,11 @@ def build_chain_sankey(segment_dist: Dict[str, Dict[str, Any]]) -> go.Figure:
             color=[DEEP_BLUE] * len(labels),
         )
     )
-    fig.update_layout(title_text="产业链层级流向", font_size=13, height=500)
+    fig.update_layout(
+        title_text="产业链层级流向",
+        font=dict(family=CHART_FONT, size=13),
+        height=500,
+    )
     return fig
 
 
