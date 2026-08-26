@@ -215,7 +215,7 @@ with tab_profile:
             json.dump(profile, f, ensure_ascii=False, indent=2)
         st.session_state["enterprise_profile"] = profile
         st.success("✅ 企业画像已保存")
-        st.info("请切换到「政策诊断」页面运行诊断。")
+        st.info("请切换到页面顶部的「🔍 政策诊断」标签页运行诊断。")
 
 # ========== 政策诊断 ==========
 with tab_diagnosis:
