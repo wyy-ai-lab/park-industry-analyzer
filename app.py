@@ -6,8 +6,8 @@ from engine.ui_helpers import inject_apple_theme
 from engine.park_metrics import load_park_enterprises, compute_metrics
 
 st.set_page_config(
-    page_title="园区产业分析智能体",
-    page_icon="🏭",
+    page_title="政策-产业-企业智能体",
+    page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -196,8 +196,8 @@ a.home-card-link:hover .home-card {
 # 侧边栏品牌头
 st.sidebar.markdown(textwrap.dedent("""
 <div class="sidebar-brand">
-    <div class="sidebar-brand-icon">🏭</div>
-    <div class="sidebar-brand-title">园区产业分析</div>
+    <div class="sidebar-brand-icon">🏛️</div>
+    <div class="sidebar-brand-title">政策-产业-企业</div>
     <div class="sidebar-brand-tagline">智能体 v1.0 · Demo</div>
 </div>
 """), unsafe_allow_html=True)
@@ -216,7 +216,7 @@ local_support = park_metrics.get("local_support_rate", 68.0)
 # Hero
 st.markdown(textwrap.dedent(f"""
 <div class="home-hero">
-    <div class="home-hero-title">🏭 园区产业分析智能体</div>
+    <div class="home-hero-title">🏛️ 政策-产业-企业智能体</div>
     <div class="home-hero-subtitle">
         看清园区产业全局 · 识别产业链强弱 · 下钻企业诊断<br>
         为园区管委会提供数据驱动的产业洞察与招商培育建议
@@ -281,7 +281,7 @@ st.divider()
 # Footer
 st.markdown(textwrap.dedent("""
 <div class="home-footer">
-    园区产业分析智能体 · Demo 版本 · 基于 Streamlit 构建<br>
+    政策-产业-企业智能体 · Demo 版本 · 基于 Streamlit 构建<br>
     数据为演示数据，仅供内部汇报使用
 </div>
 """), unsafe_allow_html=True)
