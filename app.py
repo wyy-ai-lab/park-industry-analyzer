@@ -207,11 +207,23 @@ try:
     park_data = load_park_enterprises()
     park_metrics = compute_metrics(park_data) if park_data else {}
 except Exception:
+    park_data = {}
     park_metrics = {}
 
-total_enterprises = park_metrics.get("total_enterprises", 50)
-completeness = park_metrics.get("completeness_score", 85.7)
-local_support = park_metrics.get("local_support_rate", 68.0)
+# 是否已接入园区企业数据：未接入时不展示虚构指标，只显示占位符
+has_park_data = bool(park_data and park_data.get("enterprises"))
+
+if has_park_data:
+    total_enterprises = park_metrics.get("total_enterprises", 0)
+    completeness = park_metrics.get("completeness_score", 0)
+    local_support = park_metrics.get("local_support_rate", 0)
+    stat_enterprise = f"{total_enterprises}"
+    stat_completeness = f"{completeness:.1f}"
+    stat_support = f"{local_support:.1f}%"
+else:
+    stat_enterprise = "—"
+    stat_completeness = "—"
+    stat_support = "—"
 
 # Hero
 st.markdown(textwrap.dedent(f"""
@@ -228,7 +240,7 @@ st.markdown(textwrap.dedent(f"""
 st.markdown(textwrap.dedent(f"""
 <div class="home-stats">
     <div class="home-stat-card">
-        <div class="home-stat-value">{total_enterprises}</div>
+        <div class="home-stat-value">{stat_enterprise}</div>
         <div class="home-stat-label">园区企业</div>
     </div>
     <div class="home-stat-card">
@@ -236,15 +248,19 @@ st.markdown(textwrap.dedent(f"""
         <div class="home-stat-label">分析模块</div>
     </div>
     <div class="home-stat-card">
-        <div class="home-stat-value">{completeness:.1f}</div>
+        <div class="home-stat-value">{stat_completeness}</div>
         <div class="home-stat-label">产业链完整度</div>
     </div>
     <div class="home-stat-card">
-        <div class="home-stat-value">{local_support:.1f}%</div>
+        <div class="home-stat-value">{stat_support}</div>
         <div class="home-stat-label">本地配套率</div>
     </div>
 </div>
 """), unsafe_allow_html=True)
+
+# 未接入数据时的空状态提示
+if not has_park_data:
+    st.info("ℹ️ 尚未接入园区企业数据，园区类指标暂不可计算。请先在「园区概览」页录入园区信息，或上传企业台账数据后，首页指标将自动更新。")
 
 st.divider()
 
