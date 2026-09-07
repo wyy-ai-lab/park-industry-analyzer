@@ -1235,6 +1235,12 @@ def _pdf_table_row(
             heights.append(line_height)
     row_height = max(heights + [line_height])
 
+    # 整行放不下时提前换页，避免在行中间触发自动分页导致单元格散落空白页
+    if y_start + row_height > pdf.h - pdf.b_margin:
+        pdf.add_page()
+        y_start = pdf.get_y()
+        pdf.set_xy(x_start, y_start)
+
     for i, (text, width, align, fill) in enumerate(zip(cells, col_widths, aligns, fills)):
         pdf.set_xy(x_start + sum(col_widths[:i]), y_start)
         if fill:
