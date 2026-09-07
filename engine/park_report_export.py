@@ -42,6 +42,29 @@ def _fmt_number(n) -> str:
         return str(n)
 
 
+def _build_park_intro(metrics: Dict[str, Any]) -> str:
+    """基于指标生成园区概况介绍段落"""
+    park_name = metrics.get("park_name", "该园区")
+    totals = metrics.get("totals", {})
+    sub_dist = metrics.get("sub_industry_distribution", {})
+    top_subs = "、".join(k for k, _ in sorted(sub_dist.items(), key=lambda x: -x[1])[:3]) or "新能源汽车"
+    strong = metrics.get("segment_strength", {}).get("strong", [])
+    missing = metrics.get("segment_strength", {}).get("missing", [])
+    strong_txt = "、".join(strong[:3]) if strong else "—"
+    missing_txt = "、".join(missing[:3]) if missing else "—"
+
+    return (
+        f"{park_name}是以新能源汽车为主导产业的专业园区。园区现有企业 "
+        f"{totals.get('enterprise_count', 0)} 家，年产值约 {totals.get('total_revenue', 0)} 亿元，"
+        f"员工总数约 {totals.get('total_employees', 0):,} 人，其中高新技术企业 "
+        f"{totals.get('high_tech_count', 0)} 家、专精特新“小巨人”企业 {totals.get('little_giant_count', 0)} 家。"
+        f"园区已形成以 {top_subs} 为核心的产业格局，{strong_txt} 等环节优势突出，"
+        f"{missing_txt} 等环节尚未布局。"
+        f"本报告基于园区企业台账数据，对园区产业分布、产业链强弱与企业梯队进行系统诊断，"
+        f"并提出针对性发展建议，供园区管理与招商工作参考。"
+    )
+
+
 def _segment_status_table(metrics: Dict[str, Any]) -> List[Dict[str, str]]:
     """生成产业链环节状态表格数据"""
     from engine.chain_position import SEGMENT_LAYER_MAP
@@ -94,7 +117,13 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
 
 ---
 
-## 一、核心指标
+## 一、园区概况
+
+{_build_park_intro(metrics)}
+
+---
+
+## 二、核心指标
 
 | 指标 | 数值 |
 |------|------|
@@ -108,7 +137,7 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
 
 ---
 
-## 二、产业分布与产业链层级
+## 三、产业分布与产业链层级
 
 ### 产业领域分布
 
@@ -130,7 +159,7 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
     md += """
 ---
 
-## 三、企业梯队金字塔
+## 四、企业梯队金字塔
 
 | 梯队 | 企业数 |
 |------|--------|
@@ -144,7 +173,7 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
     md += """
 ---
 
-## 四、产业链强弱分析
+## 五、产业链强弱分析
 
 ### 强势环节
 """
@@ -174,14 +203,14 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
     md += f"""
 ---
 
-## 五、本地配套率与产业链完整度
+## 六、本地配套率与产业链完整度
 
 - **本地配套率**：{metrics.get('local_support_rate', 0)}%
 - **产业链完整度评分**：{metrics.get('completeness_score', 0)} 分
 
 ---
 
-## 六、发展建议
+## 七、发展建议
 
 ### 整体判断
 
@@ -251,7 +280,7 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
 
 ---
 
-## 七、TOP10 头部企业
+## 八、TOP10 头部企业
 
 | 排名 | 企业名称 | 产业领域 | 年产值（亿元） |
 |------|----------|----------|----------------|
@@ -309,7 +338,13 @@ def build_park_word_report(
     doc.add_page_break()
 
     # 一、核心指标
-    doc.add_heading("一、核心指标", level=1)
+    # 一、园区概况
+    doc.add_heading("一、园区概况", level=1)
+    doc.add_paragraph(_build_park_intro(metrics))
+    doc.add_paragraph()
+
+    # 二、核心指标
+    doc.add_heading("二、核心指标", level=1)
     table = doc.add_table(rows=1, cols=2)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     hdr = table.rows[0].cells
@@ -333,18 +368,18 @@ def build_park_word_report(
         cells[1].text = value
 
     # 二、产业分布与产业链层级
-    doc.add_heading("二、产业分布与产业链层级", level=1)
+    doc.add_heading("三、产业分布与产业链层级", level=1)
     doc.add_heading("产业领域分布", level=2)
     _add_chart_or_placeholder(doc, charts_bytes.get("industry_pie"))
     doc.add_heading("产业链层级分布", level=2)
     _add_chart_or_placeholder(doc, charts_bytes.get("chain_layer"))
 
     # 三、企业梯队金字塔
-    doc.add_heading("三、企业梯队金字塔", level=1)
+    doc.add_heading("四、企业梯队金字塔", level=1)
     _add_chart_or_placeholder(doc, charts_bytes.get("tier_pyramid"))
 
     # 四、产业链强弱分析
-    doc.add_heading("四、产业链强弱分析", level=1)
+    doc.add_heading("五、产业链强弱分析", level=1)
     for title, key in [
         ("强势环节", "strong"),
         ("薄弱环节", "weak"),
@@ -380,12 +415,12 @@ def build_park_word_report(
             _set_docx_cell_shading(cells[4], color)
 
     # 五、本地配套率与产业链完整度
-    doc.add_heading("五、本地配套率与产业链完整度", level=1)
+    doc.add_heading("六、本地配套率与产业链完整度", level=1)
     doc.add_paragraph(f"本地配套率：{metrics.get('local_support_rate', 0)}%")
     doc.add_paragraph(f"产业链完整度评分：{metrics.get('completeness_score', 0)} 分")
 
     # 六、发展建议
-    doc.add_heading("六、发展建议", level=1)
+    doc.add_heading("七、发展建议", level=1)
     doc.add_heading("整体判断", level=2)
     doc.add_paragraph(diagnosis.get("overall_assessment", "暂无"))
 
@@ -460,7 +495,7 @@ def build_park_word_report(
     doc.add_paragraph(diagnosis.get("risk_warning", "暂无"))
 
     # 七、TOP10 头部企业
-    doc.add_heading("七、TOP10 头部企业", level=1)
+    doc.add_heading("八、TOP10 头部企业", level=1)
     table = doc.add_table(rows=1, cols=4)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     hdr = table.rows[0].cells
@@ -524,10 +559,18 @@ def build_park_pdf_report(
     pdf.set_font("cn", "", 14)
     pdf.cell(0, 10, f"报告生成日期：{date_str}", ln=True, align="C")
 
-    # 一、核心指标
+    # 一、园区概况
     pdf.add_page()
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "一、核心指标", ln=True)
+    pdf.cell(0, 10, "一、园区概况", ln=True)
+    pdf.ln(2)
+    pdf.set_font("cn", "", 11)
+    _pdf_safe_multi_cell(pdf, _build_park_intro(metrics), line_height=6.5)
+
+    # 二、核心指标
+    pdf.add_page()
+    pdf.set_font("cn", "B", 16)
+    pdf.cell(0, 10, "二、核心指标", ln=True)
     pdf.ln(2)
 
     col_widths = [65, 60]
@@ -547,25 +590,54 @@ def build_park_pdf_report(
     for label, value in rows:
         _pdf_table_row(pdf, [label, value], col_widths, line_height, aligns=["L", "C"])
 
-    # 二、产业分布与产业链层级
+    # 三、产业分布与产业链层级
     pdf.add_page()
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "二、产业分布与产业链层级", ln=True)
+    pdf.cell(0, 10, "三、产业分布与产业链层级", ln=True)
     pdf.ln(2)
     _pdf_insert_chart(pdf, charts_bytes.get("industry_pie"), title="产业领域分布")
-    _pdf_insert_chart(pdf, charts_bytes.get("chain_layer"), title="产业链层级分布")
 
-    # 三、企业梯队金字塔
+    dist_widths = [80, 45]
+    pdf.set_font("cn", "B", 9)
+    _pdf_table_row(pdf, ["产业领域", "企业数"], dist_widths, 6, aligns=["C", "C"])
+    pdf.set_font("cn", "", 9)
+    for k, v in metrics.get("sub_industry_distribution", {}).items():
+        _pdf_table_row(pdf, [k, f"{v} 家"], dist_widths, 6, aligns=["L", "C"])
+    pdf.ln(4)
+
+    _pdf_insert_chart(pdf, charts_bytes.get("chain_layer"), title="产业链层级分布")
+    pdf.set_font("cn", "B", 9)
+    _pdf_table_row(pdf, ["层级", "企业数"], dist_widths, 6, aligns=["C", "C"])
+    pdf.set_font("cn", "", 9)
+    for k, v in metrics.get("chain_distribution", {}).items():
+        _pdf_table_row(pdf, [k, f"{v} 家"], dist_widths, 6, aligns=["L", "C"])
+
+    # 四、企业梯队金字塔
     pdf.add_page()
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "三、企业梯队金字塔", ln=True)
+    pdf.cell(0, 10, "四、企业梯队金字塔", ln=True)
+    pdf.ln(2)
+    pdf.set_font("cn", "", 10)
+    _pdf_safe_multi_cell(
+        pdf,
+        "园区企业按规模与创新能力分为五个梯队：链主企业引领方向、骨干企业支撑链条、"
+        "高新技术企业构成创新中坚、科技型中小企业提供增长动能、配套服务企业完善生态。"
+        "梯队结构整体呈金字塔形，底部厚实、顶部集中，具备梯度培育的良好基础。",
+    )
     pdf.ln(2)
     _pdf_insert_chart(pdf, charts_bytes.get("tier_pyramid"))
+
+    tier_widths = [80, 45]
+    pdf.set_font("cn", "B", 9)
+    _pdf_table_row(pdf, ["梯队", "企业数"], tier_widths, 6, aligns=["C", "C"])
+    pdf.set_font("cn", "", 9)
+    for k, v in metrics.get("tier_distribution", {}).items():
+        _pdf_table_row(pdf, [k, f"{v} 家"], tier_widths, 6, aligns=["L", "C"])
 
     # 四、产业链强弱分析
     pdf.add_page()
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "四、产业链强弱分析", ln=True)
+    pdf.cell(0, 10, "五、产业链强弱分析", ln=True)
     pdf.ln(2)
 
     for title, key in [
@@ -612,7 +684,7 @@ def build_park_pdf_report(
     # 五、本地配套率与产业链完整度
     pdf.add_page()
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "五、本地配套率与产业链完整度", ln=True)
+    pdf.cell(0, 10, "六、本地配套率与产业链完整度", ln=True)
     pdf.ln(2)
     pdf.set_font("cn", "", 11)
     _pdf_safe_multi_cell(pdf, f"本地配套率：{metrics.get('local_support_rate', 0)}%")
@@ -621,7 +693,7 @@ def build_park_pdf_report(
     # 六、发展建议
     pdf.add_page()
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "六、发展建议", ln=True)
+    pdf.cell(0, 10, "七、发展建议", ln=True)
     pdf.ln(2)
 
     pdf.set_font("cn", "B", 12)
@@ -727,7 +799,7 @@ def build_park_pdf_report(
     # 七、TOP10 头部企业
     pdf.add_page()
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "七、TOP10 头部企业", ln=True)
+    pdf.cell(0, 10, "八、TOP10 头部企业", ln=True)
     pdf.ln(2)
 
     col_widths = [18, 70, 45, 45]
@@ -1032,7 +1104,12 @@ def build_park_html_report(
     </div>
 
     <div class="card">
-      <h2>一、产业分布与产业链层级</h2>
+      <h2>一、园区概况</h2>
+      <p>{_build_park_intro(metrics)}</p>
+    </div>
+
+    <div class="card">
+      <h2>二、产业分布与产业链层级</h2>
       <div class="grid-2">
         <div>
           <h3>产业领域分布</h3>
@@ -1058,7 +1135,7 @@ def build_park_html_report(
     </div>
 
     <div class="card">
-      <h2>二、企业梯队金字塔</h2>
+      <h2>三、企业梯队金字塔</h2>
       <div class="chart">{_img('tier_pyramid', '企业梯队金字塔')}</div>
       <table>
         <thead><tr><th>梯队</th><th>企业数</th></tr></thead>
@@ -1069,7 +1146,7 @@ def build_park_html_report(
     </div>
 
     <div class="card">
-      <h2>三、产业链强弱分析</h2>
+      <h2>四、产业链强弱分析</h2>
       <div class="status-grid">
 {status_cards}
       </div>
@@ -1083,13 +1160,13 @@ def build_park_html_report(
     </div>
 
     <div class="card">
-      <h2>四、本地配套率与产业链完整度</h2>
+      <h2>五、本地配套率与产业链完整度</h2>
       <p><strong>本地配套率：</strong>{metrics.get('local_support_rate', 0)}%</p>
       <p><strong>产业链完整度评分：</strong>{metrics.get('completeness_score', 0)} 分</p>
     </div>
 
     <div class="card">
-      <h2>五、发展建议</h2>
+      <h2>六、发展建议</h2>
       <h3>整体判断</h3>
       <p>{diagnosis.get('overall_assessment', '暂无')}</p>
 
@@ -1142,7 +1219,7 @@ def build_park_html_report(
     </div>
 
     <div class="card">
-      <h2>六、TOP10 头部企业</h2>
+      <h2>七、TOP10 头部企业</h2>
       <div class="chart">{_img('top_enterprises', 'TOP10 头部企业')}</div>
       <table>
         <thead><tr><th>排名</th><th>企业名称</th><th>产业领域</th><th>年产值（亿元）</th></tr></thead>
