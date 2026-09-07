@@ -174,6 +174,66 @@ def compute_top_enterprises(enterprises: List[Dict[str, Any]], top_n: int = 10) 
     return sorted_ents[:top_n]
 
 
+def compute_cultivation_candidates(enterprises: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """识别重点培育候选企业（高企 / 小巨人 / 骨干升级），输出点名建议"""
+    candidates = []
+
+    # 高企培育候选：非高企、营收与研发达到一定规模
+    for e in enterprises:
+        if e.get("high_tech_enterprise"):
+            continue
+        revenue = e.get("annual_revenue", 0)
+        rd_ratio = e.get("rd_investment_ratio", 0)
+        if revenue >= 3 and rd_ratio >= 0.03:
+            gap_parts = []
+            if e.get("invention_patents", 0) < 3:
+                gap_parts.append(f"发明专利仅 {e.get('invention_patents', 0)} 项（建议 3 项以上）")
+            if rd_ratio < 0.04:
+                gap_parts.append(f"研发占比 {rd_ratio * 100:.1f}%（建议 4% 以上）")
+            candidates.append({
+                "name": e.get("name", ""),
+                "category": "高企培育",
+                "sub_industry": e.get("sub_industry", ""),
+                "niche": e.get("niche", ""),
+                "basis": f"年产值 {revenue:.1f} 亿元、研发占比 {rd_ratio * 100:.1f}%，已达高企申报体量",
+                "suggestion": "；".join(gap_parts) if gap_parts else "基本达标，建议尽快组织申报",
+            })
+
+    # 小巨人培育候选：已是高企、非小巨人、发明专利较多
+    for e in enterprises:
+        if not e.get("high_tech_enterprise") or e.get("little_giant"):
+            continue
+        if e.get("invention_patents", 0) >= 5 and e.get("annual_revenue", 0) >= 2:
+            candidates.append({
+                "name": e.get("name", ""),
+                "category": "小巨人培育",
+                "sub_industry": e.get("sub_industry", ""),
+                "niche": e.get("niche", ""),
+                "basis": f"已是高企，发明专利 {e.get('invention_patents', 0)} 项、年产值 {e.get('annual_revenue', 0):.1f} 亿元",
+                "suggestion": "建议对照专精特新“小巨人”指标补齐市场占有率证明与细分赛道专注度材料",
+            })
+
+    # 骨干升级候选：科技型中小企业中研发突出的
+    for e in enterprises:
+        if e.get("enterprise_role") != "科技型中小企业":
+            continue
+        if e.get("rd_investment_ratio", 0) >= 0.06 and e.get("patents", 0) >= 8:
+            candidates.append({
+                "name": e.get("name", ""),
+                "category": "骨干升级",
+                "sub_industry": e.get("sub_industry", ""),
+                "niche": e.get("niche", ""),
+                "basis": f"研发占比 {e.get('rd_investment_ratio', 0) * 100:.1f}%、专利 {e.get('patents', 0)} 项，成长性突出",
+                "suggestion": "建议纳入骨干企业库，给予研发补助与场景开放支持，冲击高新技术企业",
+            })
+
+    # 每类最多保留 3 家，控制报告篇幅
+    result = []
+    for cat in ("高企培育", "小巨人培育", "骨干升级"):
+        result.extend([c for c in candidates if c["category"] == cat][:3])
+    return result
+
+
 def compute_metrics(data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     计算园区产业分析全部核心指标。
@@ -196,4 +256,5 @@ def compute_metrics(data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         "segment_strength": segment_strength_analysis(enterprises),
         "innovation": compute_innovation_metrics(enterprises),
         "top_enterprises": compute_top_enterprises(enterprises, top_n=10),
+        "cultivation_candidates": compute_cultivation_candidates(enterprises),
     }

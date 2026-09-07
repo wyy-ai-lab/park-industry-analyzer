@@ -208,6 +208,42 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
     for item in diagnosis.get("policy_suggestions", []):
         md += f"- {item}\n"
 
+    # 行动清单（建议-依据-优先级-时限）
+    action_items = diagnosis.get("action_items", [])
+    if action_items:
+        md += """
+### 行动清单
+
+| 类别 | 建议事项 | 数据依据 | 优先级 | 建议时限 |
+|------|----------|----------|--------|----------|
+"""
+        for a in action_items:
+            md += f"| {a.get('category', '')} | {a.get('action', '')} | {a.get('basis', '')} | {a.get('priority', '')} | {a.get('timeline', '')} |\n"
+
+    # 重点培育企业点名
+    callouts = diagnosis.get("enterprise_callouts", [])
+    if callouts:
+        md += """
+### 重点培育企业建议
+
+| 企业名称 | 培育方向 | 所属领域 | 入选依据 | 辅导建议 |
+|----------|----------|----------|----------|----------|
+"""
+        for c in callouts:
+            md += f"| {c.get('name', '')} | {c.get('category', '')} | {c.get('niche', '')} | {c.get('basis', '')} | {c.get('suggestion', '')} |\n"
+
+    # 风险与应对
+    risk_items = diagnosis.get("risk_items", [])
+    if risk_items:
+        md += """
+### 风险与应对
+
+| 风险点 | 影响 | 应对建议 |
+|--------|------|----------|
+"""
+        for r in risk_items:
+            md += f"| {r.get('risk', '')} | {r.get('impact', '')} | {r.get('mitigation', '')} |\n"
+
     md += f"""
 ### 风险提醒
 
@@ -367,6 +403,58 @@ def build_park_word_report(
                 doc.add_paragraph(item, style="List Bullet")
         else:
             doc.add_paragraph("暂无")
+
+    # 行动清单（建议-依据-优先级-时限）
+    action_items = diagnosis.get("action_items", [])
+    if action_items:
+        doc.add_heading("行动清单", level=2)
+        table = doc.add_table(rows=1, cols=5)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        headers = ["类别", "建议事项", "数据依据", "优先级", "建议时限"]
+        for cell, text in zip(table.rows[0].cells, headers):
+            cell.text = text
+            cell.paragraphs[0].runs[0].font.bold = True
+        for a in action_items:
+            cells = table.add_row().cells
+            cells[0].text = a.get("category", "")
+            cells[1].text = a.get("action", "")
+            cells[2].text = a.get("basis", "")
+            cells[3].text = a.get("priority", "")
+            cells[4].text = a.get("timeline", "")
+
+    # 重点培育企业建议
+    callouts = diagnosis.get("enterprise_callouts", [])
+    if callouts:
+        doc.add_heading("重点培育企业建议", level=2)
+        table = doc.add_table(rows=1, cols=5)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        headers = ["企业名称", "培育方向", "所属领域", "入选依据", "辅导建议"]
+        for cell, text in zip(table.rows[0].cells, headers):
+            cell.text = text
+            cell.paragraphs[0].runs[0].font.bold = True
+        for c in callouts:
+            cells = table.add_row().cells
+            cells[0].text = c.get("name", "")
+            cells[1].text = c.get("category", "")
+            cells[2].text = c.get("niche", "")
+            cells[3].text = c.get("basis", "")
+            cells[4].text = c.get("suggestion", "")
+
+    # 风险与应对
+    risk_items = diagnosis.get("risk_items", [])
+    if risk_items:
+        doc.add_heading("风险与应对", level=2)
+        table = doc.add_table(rows=1, cols=3)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        headers = ["风险点", "影响", "应对建议"]
+        for cell, text in zip(table.rows[0].cells, headers):
+            cell.text = text
+            cell.paragraphs[0].runs[0].font.bold = True
+        for r in risk_items:
+            cells = table.add_row().cells
+            cells[0].text = r.get("risk", "")
+            cells[1].text = r.get("impact", "")
+            cells[2].text = r.get("mitigation", "")
 
     doc.add_heading("风险提醒", level=2)
     doc.add_paragraph(diagnosis.get("risk_warning", "暂无"))
@@ -560,6 +648,77 @@ def build_park_pdf_report(
             _pdf_safe_multi_cell(pdf, "暂无")
         pdf.ln(2)
 
+    # 行动清单（建议-依据-优先级-时限）
+    action_items = diagnosis.get("action_items", [])
+    if action_items:
+        pdf.set_font("cn", "B", 12)
+        pdf.cell(0, 8, "行动清单", ln=True)
+        action_widths = [18, 52, 62, 13, 20]
+        pdf.set_font("cn", "B", 8)
+        _pdf_table_row(
+            pdf,
+            ["类别", "建议事项", "数据依据", "优先级", "建议时限"],
+            action_widths, 5,
+            aligns=["C", "C", "C", "C", "C"],
+        )
+        pdf.set_font("cn", "", 8)
+        for a in action_items:
+            _pdf_table_row(
+                pdf,
+                [a.get("category", ""), a.get("action", ""), a.get("basis", ""),
+                 a.get("priority", ""), a.get("timeline", "")],
+                action_widths, 5,
+                aligns=["C", "L", "L", "C", "C"],
+            )
+        pdf.ln(4)
+
+    # 重点培育企业建议
+    callouts = diagnosis.get("enterprise_callouts", [])
+    if callouts:
+        pdf.set_font("cn", "B", 12)
+        pdf.cell(0, 8, "重点培育企业建议", ln=True)
+        callout_widths = [28, 20, 26, 55, 50]
+        pdf.set_font("cn", "B", 8)
+        _pdf_table_row(
+            pdf,
+            ["企业名称", "培育方向", "所属领域", "入选依据", "辅导建议"],
+            callout_widths, 5,
+            aligns=["C"] * 5,
+        )
+        pdf.set_font("cn", "", 8)
+        for c in callouts:
+            _pdf_table_row(
+                pdf,
+                [c.get("name", ""), c.get("category", ""), c.get("niche", ""),
+                 c.get("basis", ""), c.get("suggestion", "")],
+                callout_widths, 5,
+                aligns=["L", "C", "L", "L", "L"],
+            )
+        pdf.ln(4)
+
+    # 风险与应对
+    risk_items = diagnosis.get("risk_items", [])
+    if risk_items:
+        pdf.set_font("cn", "B", 12)
+        pdf.cell(0, 8, "风险与应对", ln=True)
+        risk_widths = [45, 65, 70]
+        pdf.set_font("cn", "B", 8)
+        _pdf_table_row(
+            pdf,
+            ["风险点", "影响", "应对建议"],
+            risk_widths, 5,
+            aligns=["C"] * 3,
+        )
+        pdf.set_font("cn", "", 8)
+        for r in risk_items:
+            _pdf_table_row(
+                pdf,
+                [r.get("risk", ""), r.get("impact", ""), r.get("mitigation", "")],
+                risk_widths, 5,
+                aligns=["L", "L", "L"],
+            )
+        pdf.ln(4)
+
     pdf.set_font("cn", "B", 12)
     pdf.cell(0, 8, "风险提醒", ln=True)
     pdf.set_font("cn", "", 10)
@@ -683,6 +842,23 @@ def build_park_html_report(
     top_rows = "\n".join(
         f"        <tr><td>{i}</td><td>{ent.get('name', '—')}</td><td>{ent.get('sub_industry', '—')}</td><td>{ent.get('annual_revenue', 0):.2f}</td></tr>"
         for i, ent in enumerate(metrics.get("top_enterprises", [])[:10], 1)
+    )
+
+    # 行动清单 / 重点培育企业 / 风险与应对
+    action_items = diagnosis.get("action_items", [])
+    action_rows = "\n".join(
+        f"        <tr><td>{a.get('category', '')}</td><td>{a.get('action', '')}</td><td>{a.get('basis', '')}</td><td>{a.get('priority', '')}</td><td>{a.get('timeline', '')}</td></tr>"
+        for a in action_items
+    )
+    callouts = diagnosis.get("enterprise_callouts", [])
+    callout_rows = "\n".join(
+        f"        <tr><td>{c.get('name', '')}</td><td>{c.get('category', '')}</td><td>{c.get('niche', '')}</td><td>{c.get('basis', '')}</td><td>{c.get('suggestion', '')}</td></tr>"
+        for c in callouts
+    )
+    risk_items = diagnosis.get("risk_items", [])
+    risk_rows = "\n".join(
+        f"        <tr><td>{r.get('risk', '')}</td><td>{r.get('impact', '')}</td><td>{r.get('mitigation', '')}</td></tr>"
+        for r in risk_items
     )
 
     html = f"""
@@ -936,6 +1112,30 @@ def build_park_html_report(
 
       <h3>政策建议</h3>
       <ul class="insight-list">{_list_items(diagnosis.get('policy_suggestions', []))}</ul>
+
+      <h3>行动清单</h3>
+      <table>
+        <thead><tr><th>类别</th><th>建议事项</th><th>数据依据</th><th>优先级</th><th>建议时限</th></tr></thead>
+        <tbody>
+{action_rows}
+        </tbody>
+      </table>
+
+      <h3>重点培育企业建议</h3>
+      <table>
+        <thead><tr><th>企业名称</th><th>培育方向</th><th>所属领域</th><th>入选依据</th><th>辅导建议</th></tr></thead>
+        <tbody>
+{callout_rows}
+        </tbody>
+      </table>
+
+      <h3>风险与应对</h3>
+      <table>
+        <thead><tr><th>风险点</th><th>影响</th><th>应对建议</th></tr></thead>
+        <tbody>
+{risk_rows}
+        </tbody>
+      </table>
 
       <h3>风险提醒</h3>
       <div class="risk-card">{diagnosis.get('risk_warning', '暂无')}</div>

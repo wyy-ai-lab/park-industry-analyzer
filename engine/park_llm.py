@@ -169,10 +169,100 @@ def generate_diagnosis(metrics: Dict[str, Any]) -> Dict[str, Any]:
             if result:
                 result["provider"] = provider
                 result["mode"] = "llm"
+                _enrich_diagnosis(result, metrics)
                 return result
 
     # 模板模式
-    return _template_diagnosis(metrics)
+    result = _template_diagnosis(metrics)
+    _enrich_diagnosis(result, metrics)
+    return result
+
+
+def _build_action_items(metrics: Dict[str, Any]) -> List[Dict[str, str]]:
+    """基于指标生成结构化行动清单（建议-依据-优先级-时限）"""
+    segment_strength = metrics.get("segment_strength", {})
+    local_rate = metrics.get("local_support_rate", 0)
+    completeness = metrics.get("completeness_score", 0)
+    missing = segment_strength.get("missing", [])
+    weak = segment_strength.get("weak", [])
+    risk = segment_strength.get("risk", [])
+
+    items = []
+    if missing:
+        items.append({
+            "category": "招商补链",
+            "action": f"重点招引 {'、'.join(missing[:2])} 等缺失环节龙头企业",
+            "basis": f"上述环节园区尚无布局，拉低产业链完整度（当前 {completeness} 分）",
+            "priority": "高",
+            "timeline": "6–12 个月",
+        })
+    if risk:
+        items.append({
+            "category": "招商补链",
+            "action": f"布局 {'、'.join(risk[:2])} 等核心器件项目，降低断链风险",
+            "basis": "该环节对外依赖度高，属于供应链安全关键节点",
+            "priority": "高",
+            "timeline": "6–12 个月",
+        })
+    items.append({
+        "category": "企业培育",
+        "action": "建立高企、小巨人梯度培育台账，一企一策跟踪辅导",
+        "basis": f"园区高企 {metrics.get('totals', {}).get('high_tech_count', 0)} 家、小巨人 {metrics.get('totals', {}).get('little_giant_count', 0)} 家，梯队仍有扩容空间",
+        "priority": "中",
+        "timeline": "持续推进",
+    })
+    if weak:
+        items.append({
+            "category": "企业培育",
+            "action": f"支持 {'、'.join(weak[:2])} 环节企业技改扩产",
+            "basis": "该环节已有企业布局但规模偏小、技术偏弱，培育见效快于新引进",
+            "priority": "中",
+            "timeline": "1–2 年",
+        })
+    items.append({
+        "category": "政策支持",
+        "action": "出台关键环节专项扶持政策，配套产业引导基金",
+        "basis": f"本地配套率 {local_rate}%，上游材料与核心器件环节缺乏本地供给",
+        "priority": "中",
+        "timeline": "6 个月内出台",
+    })
+    items.append({
+        "category": "政策支持",
+        "action": "搭建产学研协同平台，定向输送研发人才",
+        "basis": f"园区研发人员合计约 {metrics.get('innovation', {}).get('total_rd_personnel', 0)} 人，关键材料与芯片环节人才密度不足",
+        "priority": "低",
+        "timeline": "1–2 年",
+    })
+    return items
+
+
+def _build_risk_items(metrics: Dict[str, Any]) -> List[Dict[str, str]]:
+    """生成风险-影响-应对三行式风险清单"""
+    segment_strength = metrics.get("segment_strength", {})
+    risk_segments = segment_strength.get("risk", [])
+    missing = segment_strength.get("missing", [])
+
+    items = []
+    for seg in risk_segments[:3]:
+        items.append({
+            "risk": f"{seg}环节断供风险",
+            "impact": "整车与电池企业生产排产受外部供应波动影响，成本不可控",
+            "mitigation": "招引替代供应商落地 + 与现有供应商签订长协锁量",
+        })
+    for seg in missing[:2]:
+        items.append({
+            "risk": f"{seg}环节缺失，对外依存度高",
+            "impact": "关键环节采购依赖外地/进口，议价能力与交付周期受制于人",
+            "mitigation": "将该环节列入招商目标清单，给予落地政策包优先支持",
+        })
+    return items
+
+
+def _enrich_diagnosis(diagnosis: Dict[str, Any], metrics: Dict[str, Any]) -> None:
+    """为诊断结论补充结构化行动清单、风险应对与培育企业点名（就地修改）"""
+    diagnosis["action_items"] = _build_action_items(metrics)
+    diagnosis["risk_items"] = _build_risk_items(metrics)
+    diagnosis["enterprise_callouts"] = metrics.get("cultivation_candidates", [])
 
 
 def _template_diagnosis(metrics: Dict[str, Any]) -> Dict[str, Any]:

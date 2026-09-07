@@ -1,5 +1,6 @@
 import base64
 
+import pandas as pd
 import streamlit as st
 
 from engine.ui_helpers import inject_apple_theme
@@ -190,8 +191,42 @@ with suggest_col2:
 
 st.divider()
 
+# 行动清单与重点培育企业（结构化输出）
+st.markdown('<div class="section-title">📌 行动清单</div>', unsafe_allow_html=True)
+action_items = diagnosis.get("action_items", [])
+if action_items:
+    action_df = pd.DataFrame(action_items)
+    action_df = action_df.rename(columns={
+        "category": "类别", "action": "建议事项", "basis": "数据依据",
+        "priority": "优先级", "timeline": "建议时限",
+    })
+    st.dataframe(action_df, use_container_width=True, hide_index=True)
+else:
+    st.info("暂无行动清单")
+
+st.markdown('<div class="section-title">🏅 重点培育企业建议</div>', unsafe_allow_html=True)
+callouts = diagnosis.get("enterprise_callouts", [])
+if callouts:
+    callout_df = pd.DataFrame(callouts)
+    callout_df = callout_df.rename(columns={
+        "name": "企业名称", "category": "培育方向", "niche": "所属领域",
+        "basis": "入选依据", "suggestion": "辅导建议",
+    })
+    st.dataframe(callout_df, use_container_width=True, hide_index=True)
+else:
+    st.info("暂无重点培育企业建议")
+
+st.divider()
+
 # 风险提醒
 st.markdown('<div class="section-title">🚨 风险提醒</div>', unsafe_allow_html=True)
+risk_items = diagnosis.get("risk_items", [])
+if risk_items:
+    risk_df = pd.DataFrame(risk_items)
+    risk_df = risk_df.rename(columns={
+        "risk": "风险点", "impact": "影响", "mitigation": "应对建议",
+    })
+    st.dataframe(risk_df, use_container_width=True, hide_index=True)
 st.markdown(f"""
 <div class="risk-card">
     {diagnosis.get("risk_warning", "暂无风险提醒")}
