@@ -559,16 +559,16 @@ def build_park_pdf_report(
     pdf.set_font("cn", "", 14)
     pdf.cell(0, 10, f"报告生成日期：{date_str}", ln=True, align="C")
 
-    # 一、园区概况
+    # 一、园区概况 + 二、核心指标（同页）
     pdf.add_page()
     pdf.set_font("cn", "B", 16)
     pdf.cell(0, 10, "一、园区概况", ln=True)
     pdf.ln(2)
     pdf.set_font("cn", "", 11)
     _pdf_safe_multi_cell(pdf, _build_park_intro(metrics), line_height=6.5)
+    pdf.ln(4)
 
     # 二、核心指标
-    pdf.add_page()
     pdf.set_font("cn", "B", 16)
     pdf.cell(0, 10, "二、核心指标", ln=True)
     pdf.ln(2)
@@ -1280,10 +1280,10 @@ def _hex_to_rgb(hex_color: str):
 
 
 def _pdf_safe_multi_cell(pdf, text: str, line_height: float = 5.5):
-    """重置 x 到左边距后渲染多行文本"""
+    """重置 x 到左边距后渲染多行文本（左对齐，避免两端对齐拉伸字间距）"""
     pdf.set_xy(pdf.l_margin, pdf.get_y())
     content_width = pdf.w - pdf.l_margin - pdf.r_margin
-    pdf.multi_cell(content_width, line_height, str(text))
+    pdf.multi_cell(content_width, line_height, str(text), align="L")
     pdf.set_x(pdf.l_margin)
 
 
