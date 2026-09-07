@@ -6,7 +6,7 @@ from engine.park_metrics import load_park_enterprises
 from engine.industry_classifier import classify
 
 st.set_page_config(
-    page_title="企业透视 - 政策-产业-企业智能体",
+    page_title="企业透视 - 园区产业分析智能体",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded",

@@ -21,7 +21,7 @@ from engine.park_report_export import (
 )
 
 st.set_page_config(
-    page_title="发展建议 - 政策-产业-企业智能体",
+    page_title="发展建议 - 园区产业分析智能体",
     page_icon="💡",
     layout="wide",
     initial_sidebar_state="expanded",

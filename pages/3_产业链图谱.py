@@ -7,7 +7,7 @@ from engine.chain_position import SEGMENT_LAYER_MAP, classify_segment_strength
 from engine.park_charts import build_segment_strength_chart
 
 st.set_page_config(
-    page_title="产业链图谱 - 政策-产业-企业智能体",
+    page_title="产业链图谱 - 园区产业分析智能体",
     page_icon="🕸️",
     layout="wide",
     initial_sidebar_state="expanded",

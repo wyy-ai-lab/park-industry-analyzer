@@ -10,7 +10,7 @@ from engine.park_llm import generate_diagnosis
 from engine.park_charts import build_industry_pie_chart, build_top_enterprises_bar
 
 st.set_page_config(
-    page_title="园区概览 - 政策-产业-企业智能体",
+    page_title="园区概览 - 园区产业分析智能体",
     page_icon="🏞️",
     layout="wide",
     initial_sidebar_state="expanded",

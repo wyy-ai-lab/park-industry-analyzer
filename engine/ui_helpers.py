@@ -418,8 +418,8 @@ def render_step_indicator(current_page: str):
 <div class="step-bar-wrapper">
     <div class="step-bar">
         <div class="app-header">
-            <div class="app-name">🏛️ 政策-产业-企业智能体</div>
-            <div class="app-tagline">政策洞察 · 产业分析 · 企业诊断</div>
+            <div class="app-name">🏭 园区产业分析智能体</div>
+            <div class="app-tagline">发现政策 · 诊断差距 · 辅导申报 · 生成材料</div>
         </div>
         <div class="step-indicator">""" + "".join(steps_html) + """</div>
     </div>

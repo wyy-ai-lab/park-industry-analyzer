@@ -773,7 +773,7 @@ def build_roadmap_markdown(roadmap: Dict[str, Any]) -> str:
             lines.append("")
 
     lines.append("---")
-    lines.append("*本路线图由政策-产业-企业智能体自动生成*")
+    lines.append("*本路线图由园区产业分析智能体自动生成*")
     return "\n".join(lines)
 
 

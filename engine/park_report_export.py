@@ -226,7 +226,7 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
     md += """
 ---
 
-*本报告由政策-产业-企业智能体自动生成*
+*本报告由园区产业分析智能体自动生成*
 """
     return md
 
@@ -390,7 +390,7 @@ def build_park_word_report(
 
     # 页脚
     doc.add_paragraph()
-    footer = doc.add_paragraph("本报告由政策-产业-企业智能体自动生成")
+    footer = doc.add_paragraph("本报告由园区产业分析智能体自动生成")
     footer.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
     footer.runs[0].font.size = Pt(9)
     footer.runs[0].font.color.rgb = RGBColor(107, 114, 128)
@@ -594,7 +594,7 @@ def build_park_pdf_report(
     pdf.ln(8)
     pdf.set_font("cn", "", 9)
     pdf.set_text_color(128, 128, 128)
-    pdf.cell(0, 8, "本报告由政策-产业-企业智能体自动生成", ln=True, align="C")
+    pdf.cell(0, 8, "本报告由园区产业分析智能体自动生成", ln=True, align="C")
 
     buffer = io.BytesIO(bytes(pdf.output(dest="S")))
     return buffer
@@ -952,7 +952,7 @@ def build_park_html_report(
       </table>
     </div>
 
-    <div class="footer">本报告由政策-产业-企业智能体自动生成</div>
+    <div class="footer">本报告由园区产业分析智能体自动生成</div>
   </div>
 </body>
 </html>

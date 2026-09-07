@@ -12,7 +12,7 @@ from engine.park_charts import (
 )
 
 st.set_page_config(
-    page_title="产业地图 - 政策-产业-企业智能体",
+    page_title="产业地图 - 园区产业分析智能体",
     page_icon="🗺️",
     layout="wide",
     initial_sidebar_state="expanded",
