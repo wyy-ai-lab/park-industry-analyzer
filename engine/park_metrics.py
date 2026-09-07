@@ -18,7 +18,18 @@ from .chain_position import (
 
 
 def load_park_enterprises(file_path: str = "data/park_enterprises.json") -> Dict[str, Any]:
-    """加载园区企业数据"""
+    """加载园区企业数据
+
+    支持「演示数据开关」：当用户在界面关闭演示数据时，
+    返回空数据以模拟“尚未接入园区数据”的状态。
+    """
+    try:
+        import streamlit as st
+        if st.session_state.get("use_demo_data", True) is False:
+            return {}
+    except Exception:
+        pass
+
     if not os.path.exists(file_path):
         return {}
     with open(file_path, "r", encoding="utf-8") as f:

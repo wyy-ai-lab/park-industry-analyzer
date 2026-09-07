@@ -62,7 +62,10 @@ st.markdown('<div class="help-text">搜索、筛选、下钻园区企业，一�
 # 加载数据
 data = load_park_enterprises()
 if not data or not data.get("enterprises"):
-    st.warning("⚠️ 未找到园区企业数据，请确认 `data/park_enterprises.json` 存在。")
+    if st.session_state.get("use_demo_data", True):
+        st.warning("⚠️ 未找到园区企业数据，请确认 `data/park_enterprises.json` 存在。")
+    else:
+        st.warning("📦 演示数据已关闭，当前为「未接入数据」状态。返回首页打开左侧开关「载入演示数据」即可查看演示内容。")
     st.stop()
 
 enterprises = data["enterprises"]

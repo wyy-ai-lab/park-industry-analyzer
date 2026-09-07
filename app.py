@@ -202,6 +202,15 @@ st.sidebar.markdown(textwrap.dedent("""
 </div>
 """), unsafe_allow_html=True)
 
+# 侧边栏：演示数据开关（用于演示“未接入数据 → 载入数据”的过程）
+st.sidebar.divider()
+st.sidebar.toggle(
+    "📦 载入演示数据（50 家企业）",
+    value=True,
+    key="use_demo_data",
+    help="关闭后，全站将模拟“尚未接入园区企业数据”的空状态。",
+)
+
 # 加载园区指标，用于首页数据看板
 try:
     park_data = load_park_enterprises()
@@ -260,7 +269,10 @@ st.markdown(textwrap.dedent(f"""
 
 # 未接入数据时的空状态提示
 if not has_park_data:
-    st.info("ℹ️ 尚未接入园区企业数据，园区类指标暂不可计算。请先在「园区概览」页录入园区信息，或上传企业台账数据后，首页指标将自动更新。")
+    if st.session_state.get("use_demo_data", True):
+        st.info("ℹ️ 尚未接入园区企业数据，园区类指标暂不可计算。请先在「园区概览」页录入园区信息，或上传企业台账数据后，首页指标将自动更新。")
+    else:
+        st.info("📦 演示数据已关闭，当前为「未接入数据」状态。打开左侧开关「载入演示数据」，即可查看演示园区的完整分析。")
 
 st.divider()
 
