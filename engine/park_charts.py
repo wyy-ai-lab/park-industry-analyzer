@@ -501,6 +501,197 @@ def build_metric_trend_chart(trends: Dict[str, Any], height: int = 380) -> go.Fi
     return fig
 
 
+def build_segment_supply_chart(enterprises: List[Dict[str, Any]], height: int = 620) -> go.Figure:
+    """
+    环节供需聚合网络图：把企业间供需关系按「环节对」聚合，
+    边粗细 = 供需企业数，节点 = 园区产业链环节 + 外部供应商/客户。
+    """
+    palette = {"上游": "#5ac8fa", "中游": "#0071e3", "下游": "#34c759"}
+    band_colors = {"上游": "#eef8ff", "中游": "#f0f5ff", "下游": "#f0fbf3"}
+
+    # 环节节点
+    seg_info: Dict[str, Dict[str, Any]] = {}
+    for e in enterprises:
+        niche = e.get("niche", "其他")
+        s = seg_info.setdefault(niche, {
+            "layer": e.get("chain_position", "中游"),
+            "count": 0, "revenue": 0.0, "enterprises": [],
+        })
+        s["count"] += 1
+        s["revenue"] += e.get("annual_revenue", 0)
+        s["enterprises"].append(e["name"])
+
+    # 环节间供需边聚合
+    name_to_seg = {n: niche for niche, s in seg_info.items() for n in s["enterprises"]}
+    edge_agg: Dict[Any, Dict[str, Any]] = {}
+
+    def _add_edge(src_niche: str, tgt_niche: str, rel: str, pair: str):
+        key = (src_niche, tgt_niche, rel)
+        a = edge_agg.setdefault(key, {"count": 0, "pairs": []})
+        a["count"] += 1
+        a["pairs"].append(pair)
+
+    for e in enterprises:
+        src = e.get("niche", "其他")
+        # 上游来源（本地供应商 + 上游供货）：内部按环节聚合到「本地配套」，外部归入「外部供应商」
+        upstream_tgts = set(e.get("local_suppliers", []) or []) | set(e.get("upstream_suppliers", []) or [])
+        for tgt in upstream_tgts:
+            if not tgt or tgt == e["name"]:
+                continue
+            if tgt in name_to_seg:
+                _add_edge(name_to_seg[tgt], src, "本地配套", f"{tgt} → {e['name']}")
+            else:
+                _add_edge("外部供应商", src, "上游供货", f"{tgt} → {e['name']}")
+        # 下游去向：内部按环节聚合，外部归入「外部客户」
+        for tgt in e.get("downstream_customers", []) or []:
+            if not tgt or tgt == e["name"]:
+                continue
+            if tgt in name_to_seg:
+                _add_edge(src, name_to_seg[tgt], "下游客户", f"{e['name']} → {tgt}")
+            else:
+                _add_edge(src, "外部客户", "下游客户", f"{e['name']} → {tgt}")
+
+    # 布局：环节按层分子列
+    layer_layout = {
+        "上游": {"base": 0.0, "cols": 2, "band": (-0.6, 1.0)},
+        "中游": {"base": 1.7, "cols": 3, "band": (1.15, 3.1)},
+        "下游": {"base": 3.6, "cols": 2, "band": (3.25, 4.6)},
+    }
+    by_layer: Dict[str, List[str]] = {"上游": [], "中游": [], "下游": []}
+    for niche, s in seg_info.items():
+        by_layer.setdefault(s["layer"], []).append(niche)
+    for layer in by_layer:
+        by_layer[layer].sort(key=lambda n: -seg_info[n]["revenue"])
+
+    pos: Dict[str, Dict[str, Any]] = {}
+    for layer, niches in by_layer.items():
+        cfg = layer_layout[layer]
+        cols: List[List[str]] = [[] for _ in range(cfg["cols"])]
+        for i, n in enumerate(niches):
+            cols[i % cfg["cols"]].append(n)
+        for ci, col in enumerate(cols):
+            for i, n in enumerate(col):
+                pos[n] = {
+                    "x": cfg["base"] + ci * 0.5,
+                    "y": -i * 1.15,
+                    "layer": layer,
+                }
+
+    ext_nodes = {"外部供应商": (-1.45, None), "外部客户": (5.45, None)}
+    ext_pos: Dict[str, Any] = {}
+    for name in ext_nodes:
+        ys = [pos[tgt]["y"] for (src, tgt, _), a in edge_agg.items()
+              if src == name and tgt in pos for _ in range(min(a["count"], 3))]
+        if not ys:
+            ys = [pos[src]["y"] for (src, tgt, _), a in edge_agg.items()
+                  if tgt == name and src in pos for _ in range(min(a["count"], 3))]
+        ext_pos[name] = (ext_nodes[name][0], sum(ys) / len(ys) if ys else 0)
+
+    fig = go.Figure()
+
+    # 分层背景带
+    for layer, cfg in layer_layout.items():
+        fig.add_vrect(x0=cfg["band"][0], x1=cfg["band"][1], fillcolor=band_colors[layer],
+                      line=dict(color=palette[layer], width=1.2), layer="below", opacity=0.65)
+        fig.add_annotation(x=(cfg["band"][0] + cfg["band"][1]) / 2, y=1.04, xref="x", yref="paper",
+                           text=f"◀ {layer} ▶", showarrow=False,
+                           font=dict(size=15, color=palette[layer], family=CHART_FONT))
+    fig.add_annotation(x=ext_pos["外部供应商"][0], y=1.04, xref="x", yref="paper",
+                       text="外部供应商", showarrow=False,
+                       font=dict(size=14, color="#8e8e93", family=CHART_FONT))
+    fig.add_annotation(x=ext_pos["外部客户"][0], y=1.04, xref="x", yref="paper",
+                       text="外部客户", showarrow=False,
+                       font=dict(size=14, color="#8e8e93", family=CHART_FONT))
+
+    # 聚合边
+    edge_style = {
+        "本地配套": ("#34c759", "内部本地配套"),
+        "上游供货": ("#0071e3", "外部供货依赖"),
+        "下游客户": ("#ff9500", "下游客户（含外部）"),
+    }
+    for rel in ("本地配套", "上游供货", "下游客户"):
+        color, legend_name = edge_style[rel]
+        ex, ey, ewidth, ehover = [], [], [], []
+        for (src, tgt, r), a in sorted(edge_agg.items(), key=lambda kv: -kv[1]["count"]):
+            if r != rel:
+                continue
+            if src in pos:
+                sx, sy = pos[src]["x"], pos[src]["y"]
+            elif src in ext_pos:
+                sx, sy = ext_pos[src]
+            else:
+                continue
+            if tgt in pos:
+                tx, ty = pos[tgt]["x"], pos[tgt]["y"]
+            elif tgt in ext_pos:
+                tx, ty = ext_pos[tgt]
+            else:
+                continue
+            ex += [sx, tx, None]
+            ey += [sy, ty, None]
+            w = 1.5 + min(a["count"], 8) * 1.1
+            ewidth.extend([w, w, 0])
+            pairs = "<br>".join(a["pairs"][:4])
+            more = f"<br>……等 {a['count']} 对企业" if a["count"] > 4 else ""
+            ehover.extend([f"{src} → {tgt}<br>涉及 {a['count']} 对企业<br>{pairs}{more}",
+                           None, None])
+        fig.add_trace(go.Scatter(
+            x=ex, y=ey, mode="lines",
+            line=dict(color=color, width=2),
+            opacity=0.55, name=legend_name,
+            hovertext=ehover, hoverinfo="text",
+        ))
+
+    # 环节节点
+    for layer in ("上游", "中游", "下游"):
+        names = [n for n, p in pos.items() if p["layer"] == layer]
+        fig.add_trace(go.Scatter(
+            x=[pos[n]["x"] for n in names],
+            y=[pos[n]["y"] for n in names],
+            mode="markers+text",
+            text=[f"{n}（{seg_info[n]['count']}）" for n in names],
+            textposition="middle center",
+            textfont=dict(size=9, color="#ffffff", family=CHART_FONT),
+            marker=dict(
+                size=[max(30, 22 + seg_info[n]["count"] * 5) for n in names],
+                color=palette[layer], opacity=0.94,
+                line=dict(color="#ffffff", width=1.5),
+            ),
+            name=f"{layer}环节",
+            hovertext=[
+                f"{n}<br>{seg_info[n]['count']} 家企业 · 产值 {seg_info[n]['revenue']:.1f} 亿元<br>"
+                f"代表：{'、'.join(seg_info[n]['enterprises'][:3])}" for n in names
+            ],
+            hoverinfo="text",
+        ))
+
+    # 外部聚合节点
+    for name, (x, y) in ext_pos.items():
+        fig.add_trace(go.Scatter(
+            x=[x], y=[y], mode="markers+text",
+            text=[name],
+            textposition="middle center",
+            textfont=dict(size=10, color="#6e6e73", family=CHART_FONT),
+            marker=dict(size=44, color="rgba(142,142,147,0.25)",
+                        line=dict(color="#8e8e93", width=1.5, dash="dot")),
+            name=name, hoverinfo="name",
+        ))
+
+    fig.update_layout(
+        title=dict(text="环节供需聚合网络（边粗细 = 供需企业数）",
+                   font=dict(size=16, family=CHART_FONT, color="#1d1d1f")),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family=CHART_FONT, size=12, color="#1d1d1f"),
+        margin=dict(l=20, r=20, t=70, b=20),
+        height=height,
+        xaxis=dict(visible=False, range=[-2.0, 6.6]),
+        yaxis=dict(visible=False),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.06, x=0.5, xanchor="center"),
+    )
+    return fig
+
+
 def build_supply_network_chart(enterprises: List[Dict[str, Any]], height: int = 640) -> go.Figure:
     """
     企业供需网络图：节点按产业链层级分区布局（上游/中游/下游分带背景），

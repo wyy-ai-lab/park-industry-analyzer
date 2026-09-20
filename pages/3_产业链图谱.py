@@ -4,7 +4,11 @@ import streamlit as st
 from engine.ui_helpers import inject_apple_theme
 from engine.park_metrics import load_park_enterprises, compute_metrics
 from engine.chain_position import SEGMENT_LAYER_MAP, classify_segment_strength
-from engine.park_charts import build_segment_strength_chart, build_supply_network_chart
+from engine.park_charts import (
+    build_segment_strength_chart,
+    build_supply_network_chart,
+    build_segment_supply_chart,
+)
 
 st.set_page_config(
     page_title="产业链图谱 - 园区产业分析智能体",
@@ -185,14 +189,25 @@ st.divider()
 
 # 企业供需网络图
 st.markdown('<div class="section-title">🕸️ 企业供需网络</div>', unsafe_allow_html=True)
-st.markdown(
-    "<p style='color: var(--apple-muted); margin-bottom: 0.75rem;'>"
-    "基于企业台账中的供货/客户关系构建：节点按产业链层级布局（左上游 → 右下游），"
-    "灰色空心节点为园区外主体，反映对外依赖点。"
-    "</p>",
-    unsafe_allow_html=True,
-)
-fig_network = build_supply_network_chart(data["enterprises"])
+agg_view = st.toggle("聚合到环节视图（推荐，更清爽）", value=True)
+if agg_view:
+    st.markdown(
+        "<p style='color: var(--apple-muted); margin-bottom: 0.75rem;'>"
+        "将企业间供需关系按「环节对」聚合：节点 = 产业链环节（数字为企业数），"
+        "边粗细 = 供需企业数，悬停查看具体企业对应关系。"
+        "</p>",
+        unsafe_allow_html=True,
+    )
+    fig_network = build_segment_supply_chart(data["enterprises"])
+else:
+    st.markdown(
+        "<p style='color: var(--apple-muted); margin-bottom: 0.75rem;'>"
+        "企业明细视图：节点按产业链层级布局（左上游 → 右下游），"
+        "灰色空心节点为园区外主体，反映对外依赖点。"
+        "</p>",
+        unsafe_allow_html=True,
+    )
+    fig_network = build_supply_network_chart(data["enterprises"])
 st.plotly_chart(fig_network, use_container_width=True, key="chain_network")
 
 st.divider()
