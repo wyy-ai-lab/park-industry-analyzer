@@ -501,69 +501,128 @@ def build_metric_trend_chart(trends: Dict[str, Any], height: int = 380) -> go.Fi
     return fig
 
 
-def build_supply_network_chart(enterprises: List[Dict[str, Any]], height: int = 560) -> go.Figure:
+def build_supply_network_chart(enterprises: List[Dict[str, Any]], height: int = 640) -> go.Figure:
     """
-    企业供需网络图：节点按产业链层级布局（上游 → 下游），
-    边表示供货/客户关系；园区外主体显示为灰色空心节点（对外依赖）。
+    企业供需网络图：节点按产业链层级分区布局（上游/中游/下游分带背景），
+    层内按细分环节分子列错位排列；园区外主体显示为灰色空心节点（对外依赖）。
     """
-    layer_x = {"上游": 0.0, "中游": 1.0, "下游": 2.0}
     palette = {"上游": "#5ac8fa", "中游": "#0071e3", "下游": "#34c759"}
+    band_colors = {"上游": "#eef8ff", "中游": "#f0f5ff", "下游": "#f0fbf3", "外部": "#f5f5f7"}
+    # 每个层级的基准 x 与子列数（层内按环节分子列，避免单列堆叠）
+    layer_layout = {
+        "上游": {"base": 0.0, "cols": 2, "band": (-0.55, 0.95)},
+        "中游": {"base": 1.45, "cols": 3, "band": (1.0, 2.7)},
+        "下游": {"base": 3.0, "cols": 2, "band": (2.75, 3.95)},
+    }
+    ext_x, ext_band = 5.0, (4.45, 5.85)
 
-    # 按层级、产值排序确定纵向位置
-    by_layer: Dict[str, List[Dict[str, Any]]] = {"上游": [], "中游": [], "下游": []}
+    # 按层级分组，层内按细分环节分组（组内按产值降序）
+    by_layer: Dict[str, Dict[str, List[Dict[str, Any]]]] = {"上游": {}, "中游": {}, "下游": {}}
     for e in enterprises:
         layer = e.get("chain_position", "中游")
         if layer not in by_layer:
-            by_layer[layer] = []
-        by_layer[layer].append(e)
+            by_layer[layer] = {}
+        by_layer[layer].setdefault(e.get("niche", "其他"), []).append(e)
     for layer in by_layer:
-        by_layer[layer].sort(key=lambda x: -x.get("annual_revenue", 0))
+        for niche in by_layer[layer]:
+            by_layer[layer][niche].sort(key=lambda x: -x.get("annual_revenue", 0))
 
+    # 子列分配：环节组按总产值降序轮流分配到各子列
     pos: Dict[str, Dict[str, Any]] = {}
-    for layer, ents in by_layer.items():
-        n = len(ents)
-        for i, e in enumerate(ents):
-            y = (n - 1) / 2 - i  # 从上到下按产值降序
-            jitter = (hash(e.get("niche", "")) % 7 - 3) * 0.04
-            pos[e["name"]] = {
-                "x": layer_x.get(layer, 1.0) + jitter,
-                "y": y,
-                "layer": layer,
-                "niche": e.get("niche", ""),
-                "revenue": e.get("annual_revenue", 0),
-            }
+    for layer, groups in by_layer.items():
+        cfg = layer_layout[layer]
+        cols: List[List[Any]] = [[] for _ in range(cfg["cols"])]
+        for i, (niche, ents) in enumerate(
+            sorted(groups.items(), key=lambda kv: -sum(x.get("annual_revenue", 0) for x in kv[1]))
+        ):
+            cols[i % cfg["cols"]].append((niche, ents))
+        for ci, col_groups in enumerate(cols):
+            y = 0.0
+            for niche, ents in col_groups:
+                for e in ents:
+                    pos[e["name"]] = {
+                        "x": cfg["base"] + ci * 0.42,
+                        "y": y,
+                        "layer": layer,
+                        "niche": niche,
+                        "revenue": e.get("annual_revenue", 0),
+                    }
+                    y -= 0.85
 
-    # 边：本地供应商（绿）> 上游供货（蓝）> 下游客户（橙）
+    # 边：本地配套 > 上游供货 > 下游客户
     edges = []
     for e in enterprises:
         src = e["name"]
         for tgt in e.get("local_suppliers", []) or []:
             if tgt and tgt != src:
-                edges.append((src, tgt, "本地配套", "#34c759"))
+                edges.append((src, tgt, "本地配套"))
         for tgt in e.get("upstream_suppliers", []) or []:
             if tgt and tgt != src and not any(t[1] == tgt for t in edges if t[0] == src):
-                edges.append((src, tgt, "上游供货", "#0071e3"))
+                edges.append((src, tgt, "上游供货"))
         for tgt in e.get("downstream_customers", []) or []:
             if tgt and tgt != src:
-                edges.append((src, tgt, "下游客户", "#ff9500"))
+                edges.append((src, tgt, "下游客户"))
 
-    # 园区外依赖节点
-    ext_names = sorted({t for _, t, _, _ in edges if t not in pos})
-
-    edge_x, edge_y = [], []
-    for src, tgt, rel, color in edges:
-        if src not in pos or tgt not in pos:
-            continue
-        edge_x += [pos[src]["x"], pos[tgt]["x"], None]
-        edge_y += [pos[src]["y"], pos[tgt]["y"], None]
+    # 园区外节点：纵向位置取其在园区内合作伙伴的平均高度（贴近对应链条），再做防重叠展开
+    ext_names = sorted({t for _, t, _ in edges if t not in pos})
+    partner_ys: Dict[str, List[float]] = {n: [] for n in ext_names}
+    for src, tgt, _ in edges:
+        if src in pos and tgt in partner_ys:
+            partner_ys[tgt].append(pos[src]["y"])
+    ext_y_raw = {}
+    for i, n in enumerate(ext_names):
+        ys = partner_ys.get(n) or []
+        ext_y_raw[n] = sum(ys) / len(ys) if ys else -(i * 0.8)
+    ext_sorted = sorted(ext_names, key=lambda n: -ext_y_raw[n])
+    ext_pos: Dict[str, Any] = {}
+    last_y = float("inf")
+    for n in ext_sorted:
+        y = min(ext_y_raw[n], last_y - 0.55)  # 保持最小间距，防重叠
+        ext_pos[n] = (ext_x, y)
+        last_y = y
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=edge_x, y=edge_y, mode="lines",
-        line=dict(color="rgba(142,142,147,0.45)", width=1.2),
-        hoverinfo="skip", showlegend=False,
-    ))
 
+    # 分层背景带
+    for layer, cfg in layer_layout.items():
+        fig.add_vrect(x0=cfg["band"][0], x1=cfg["band"][1], fillcolor=band_colors[layer],
+                      line=dict(color=palette[layer], width=1.2), layer="below", opacity=0.65)
+        fig.add_annotation(x=(cfg["band"][0] + cfg["band"][1]) / 2, y=1.04, xref="x", yref="paper",
+                           text=f"◀ {layer} ▶", showarrow=False,
+                           font=dict(size=15, color=palette[layer], family=CHART_FONT))
+    fig.add_vrect(x0=ext_band[0], x1=ext_band[1], fillcolor=band_colors["外部"],
+                  line=dict(color="#c7c7cc", width=1.2), layer="below", opacity=0.65)
+    fig.add_annotation(x=(ext_band[0] + ext_band[1]) / 2, y=1.04, xref="x", yref="paper",
+                       text="园区外（对外依赖）", showarrow=False,
+                       font=dict(size=15, color="#8e8e93", family=CHART_FONT))
+
+    # 边（按关系类型分 trace，便于图例展示）
+    edge_style = {
+        "本地配套": ("#34c759", 1.4),
+        "上游供货": ("#0071e3", 1.0),
+        "下游客户": ("#ff9500", 1.0),
+    }
+    for rel in ("本地配套", "上游供货", "下游客户"):
+        color, width = edge_style[rel]
+        ex, ey = [], []
+        for src, tgt, r in edges:
+            if r != rel or src not in pos:
+                continue
+            if tgt in pos:
+                tx, ty = pos[tgt]["x"], pos[tgt]["y"]
+            elif tgt in ext_pos:
+                tx, ty = ext_pos[tgt]
+            else:
+                continue
+            ex += [pos[src]["x"], tx, None]
+            ey += [pos[src]["y"], ty, None]
+        fig.add_trace(go.Scatter(
+            x=ex, y=ey, mode="lines",
+            line=dict(color=color, width=width),
+            opacity=0.28, name=rel, hoverinfo="skip",
+        ))
+
+    # 内部企业节点
     for layer in ("上游", "中游", "下游"):
         names = [k for k, p in pos.items() if p["layer"] == layer]
         fig.add_trace(go.Scatter(
@@ -572,39 +631,42 @@ def build_supply_network_chart(enterprises: List[Dict[str, Any]], height: int = 
             mode="markers+text",
             text=[n.split("有限公司")[0].replace("股份有限公司", "").replace("有限责任公司", "")[:6] for n in names],
             textposition="middle center",
-            textfont=dict(size=9, color="#ffffff", family=CHART_FONT),
-            marker=dict(size=34, color=palette[layer], opacity=0.92, line=dict(color="#ffffff", width=1.5)),
-            name=f"{layer}（{len(names)} 家）",
+            textfont=dict(size=8.5, color="#ffffff", family=CHART_FONT),
+            marker=dict(size=30, color=palette[layer], opacity=0.94,
+                        line=dict(color="#ffffff", width=1.5)),
+            name=f"{layer}企业",
             hovertext=[
                 f"{n}<br>{pos[n]['niche']} · 年产值 {pos[n]['revenue']:.1f} 亿元" for n in names
             ],
             hoverinfo="text",
         ))
 
+    # 园区外依赖节点
     if ext_names:
-        ext_x = [2.45 + (i % 2) * 0.12 for i in range(len(ext_names))]
-        ext_y = [(len(ext_names) - 1) / 2 - i for i in range(len(ext_names))]
         fig.add_trace(go.Scatter(
-            x=ext_x, y=ext_y, mode="markers+text",
-            text=[n if len(n) <= 8 else n[:8] + "…" for n in ext_names],
+            x=[ext_pos[n][0] for n in ext_names],
+            y=[ext_pos[n][1] for n in ext_names],
+            mode="markers+text",
+            text=[n if len(n) <= 9 else n[:9] + "…" for n in ext_names],
             textposition="middle right",
-            textfont=dict(size=10, color="#8e8e93", family=CHART_FONT),
-            marker=dict(size=22, color="rgba(142,142,147,0.25)",
+            textfont=dict(size=9, color="#6e6e73", family=CHART_FONT),
+            marker=dict(size=16, color="rgba(142,142,147,0.2)",
                         line=dict(color="#8e8e93", width=1.2)),
-            name=f"园区外依赖（{len(ext_names)} 家）",
+            name="园区外主体",
             hovertext=ext_names, hoverinfo="text",
         ))
 
     fig.update_layout(
-        title=dict(text="企业供需网络（左：上游 → 右：下游）", font=dict(size=16, family=CHART_FONT, color="#1d1d1f")),
+        title=dict(text="企业供需网络（左：上游 → 右：下游，灰列为园区外依赖）",
+                   font=dict(size=16, family=CHART_FONT, color="#1d1d1f")),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family=CHART_FONT, size=12, color="#1d1d1f"),
-        margin=dict(l=20, r=20, t=50, b=20),
+        margin=dict(l=20, r=20, t=70, b=20),
         height=height,
-        xaxis=dict(visible=False, range=[-0.45, 3.4]),
+        xaxis=dict(visible=False, range=[-0.7, 7.4]),
         yaxis=dict(visible=False),
-        legend=dict(orientation="h", yanchor="bottom", y=-0.06, x=0.5, xanchor="center"),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.05, x=0.5, xanchor="center"),
     )
     return fig
 
