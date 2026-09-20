@@ -261,6 +261,24 @@ def build_park_markdown_report(metrics: Dict[str, Any], diagnosis: Dict[str, Any
         for c in callouts:
             md += f"| {c.get('name', '')} | {c.get('category', '')} | {c.get('niche', '')} | {c.get('basis', '')} | {c.get('suggestion', '')} |\n"
 
+    # 招商目标清单
+    invest_targets = metrics.get("investment_targets", [])
+    if invest_targets:
+        md += """
+### 招商目标清单
+
+> 注：目标企业为规则生成的演示画像（虚构名称）；接入工商/知产数据库后替换为真实检索结果。
+
+| 目标企业 | 所在地 | 所属环节 | 营收规模 | 发明专利数 | 潜在配套对象 | 落地信号 | 优先级 | 推荐理由 |
+|----------|--------|----------|----------|------------|--------------|----------|--------|----------|
+"""
+        for t in invest_targets:
+            md += (
+                f"| {t.get('name', '')} | {t.get('location', '')} | {t.get('segment', '')} "
+                f"| {t.get('revenue', '')} | {t.get('invention_patents', '')} | {t.get('partners', '')} "
+                f"| {t.get('signal', '')} | {t.get('priority', '')} | {t.get('reason', '')} |\n"
+            )
+
     # 风险与应对
     risk_items = diagnosis.get("risk_items", [])
     if risk_items:
@@ -474,6 +492,32 @@ def build_park_word_report(
             cells[2].text = c.get("niche", "")
             cells[3].text = c.get("basis", "")
             cells[4].text = c.get("suggestion", "")
+
+    # 招商目标清单
+    invest_targets = metrics.get("investment_targets", [])
+    if invest_targets:
+        doc.add_heading("招商目标清单", level=2)
+        doc.add_paragraph(
+            "注：目标企业为规则生成的演示画像（虚构名称）；接入工商/知产数据库后替换为真实检索结果。"
+        )
+        table = doc.add_table(rows=1, cols=9)
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        headers = ["目标企业", "所在地", "所属环节", "营收规模", "发明专利数",
+                   "潜在配套对象", "落地信号", "优先级", "推荐理由"]
+        for cell, text in zip(table.rows[0].cells, headers):
+            cell.text = text
+            cell.paragraphs[0].runs[0].font.bold = True
+        for t in invest_targets:
+            cells = table.add_row().cells
+            cells[0].text = t.get("name", "")
+            cells[1].text = t.get("location", "")
+            cells[2].text = t.get("segment", "")
+            cells[3].text = t.get("revenue", "")
+            cells[4].text = str(t.get("invention_patents", ""))
+            cells[5].text = t.get("partners", "")
+            cells[6].text = t.get("signal", "")
+            cells[7].text = t.get("priority", "")
+            cells[8].text = t.get("reason", "")
 
     # 风险与应对
     risk_items = diagnosis.get("risk_items", [])
@@ -768,6 +812,33 @@ def build_park_pdf_report(
             )
         pdf.ln(4)
 
+    # 招商目标清单（PDF 版省略推荐理由列，控制表格宽度；完整字段见页面与 Markdown/HTML 报告）
+    invest_targets = metrics.get("investment_targets", [])
+    if invest_targets:
+        pdf.set_font("cn", "B", 12)
+        pdf.cell(0, 8, "招商目标清单", ln=True)
+        pdf.set_font("cn", "", 8)
+        _pdf_safe_multi_cell(pdf, "注：目标企业为规则生成的演示画像（虚构名称）；接入工商/知产数据库后替换为真实检索结果。", 4.5)
+        target_widths = [28, 18, 20, 15, 13, 32, 34, 12]
+        pdf.set_font("cn", "B", 8)
+        _pdf_table_row(
+            pdf,
+            ["目标企业", "所在地", "所属环节", "营收规模", "发明专利", "潜在配套对象", "落地信号", "优先级"],
+            target_widths, 5,
+            aligns=["C"] * 8,
+        )
+        pdf.set_font("cn", "", 8)
+        for t in invest_targets:
+            _pdf_table_row(
+                pdf,
+                [t.get("name", ""), t.get("location", ""), t.get("segment", ""),
+                 t.get("revenue", ""), str(t.get("invention_patents", "")),
+                 t.get("partners", ""), t.get("signal", ""), t.get("priority", "")],
+                target_widths, 5,
+                aligns=["L", "C", "C", "C", "C", "L", "L", "C"],
+            )
+        pdf.ln(4)
+
     # 风险与应对
     risk_items = diagnosis.get("risk_items", [])
     if risk_items:
@@ -932,6 +1003,13 @@ def build_park_html_report(
         f"        <tr><td>{r.get('risk', '')}</td><td>{r.get('impact', '')}</td><td>{r.get('mitigation', '')}</td></tr>"
         for r in risk_items
     )
+    invest_targets = metrics.get("investment_targets", [])
+    invest_rows = "\n".join(
+        f"        <tr><td>{t.get('name', '')}</td><td>{t.get('location', '')}</td><td>{t.get('segment', '')}</td>"
+        f"<td>{t.get('revenue', '')}</td><td>{t.get('invention_patents', '')}</td><td>{t.get('partners', '')}</td>"
+        f"<td>{t.get('signal', '')}</td><td>{t.get('priority', '')}</td><td>{t.get('reason', '')}</td></tr>"
+        for t in invest_targets
+    )
 
     html = f"""
 <!DOCTYPE html>
@@ -1086,6 +1164,11 @@ def build_park_html_report(
       font-size: 0.85rem;
       margin-top: 2rem;
     }}
+    .muted {{
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin: 0.25rem 0 0.75rem;
+    }}
     @media print {{
       body {{ background: #fff; padding: 0; }}
       .card {{ break-inside: avoid; }}
@@ -1203,6 +1286,15 @@ def build_park_html_report(
         <thead><tr><th>企业名称</th><th>培育方向</th><th>所属领域</th><th>入选依据</th><th>辅导建议</th></tr></thead>
         <tbody>
 {callout_rows}
+        </tbody>
+      </table>
+
+      <h3>招商目标清单</h3>
+      <p class="muted">注：目标企业为规则生成的演示画像（虚构名称）；接入工商/知产数据库后替换为真实检索结果。</p>
+      <table>
+        <thead><tr><th>目标企业</th><th>所在地</th><th>所属环节</th><th>营收规模</th><th>发明专利数</th><th>潜在配套对象</th><th>落地信号</th><th>优先级</th><th>推荐理由</th></tr></thead>
+        <tbody>
+{invest_rows}
         </tbody>
       </table>
 
