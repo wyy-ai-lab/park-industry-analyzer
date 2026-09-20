@@ -159,40 +159,94 @@ if active_tab == "profile":
 
     ep = st.session_state["enterprise_profile"]
 
+    # —— 任务引导：先选目标，只显示该目标需要的字段 ——
+    _DIAGNOSIS_TASKS = {
+        "auto": {"label": "🎯 智能推荐（自动判断最合适的诊断任务）", "fields": "auto"},
+        "hightech": {"label": "📘 诊断高企申报可行性", "fields": ["name", "industry", "sub_industry", "founded_year", "scale", "province", "city", "region", "revenue", "profit", "employees", "rd_investment", "rd_ratio", "rd_team_size", "rd_team_ratio", "high_tech_income_ratio", "invention_patents", "utility_models", "software_copyrights", "trademarks", "core_product", "is_high_tech_field", "is_high_tech_enterprise", "rd_accounting_system", "has_major_accident", "qualifications"]},
+        "giant": {"label": "🏭 诊断小巨人申报可行性", "fields": ["name", "industry", "sub_industry", "founded_year", "scale", "province", "city", "region", "revenue", "profit", "employees", "rd_investment", "rd_ratio", "rd_team_size", "rd_team_ratio", "invention_patents", "utility_models", "software_copyrights", "core_product", "market_share_proof", "is_high_tech_enterprise", "has_major_accident", "qualifications"]},
+        "segment": {"label": "🔬 诊断专精特新（细分赛道）申报", "fields": ["name", "industry", "sub_industry", "founded_year", "scale", "province", "city", "region", "revenue", "employees", "rd_ratio", "invention_patents", "core_product", "market_share_proof", "is_high_tech_enterprise", "has_major_accident", "qualifications"]},
+    }
+
+    if "diagnosis_task" not in st.session_state:
+        st.session_state["diagnosis_task"] = "auto"
+
+    task_options = list(_DIAGNOSIS_TASKS.keys())
+    task = st.selectbox(
+        "你想诊断什么？",
+        options=task_options,
+        index=task_options.index(st.session_state["diagnosis_task"]),
+        format_func=lambda k: _DIAGNOSIS_TASKS[k]["label"],
+        help="选定后只显示该诊断任务需要的字段，减少无关录入",
+    )
+    st.session_state["diagnosis_task"] = task
+
+    # 字段帮助说明
+    _FIELD_HELP = {
+        "name": "用于报告展示，可填写脱敏编号",
+        "founded_year": "高企要求成立满一年",
+        "revenue": "部分政策对营收规模有门槛",
+        "rd_investment": "高企要求研发占比达标，金额用于交叉核对",
+        "rd_ratio": "高企门槛：研发占比 ≥ 3%（营收 2 亿以上）或 ≥ 4%（2 亿以下）",
+        "invention_patents": "高企建议 ≥ 3 项；小巨人看重发明专利质量",
+        "high_tech_income_ratio": "高企要求高新技术产品收入占比 ≥ 60%",
+        "rd_accounting_system": "高企要求建立研发费用辅助账/准备金制度",
+        "market_share_proof": "小巨人要求提供细分市场占有率证明",
+        "core_product": "用于判断细分赛道与技术方向",
+        "rd_team_size": "反映研发团队实力",
+        "rd_team_ratio": "科技型企业研发人员占比参考指标",
+        "has_major_accident": "一票否决项：近三年重大安全/质量事故",
+    }
+
+    # 智能推荐：根据企业现状推荐最合适的诊断任务
+    if task == "auto":
+        if ep.get("is_high_tech_enterprise"):
+            recommended = "giant"
+            reason = "企业已是高企，建议评估小巨人申报路径"
+        elif ep.get("revenue", 0) >= 2000 and ep.get("rd_ratio", 0) >= 0.03:
+            recommended = "hightech"
+            reason = "营收与研发占比已达高企申报体量，建议优先诊断高企"
+        else:
+            recommended = "segment"
+            reason = "基础条件尚在培育期，建议先走专精特新路径"
+        st.info(f"💡 智能推荐：{_DIAGNOSIS_TASKS[recommended]['label']}——{reason}（选择上方对应任务开始）")
+
+    active_fields = _DIAGNOSIS_TASKS[task]["fields"]
+    show = lambda f: ("auto" in active_fields) or (f in active_fields)
+
     with st.form("enterprise_profile_form"):
         c1, c2, c3 = st.columns(3)
         with c1:
-            name = st.text_input("企业名称", value=ep.get("name", ""))
-            industry = st.text_input("所属行业", value=ep.get("industry", "新能源汽车"))
-            province = st.text_input("省份", value=ep.get("province", "安徽省"))
-            founded_year = st.number_input("成立年份", min_value=1900, max_value=2100, value=int(ep.get("founded_year", 2015)))
-            employees = st.number_input("员工人数", min_value=0, value=int(ep.get("employees", 0)))
-            revenue = st.number_input("上年度营收（万元）", min_value=0.0, value=float(ep.get("revenue", 0)))
-            rd_investment = st.number_input("研发投入（万元）", min_value=0.0, value=float(ep.get("rd_investment") or 0))
-            invention_patents = st.number_input("发明专利数量", min_value=0, value=int(ep.get("invention_patents", 0)))
+            name = st.text_input("企业名称", value=ep.get("name", ""), help=_FIELD_HELP["name"]) if show("name") else ep.get("name", "")
+            industry = st.text_input("所属行业", value=ep.get("industry", "新能源汽车")) if show("industry") else ep.get("industry", "新能源汽车")
+            province = st.text_input("省份", value=ep.get("province", "安徽省")) if show("province") else ep.get("province", "安徽省")
+            founded_year = st.number_input("成立年份", min_value=1900, max_value=2100, value=int(ep.get("founded_year", 2015)), help=_FIELD_HELP["founded_year"]) if show("founded_year") else int(ep.get("founded_year", 2015))
+            employees = st.number_input("员工人数", min_value=0, value=int(ep.get("employees", 0))) if show("employees") else int(ep.get("employees", 0))
+            revenue = st.number_input("上年度营收（万元）", min_value=0.0, value=float(ep.get("revenue", 0)), help=_FIELD_HELP["revenue"]) if show("revenue") else float(ep.get("revenue", 0))
+            rd_investment = st.number_input("研发投入（万元）", min_value=0.0, value=float(ep.get("rd_investment") or 0), help=_FIELD_HELP["rd_investment"]) if show("rd_investment") else float(ep.get("rd_investment") or 0)
+            invention_patents = st.number_input("发明专利数量", min_value=0, value=int(ep.get("invention_patents", 0)), help=_FIELD_HELP["invention_patents"]) if show("invention_patents") else int(ep.get("invention_patents", 0))
         with c2:
-            sub_industry = st.text_input("细分行业", value=ep.get("sub_industry", "动力电池"))
+            sub_industry = st.text_input("细分行业", value=ep.get("sub_industry", "动力电池"), help=_FIELD_HELP["core_product"]) if show("sub_industry") else ep.get("sub_industry", "动力电池")
             scale_options = ["小型企业", "中型企业", "大型企业", "规模以上"]
             current_scale = ep.get("scale", "小型企业")
             scale_index = scale_options.index(current_scale) if current_scale in scale_options else 0
-            scale = st.selectbox("企业规模", scale_options, index=scale_index)
-            city = st.text_input("城市", value=ep.get("city", "合肥市"))
-            region = st.text_input("所在地区", value=ep.get("region", "安徽省合肥市高新区"))
-            profit = st.number_input("上年度利润（万元）", min_value=0.0, value=float(ep.get("profit", 0)))
-            rd_ratio = st.number_input("研发投入占比", min_value=0.0, max_value=1.0, value=float(ep.get("rd_ratio", 0.0)), step=0.01, format="%.2f")
-            rd_team_size = st.number_input("研发人员数量", min_value=0, value=int(ep.get("rd_team_size") or 0))
-            utility_models = st.number_input("实用新型专利数量", min_value=0, value=int(ep.get("utility_models", 0)))
+            scale = st.selectbox("企业规模", scale_options, index=scale_index) if show("scale") else current_scale
+            city = st.text_input("城市", value=ep.get("city", "合肥市")) if show("city") else ep.get("city", "合肥市")
+            region = st.text_input("所在地区", value=ep.get("region", "安徽省合肥市高新区")) if show("region") else ep.get("region", "安徽省合肥市高新区")
+            profit = st.number_input("上年度利润（万元）", min_value=0.0, value=float(ep.get("profit", 0))) if show("profit") else float(ep.get("profit", 0))
+            rd_ratio = st.number_input("研发投入占比", min_value=0.0, max_value=1.0, value=float(ep.get("rd_ratio", 0.0)), step=0.01, format="%.2f", help=_FIELD_HELP["rd_ratio"]) if show("rd_ratio") else float(ep.get("rd_ratio", 0.0))
+            rd_team_size = st.number_input("研发人员数量", min_value=0, value=int(ep.get("rd_team_size") or 0), help=_FIELD_HELP["rd_team_size"]) if show("rd_team_size") else int(ep.get("rd_team_size") or 0)
+            utility_models = st.number_input("实用新型专利数量", min_value=0, value=int(ep.get("utility_models", 0))) if show("utility_models") else int(ep.get("utility_models", 0))
         with c3:
-            core_product = st.text_input("核心产品", value=ep.get("core_product", ""))
-            rd_team_ratio = st.number_input("研发人员占比", min_value=0.0, max_value=1.0, value=float(ep.get("rd_team_ratio", 0.0)), step=0.01, format="%.2f")
-            high_tech_income_ratio = st.number_input("高新技术产品收入占比", min_value=0.0, max_value=1.0, value=float(ep.get("high_tech_income_ratio", 0.0)), step=0.01, format="%.2f")
-            software_copyrights = st.number_input("软件著作权数量", min_value=0, value=int(ep.get("software_copyrights", 0)))
-            trademarks = st.number_input("商标数量", min_value=0, value=int(ep.get("trademarks", 0)))
-            is_high_tech_enterprise = st.checkbox("国家高新技术企业", value=ep.get("is_high_tech_enterprise", False))
-            is_high_tech_field = st.checkbox("属于高新技术领域", value=ep.get("is_high_tech_field", True))
-            market_share_proof = st.checkbox("有市场占有率证明", value=ep.get("market_share_proof", False))
-            rd_accounting_system = st.checkbox("建立研发准备金制度", value=ep.get("rd_accounting_system", False))
-            has_major_accident = st.checkbox("近三年有重大事故", value=ep.get("has_major_accident", False))
+            core_product = st.text_input("核心产品", value=ep.get("core_product", ""), help=_FIELD_HELP["core_product"]) if show("core_product") else ep.get("core_product", "")
+            rd_team_ratio = st.number_input("研发人员占比", min_value=0.0, max_value=1.0, value=float(ep.get("rd_team_ratio", 0.0)), step=0.01, format="%.2f", help=_FIELD_HELP["rd_team_ratio"]) if show("rd_team_ratio") else float(ep.get("rd_team_ratio", 0.0))
+            high_tech_income_ratio = st.number_input("高新技术产品收入占比", min_value=0.0, max_value=1.0, value=float(ep.get("high_tech_income_ratio", 0.0)), step=0.01, format="%.2f", help=_FIELD_HELP["high_tech_income_ratio"]) if show("high_tech_income_ratio") else float(ep.get("high_tech_income_ratio", 0.0))
+            software_copyrights = st.number_input("软件著作权数量", min_value=0, value=int(ep.get("software_copyrights", 0))) if show("software_copyrights") else int(ep.get("software_copyrights", 0))
+            trademarks = st.number_input("商标数量", min_value=0, value=int(ep.get("trademarks", 0))) if show("trademarks") else int(ep.get("trademarks", 0))
+            is_high_tech_enterprise = st.checkbox("国家高新技术企业", value=ep.get("is_high_tech_enterprise", False)) if show("is_high_tech_enterprise") else ep.get("is_high_tech_enterprise", False)
+            is_high_tech_field = st.checkbox("属于高新技术领域", value=ep.get("is_high_tech_field", True)) if show("is_high_tech_field") else ep.get("is_high_tech_field", True)
+            market_share_proof = st.checkbox("有市场占有率证明", value=ep.get("market_share_proof", False), help=_FIELD_HELP["market_share_proof"]) if show("market_share_proof") else ep.get("market_share_proof", False)
+            rd_accounting_system = st.checkbox("建立研发准备金制度", value=ep.get("rd_accounting_system", False), help=_FIELD_HELP["rd_accounting_system"]) if show("rd_accounting_system") else ep.get("rd_accounting_system", False)
+            has_major_accident = st.checkbox("近三年有重大事故", value=ep.get("has_major_accident", False), help=_FIELD_HELP["has_major_accident"]) if show("has_major_accident") else ep.get("has_major_accident", False)
 
         qualification_options = [
             "国家高新技术企业", "国家级专精特新小巨人", "安徽省专精特新中小企业",
@@ -208,7 +262,7 @@ if active_tab == "profile":
             "已获资质",
             options=qualification_options,
             default=default_qualifications,
-        )
+        ) if show("qualifications") else (default_qualifications if isinstance(default_qualifications, list) else [])
 
         submitted = st.form_submit_button("💾 保存企业画像", type="primary", use_container_width=True)
 
