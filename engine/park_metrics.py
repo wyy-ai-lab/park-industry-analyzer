@@ -234,6 +234,120 @@ def compute_cultivation_candidates(enterprises: List[Dict[str, Any]]) -> List[Di
     return result
 
 
+# 招商目标画像（Demo）：目标环节 -> 潜在配套对象（园区企业）所在环节
+_INVEST_TARGET_PARTNER_HINTS = {
+    "锂盐/锂矿": ["正极材料", "电解液"],
+    "动力电池隔膜": ["动力电池电芯", "电池包集成"],
+    "高精度传感器": ["车载芯片", "BMS系统", "激光雷达"],
+    "车载芯片": ["乘用车制造", "商用车制造"],
+    "激光雷达": ["乘用车制造", "商用车制造"],
+    "电解液": ["动力电池电芯"],
+    "电机控制器": ["驱动电机"],
+}
+
+# 招商目标画像（Demo）：目标环节 -> 虚构演示企业名称池
+_INVEST_TARGET_NAME_POOLS = {
+    "锂盐/锂矿": ["（演示）川能锂业科技", "（演示）中矿锂源材料"],
+    "动力电池隔膜": ["（演示）蓝科隔膜科技", "（演示）晟阳膜材料"],
+    "高精度传感器": ["（演示）精测传感科技", "（演示）微纳感知技术"],
+    "车载芯片": ["（演示）芯驰半导体", "（演示）杰发智芯科技"],
+    "激光雷达": ["（演示）禾光感知技术", "（演示）镭神光电科技"],
+    "电解液": ["（演示）昆仑电解液科技", "（演示）蓝帆新能源材料"],
+    "电机控制器": ["（演示）精控电驱科技", "（演示）威迈斯电控"],
+}
+
+# 招商目标画像（Demo）：候选所在地（长三角/中部供应链圈内城市）
+_INVEST_TARGET_LOCATIONS = [
+    "江苏常州", "江苏苏州", "江苏无锡", "浙江宁波",
+    "安徽合肥", "湖北武汉", "湖南长沙", "上海嘉定",
+]
+
+# 招商目标画像（Demo）：落地信号话术池
+_INVEST_TARGET_SIGNALS = [
+    "近期发布扩产公告，规划新生产基地",
+    "正在筹备新设华东区域子公司",
+    "获得新一轮融资，规划新增产能",
+    "与本地整车厂已有小规模供货试点",
+]
+
+
+def _segment_hash(segment: str) -> int:
+    """稳定的环节散列值，用于确定性生成演示数据"""
+    return sum(ord(ch) for ch in segment)
+
+
+def _resolve_partners(segment: str, segment_dist: Dict[str, Dict[str, Any]]) -> str:
+    """解析潜在配套对象：优先映射到园区已有环节的头部企业"""
+    for hint in _INVEST_TARGET_PARTNER_HINTS.get(segment, []):
+        if hint in segment_dist and segment_dist[hint]["enterprises"]:
+            names = list(dict.fromkeys(segment_dist[hint]["enterprises"]))[:2]
+            return "、".join(names)
+    # 兜底：下游环节中的代表企业
+    downstream = [seg for seg in ("乘用车制造", "商用车制造") if seg in segment_dist]
+    for seg in downstream:
+        if segment_dist[seg]["enterprises"]:
+            names = list(dict.fromkeys(segment_dist[seg]["enterprises"]))[:2]
+            return "、".join(names)
+    return "园区链主企业（待匹配）"
+
+
+def _build_targets_for_segment(
+    segment: str, priority: str, segment_dist: Dict[str, Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """为一个缺失/风险/薄弱环节生成 2 家演示目标企业画像（确定性）"""
+    h = _segment_hash(segment)
+    names = _INVEST_TARGET_NAME_POOLS.get(segment, [f"（演示）{segment}龙头企业A", f"（演示）{segment}成长企业B"])
+    partners = _resolve_partners(segment, segment_dist)
+    status_label = "缺失" if priority == "高" else "薄弱"
+    targets = []
+    for i, name in enumerate(names[:2]):
+        revenue = round(3 + ((h + i * 7) % 12), 1)          # 3–14 亿元
+        patents = 5 + ((h + i * 11) % 25)                    # 5–29 项
+        location = _INVEST_TARGET_LOCATIONS[(h + i * 3) % len(_INVEST_TARGET_LOCATIONS)]
+        signal = _INVEST_TARGET_SIGNALS[(h + i * 5) % len(_INVEST_TARGET_SIGNALS)]
+        reason = (
+            f"园区「{segment}」环节{status_label}，本地{partners.split('、')[0]}等企业急需配套；"
+            f"该企业营收 {revenue} 亿元、发明专利 {patents} 项，符合实力门槛"
+        )
+        targets.append({
+            "name": name,
+            "location": location,
+            "segment": segment,
+            "revenue": f"{revenue} 亿元",
+            "invention_patents": patents,
+            "partners": partners,
+            "signal": signal,
+            "priority": priority,
+            "reason": reason,
+        })
+    return targets
+
+
+def compute_investment_targets(metrics: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    生成招商目标清单（Demo）：对缺失/风险环节生成高优先级目标，薄弱环节生成中优先级目标。
+
+    当前为规则生成的演示目标画像（虚构企业名称）；
+    接入工商/知产数据库后替换为真实检索结果。
+    """
+    segment_dist = metrics.get("segment_distribution", {})
+    strength = metrics.get("segment_strength", {})
+    seen = set()
+    targets: List[Dict[str, Any]] = []
+    # 缺失/风险环节（risk 为 missing 的子集，需去重）→ 高优先级
+    for seg in strength.get("missing", []) + strength.get("risk", []):
+        if seg in seen:
+            continue
+        seen.add(seg)
+        targets.extend(_build_targets_for_segment(seg, "高", segment_dist))
+    for seg in strength.get("weak", []):
+        if seg in seen:
+            continue
+        seen.add(seg)
+        targets.extend(_build_targets_for_segment(seg, "中", segment_dist))
+    return targets
+
+
 def compute_metrics(data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     计算园区产业分析全部核心指标。
@@ -257,4 +371,10 @@ def compute_metrics(data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         "innovation": compute_innovation_metrics(enterprises),
         "top_enterprises": compute_top_enterprises(enterprises, top_n=10),
         "cultivation_candidates": compute_cultivation_candidates(enterprises),
+        "investment_targets": compute_investment_targets(
+            {
+                "segment_distribution": compute_segment_distribution(enterprises),
+                "segment_strength": segment_strength_analysis(enterprises),
+            }
+        ),
     }

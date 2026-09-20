@@ -216,6 +216,27 @@ if callouts:
 else:
     st.info("暂无重点培育企业建议")
 
+st.markdown('<div class="section-title">🎯 招商目标清单</div>', unsafe_allow_html=True)
+st.markdown(
+    "<p style='color: var(--apple-muted); margin-bottom: 0.75rem;'>"
+    "基于产业链缺口生成的招商作战地图：按「环节匹配 → 实力门槛 → 成长性 → 落地可行性」四层漏斗筛选目标企业。"
+    "</p>",
+    unsafe_allow_html=True,
+)
+invest_targets = metrics.get("investment_targets", [])
+if invest_targets:
+    target_df = pd.DataFrame(invest_targets)
+    target_df = target_df.rename(columns={
+        "name": "目标企业", "location": "所在地", "segment": "所属环节",
+        "revenue": "营收规模", "invention_patents": "发明专利数",
+        "partners": "潜在配套对象", "signal": "落地信号",
+        "priority": "优先级", "reason": "推荐理由",
+    })
+    st.dataframe(target_df, use_container_width=True, hide_index=True)
+    st.caption("注：目标企业为规则生成的演示画像（虚构名称）；接入工商/知产数据库后，将替换为真实检索结果。")
+else:
+    st.info("暂无招商目标清单")
+
 st.divider()
 
 # 风险提醒
