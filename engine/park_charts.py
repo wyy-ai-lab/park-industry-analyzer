@@ -419,3 +419,233 @@ def fig_to_image_bytes(fig, format: str = "png", width: int = 900, scale: int = 
         return pio.to_image(fig, format=format, width=width, scale=scale)
     except TypeError:
         return pio.to_image(fig, format=format, width=width, scale=scale, engine="kaleido")
+
+
+def build_health_radar_chart(dimensions: Dict[str, float], height: int = 380) -> go.Figure:
+    """产业健康指数雷达图：当前园区 vs 满分基准"""
+    labels = list(dimensions.keys())
+    values = [dimensions[k] for k in labels]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatterpolar(
+        r=values + values[:1],
+        theta=labels + labels[:1],
+        fill="toself",
+        fillcolor="rgba(0,113,227,0.18)",
+        line=dict(color="#0071e3", width=2.5),
+        name="本园区",
+    ))
+    fig.add_trace(go.Scatterpolar(
+        r=[100] * (len(labels) + 1),
+        theta=labels + labels[:1],
+        line=dict(color="#8e8e93", width=1.5, dash="dot"),
+        name="满分基准",
+    ))
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(range=[0, 100], tickfont=dict(size=11), gridcolor="#e5e5ea"),
+            angularaxis=dict(tickfont=dict(size=13, family=CHART_FONT)),
+            bgcolor="rgba(0,0,0,0)",
+        ),
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(family=CHART_FONT, color="#1d1d1f"),
+        margin=dict(l=40, r=40, t=30, b=30),
+        height=height,
+        legend=dict(orientation="h", yanchor="bottom", y=-0.12, x=0.5, xanchor="center"),
+        showlegend=True,
+    )
+    return fig
+
+
+def build_metric_trend_chart(trends: Dict[str, Any], height: int = 380) -> go.Figure:
+    """近三年核心指标趋势：产值（左轴）+ 完整度/配套率（右轴）"""
+    years = trends.get("years", [])
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+    fig.add_trace(
+        go.Scatter(
+            x=years, y=trends.get("revenue", []),
+            mode="lines+markers+text", text=[f"{v:.0f}" for v in trends.get("revenue", [])],
+            textposition="top center", line=dict(color="#0071e3", width=3),
+            marker=dict(size=9), name="总产值（亿元）",
+        ),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=years, y=trends.get("completeness", []),
+            mode="lines+markers", line=dict(color="#34c759", width=2.5, dash="dash"),
+            marker=dict(size=8), name="产业链完整度（分）",
+        ),
+        secondary_y=True,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=years, y=trends.get("support_rate", []),
+            mode="lines+markers", line=dict(color="#ff9500", width=2.5, dash="dot"),
+            marker=dict(size=8), name="本地配套率（%）",
+        ),
+        secondary_y=True,
+    )
+    fig.update_xaxes(tickmode="array", tickvals=years, ticktext=[str(y) for y in years])
+    fig.update_yaxes(title_text="总产值（亿元）", secondary_y=False, rangemode="tozero")
+    fig.update_yaxes(title_text="分数 / 百分比", secondary_y=True, range=[0, 105])
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family=CHART_FONT, size=13, color="#1d1d1f"),
+        margin=dict(l=28, r=28, t=40, b=32),
+        height=height,
+        legend=dict(orientation="h", yanchor="bottom", y=-0.18, x=0.5, xanchor="center"),
+    )
+    return fig
+
+
+def build_supply_network_chart(enterprises: List[Dict[str, Any]], height: int = 560) -> go.Figure:
+    """
+    企业供需网络图：节点按产业链层级布局（上游 → 下游），
+    边表示供货/客户关系；园区外主体显示为灰色空心节点（对外依赖）。
+    """
+    layer_x = {"上游": 0.0, "中游": 1.0, "下游": 2.0}
+    palette = {"上游": "#5ac8fa", "中游": "#0071e3", "下游": "#34c759"}
+
+    # 按层级、产值排序确定纵向位置
+    by_layer: Dict[str, List[Dict[str, Any]]] = {"上游": [], "中游": [], "下游": []}
+    for e in enterprises:
+        layer = e.get("chain_position", "中游")
+        if layer not in by_layer:
+            by_layer[layer] = []
+        by_layer[layer].append(e)
+    for layer in by_layer:
+        by_layer[layer].sort(key=lambda x: -x.get("annual_revenue", 0))
+
+    pos: Dict[str, Dict[str, Any]] = {}
+    for layer, ents in by_layer.items():
+        n = len(ents)
+        for i, e in enumerate(ents):
+            y = (n - 1) / 2 - i  # 从上到下按产值降序
+            jitter = (hash(e.get("niche", "")) % 7 - 3) * 0.04
+            pos[e["name"]] = {
+                "x": layer_x.get(layer, 1.0) + jitter,
+                "y": y,
+                "layer": layer,
+                "niche": e.get("niche", ""),
+                "revenue": e.get("annual_revenue", 0),
+            }
+
+    # 边：本地供应商（绿）> 上游供货（蓝）> 下游客户（橙）
+    edges = []
+    for e in enterprises:
+        src = e["name"]
+        for tgt in e.get("local_suppliers", []) or []:
+            if tgt and tgt != src:
+                edges.append((src, tgt, "本地配套", "#34c759"))
+        for tgt in e.get("upstream_suppliers", []) or []:
+            if tgt and tgt != src and not any(t[1] == tgt for t in edges if t[0] == src):
+                edges.append((src, tgt, "上游供货", "#0071e3"))
+        for tgt in e.get("downstream_customers", []) or []:
+            if tgt and tgt != src:
+                edges.append((src, tgt, "下游客户", "#ff9500"))
+
+    # 园区外依赖节点
+    ext_names = sorted({t for _, t, _, _ in edges if t not in pos})
+
+    edge_x, edge_y = [], []
+    for src, tgt, rel, color in edges:
+        if src not in pos or tgt not in pos:
+            continue
+        edge_x += [pos[src]["x"], pos[tgt]["x"], None]
+        edge_y += [pos[src]["y"], pos[tgt]["y"], None]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=edge_x, y=edge_y, mode="lines",
+        line=dict(color="rgba(142,142,147,0.45)", width=1.2),
+        hoverinfo="skip", showlegend=False,
+    ))
+
+    for layer in ("上游", "中游", "下游"):
+        names = [k for k, p in pos.items() if p["layer"] == layer]
+        fig.add_trace(go.Scatter(
+            x=[pos[n]["x"] for n in names],
+            y=[pos[n]["y"] for n in names],
+            mode="markers+text",
+            text=[n.split("有限公司")[0].replace("股份有限公司", "").replace("有限责任公司", "")[:6] for n in names],
+            textposition="middle center",
+            textfont=dict(size=9, color="#ffffff", family=CHART_FONT),
+            marker=dict(size=34, color=palette[layer], opacity=0.92, line=dict(color="#ffffff", width=1.5)),
+            name=f"{layer}（{len(names)} 家）",
+            hovertext=[
+                f"{n}<br>{pos[n]['niche']} · 年产值 {pos[n]['revenue']:.1f} 亿元" for n in names
+            ],
+            hoverinfo="text",
+        ))
+
+    if ext_names:
+        ext_x = [2.45 + (i % 2) * 0.12 for i in range(len(ext_names))]
+        ext_y = [(len(ext_names) - 1) / 2 - i for i in range(len(ext_names))]
+        fig.add_trace(go.Scatter(
+            x=ext_x, y=ext_y, mode="markers+text",
+            text=[n if len(n) <= 8 else n[:8] + "…" for n in ext_names],
+            textposition="middle right",
+            textfont=dict(size=10, color="#8e8e93", family=CHART_FONT),
+            marker=dict(size=22, color="rgba(142,142,147,0.25)",
+                        line=dict(color="#8e8e93", width=1.2)),
+            name=f"园区外依赖（{len(ext_names)} 家）",
+            hovertext=ext_names, hoverinfo="text",
+        ))
+
+    fig.update_layout(
+        title=dict(text="企业供需网络（左：上游 → 右：下游）", font=dict(size=16, family=CHART_FONT, color="#1d1d1f")),
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family=CHART_FONT, size=12, color="#1d1d1f"),
+        margin=dict(l=20, r=20, t=50, b=20),
+        height=height,
+        xaxis=dict(visible=False, range=[-0.45, 3.4]),
+        yaxis=dict(visible=False),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.06, x=0.5, xanchor="center"),
+    )
+    return fig
+
+
+def build_tech_track_chart(tracks: List[Dict[str, Any]], height: int = 460) -> go.Figure:
+    """技术赛道气泡图：x=平均产业链层级，气泡大小=发明专利数，颜色=产值"""
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=[t["avg_layer"] for t in tracks],
+        y=[t["track"] for t in tracks],
+        mode="markers+text",
+        text=[t["track"] for t in tracks],
+        textposition="middle center",
+        textfont=dict(size=12, color="#ffffff", family=CHART_FONT),
+        marker=dict(
+            size=[max(26, t["invention_patents"] / 3) for t in tracks],
+            sizemode="diameter",
+            color=[t["revenue"] for t in tracks],
+            colorscale="Blues",
+            showscale=True,
+            colorbar=dict(title="产值（亿元）"),
+            opacity=0.9,
+            line=dict(color="#ffffff", width=1.5),
+        ),
+        hovertext=[
+            f"{t['track']}：{t['count']} 家企业 · 发明专利 {t['invention_patents']} 项<br>"
+            f"核心技术：{'、'.join(t['core_techs']) or '—'}<br>代表企业：{t['top_enterprise']}"
+            for t in tracks
+        ],
+        hoverinfo="text",
+        showlegend=False,
+    ))
+    fig.update_xaxes(
+        tickvals=[1, 2, 3], ticktext=["上游", "中游", "下游"],
+        range=[0.4, 3.6], title="平均产业链层级",
+    )
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(family=CHART_FONT, size=13, color="#1d1d1f"),
+        margin=dict(l=28, r=28, t=40, b=40),
+        height=height,
+    )
+    return fig

@@ -348,6 +348,128 @@ def compute_investment_targets(metrics: Dict[str, Any]) -> List[Dict[str, Any]]:
     return targets
 
 
+def compute_park_health_index(metrics: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    产业健康指数：将完整度、配套率、创新密度、梯队结构加权合成为 0–100 综合指数。
+    权重：产业链完整度 30% · 本地配套率 25% · 创新密度 25% · 梯队结构 20%
+    """
+    completeness = float(metrics.get("completeness_score", 0))
+    support_rate = float(metrics.get("local_support_rate", 0))
+
+    innovation = metrics.get("innovation", {})
+    avg_rd_ratio = float(innovation.get("avg_rd_ratio", 0))
+    patents_per_ent = float(innovation.get("patents_per_enterprise", 0))
+    innovation_score = min(100.0, round(avg_rd_ratio * 6 + patents_per_ent * 1.2, 1))
+
+    tier_dist = metrics.get("tier_distribution", {})
+    total = sum(tier_dist.values()) or 1
+    # 链主 3 分 / 骨干 2 分 / 高企 1 分 / 科技型中小企业 0.5 分，归一化到 0–100
+    tier_score = (
+        tier_dist.get("链主企业", 0) * 3
+        + tier_dist.get("骨干企业", 0) * 2
+        + tier_dist.get("高新技术企业", 0)
+        + tier_dist.get("科技型中小企业", 0) * 0.5
+    )
+    structure_score = min(100.0, round(tier_score * 100 / (3 * total), 1))
+
+    dimensions = {
+        "产业链完整度": round(completeness, 1),
+        "本地配套率": round(support_rate, 1),
+        "创新密度": innovation_score,
+        "梯队结构": structure_score,
+    }
+    weights = {"产业链完整度": 0.30, "本地配套率": 0.25, "创新密度": 0.25, "梯队结构": 0.20}
+    score = round(sum(dimensions[k] * weights[k] for k in dimensions), 1)
+    grade = "优秀" if score >= 85 else "良好" if score >= 70 else "一般" if score >= 55 else "待提升"
+    return {"score": score, "grade": grade, "dimensions": dimensions, "weights": weights}
+
+
+def compute_metric_trends(metrics: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    生成近三年核心指标趋势（Demo：基于当前值按固定增速确定性回溯）。
+
+    演示数据为单期快照，此处以规则回溯 2023–2025 序列以展示时间维度分析能力；
+    接入真实数据后替换为历年台账统计。
+    """
+    this_year = 2025
+    years = [this_year - 2, this_year - 1, this_year]
+
+    revenue_now = float(metrics.get("totals", {}).get("total_revenue", 0))
+    completeness_now = float(metrics.get("completeness_score", 0))
+    support_now = float(metrics.get("local_support_rate", 0))
+
+    revenue_growth = 0.12   # 产值年增速假设
+    revenue = [round(revenue_now / (1 + revenue_growth) ** k, 1) for k in (2, 1, 0)]
+    completeness = [round(max(0, completeness_now - 4 * k), 1) for k in (2, 1, 0)]
+    support_rate = [round(max(0, support_now - 3 * k), 1) for k in (2, 1, 0)]
+
+    return {
+        "years": years,
+        "revenue": revenue,
+        "completeness": completeness,
+        "support_rate": support_rate,
+        "note": "演示数据为规则回溯生成的趋势序列，接入真实台账后替换为历年统计。",
+    }
+
+
+# 技术赛道标签体系：细分领域 -> 技术赛道（Demo 版）
+TECH_TRACK_MAP = {
+    "正极材料": "电池材料", "负极材料": "电池材料", "电解液": "电池材料",
+    "锂盐/锂矿": "电池材料", "动力电池隔膜": "电池材料",
+    "电机材料": "电驱动", "驱动电机": "电驱动", "电机控制器": "电驱动", "减速器": "电驱动",
+    "车载芯片": "智能网联", "激光雷达": "智能网联", "车载操作系统": "智能网联",
+    "高精地图": "智能网联", "高精度传感器": "智能网联", "BMS系统": "智能网联",
+    "动力电池电芯": "整车集成", "电池包集成": "整车集成",
+    "乘用车制造": "整车集成", "商用车制造": "整车集成",
+    "充电桩": "能源补给", "换电站": "能源补给", "运营平台": "能源补给",
+    "生产设备": "装备与后市场", "检测设备": "装备与后市场",
+    "售后服务": "装备与后市场", "金融服务": "装备与后市场",
+    "二手车/回收": "装备与后市场", "其他配套": "装备与后市场",
+}
+
+_LAYER_NUM = {"上游": 1, "中游": 2, "下游": 3}
+
+
+def compute_tech_landscape(enterprises: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    技术图谱：按技术赛道聚合企业的数量、产值、专利与核心技术方向。
+    """
+    tracks: Dict[str, Dict[str, Any]] = {}
+    for e in enterprises:
+        niche = e.get("niche", "未知")
+        track = TECH_TRACK_MAP.get(niche, "其他")
+        t = tracks.setdefault(track, {
+            "track": track,
+            "count": 0,
+            "revenue": 0.0,
+            "invention_patents": 0,
+            "layer_weight": 0,
+            "layers": {"上游": 0, "中游": 0, "下游": 0},
+            "core_techs": [],
+            "top_enterprise": "",
+            "top_revenue": -1.0,
+        })
+        t["count"] += 1
+        t["revenue"] = round(t["revenue"] + e.get("annual_revenue", 0), 2)
+        t["invention_patents"] += e.get("invention_patents", 0)
+        layer = e.get("chain_position", "中游")
+        t["layers"][layer] = t["layers"].get(layer, 0) + 1
+        t["layer_weight"] += _LAYER_NUM.get(layer, 2)
+        core = (e.get("core_technology") or "").strip()
+        if core and core not in t["core_techs"]:
+            t["core_techs"].append(core)
+        if e.get("annual_revenue", 0) > t["top_revenue"]:
+            t["top_revenue"] = e.get("annual_revenue", 0)
+            t["top_enterprise"] = e.get("name", "")
+
+    result = []
+    for t in tracks.values():
+        t["avg_layer"] = round(t["layer_weight"] / t["count"], 2) if t["count"] else 0
+        t["core_techs"] = t["core_techs"][:3]
+        result.append(t)
+    return sorted(result, key=lambda x: x["invention_patents"], reverse=True)
+
+
 def compute_metrics(data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     计算园区产业分析全部核心指标。
@@ -377,4 +499,20 @@ def compute_metrics(data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
                 "segment_strength": segment_strength_analysis(enterprises),
             }
         ),
+        "health_index": compute_park_health_index(
+            {
+                "completeness_score": completeness_score(enterprises),
+                "local_support_rate": local_support_rate(enterprises),
+                "innovation": compute_innovation_metrics(enterprises),
+                "tier_distribution": compute_tier_distribution(enterprises),
+            }
+        ),
+        "metric_trends": compute_metric_trends(
+            {
+                "totals": compute_totals(enterprises),
+                "completeness_score": completeness_score(enterprises),
+                "local_support_rate": local_support_rate(enterprises),
+            }
+        ),
+        "tech_landscape": compute_tech_landscape(enterprises),
     }

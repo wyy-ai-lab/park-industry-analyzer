@@ -7,7 +7,12 @@ import streamlit as st
 from engine.ui_helpers import inject_apple_theme
 from engine.park_metrics import load_park_enterprises, compute_metrics
 from engine.park_llm import generate_diagnosis
-from engine.park_charts import build_industry_pie_chart, build_top_enterprises_bar
+from engine.park_charts import (
+    build_industry_pie_chart,
+    build_top_enterprises_bar,
+    build_health_radar_chart,
+    build_metric_trend_chart,
+)
 
 st.set_page_config(
     page_title="园区概览 - 园区产业分析智能体",
@@ -294,6 +299,36 @@ for label, value, col in cards:
             <div class="metric-label">{label}</div>
         </div>
         """, unsafe_allow_html=True)
+
+# 产业健康指数 + 三年趋势
+health = metrics.get("health_index", {})
+trends = metrics.get("metric_trends", {})
+st.markdown('<div class="section-title">🏥 产业健康指数</div>', unsafe_allow_html=True)
+health_col1, health_col2 = st.columns([1, 1.6])
+with health_col1:
+    score = health.get("score", 0)
+    grade = health.get("grade", "—")
+    score_color = "#34c759" if score >= 70 else "#ff9500" if score >= 55 else "#ff3b30"
+    st.markdown(f"""
+    <div class="metric-card" style="margin-bottom: 0.75rem;">
+        <div class="metric-value" style="color: {score_color};">{score}</div>
+        <div class="metric-label">综合指数 · {grade}</div>
+    </div>
+    """, unsafe_allow_html=True)
+    dims = health.get("dimensions", {})
+    if dims:
+        dim_rows = "\n".join(
+            f"- **{k}**：{v} 分" for k, v in dims.items()
+        )
+        st.markdown(f"**分维度得分**\n\n{dim_rows}")
+with health_col2:
+    fig_radar = build_health_radar_chart(dims or {"产业链完整度": 0, "本地配套率": 0, "创新密度": 0, "梯队结构": 0})
+    st.plotly_chart(fig_radar, use_container_width=True, key="overview_health_radar")
+
+st.markdown('<div class="section-title">📈 近三年指标趋势</div>', unsafe_allow_html=True)
+fig_trend = build_metric_trend_chart(trends)
+st.plotly_chart(fig_trend, use_container_width=True, key="overview_trend")
+st.caption(trends.get("note", ""))
 
 # 汇报模式：核心洞察卡片
 if presentation_mode:

@@ -9,6 +9,7 @@ from engine.park_charts import (
     build_chain_layer_chart,
     build_revenue_rd_scatter,
     build_innovation_density_chart,
+    build_tech_track_chart,
 )
 
 st.set_page_config(
@@ -137,6 +138,33 @@ with bubble_col:
     st.markdown("**营收 vs 专利数（气泡大小=研发人员）**")
     fig_bubble = build_innovation_density_chart(data["enterprises"])
     st.plotly_chart(fig_bubble, use_container_width=True, key="map_bubble")
+
+st.divider()
+
+# 技术图谱
+st.markdown('<div class="section-title">🧬 技术图谱</div>', unsafe_allow_html=True)
+st.markdown(
+    "<p style='color: var(--apple-muted); margin-bottom: 0.75rem;'>"
+    "按技术赛道聚合企业技术方向：气泡大小 = 发明专利数，颜色 = 产值规模，位置 = 平均产业链层级。"
+    "</p>",
+    unsafe_allow_html=True,
+)
+tech_col1, tech_col2 = st.columns([1.3, 1])
+with tech_col1:
+    fig_tech = build_tech_track_chart(metrics.get("tech_landscape", []))
+    st.plotly_chart(fig_tech, use_container_width=True, key="map_tech")
+with tech_col2:
+    tech_df = pd.DataFrame([
+        {
+            "技术赛道": t["track"],
+            "企业数": t["count"],
+            "发明专利": t["invention_patents"],
+            "年产值（亿元）": round(t["revenue"], 1),
+            "核心技术方向": "、".join(t["core_techs"]) or "—",
+        }
+        for t in metrics.get("tech_landscape", [])
+    ])
+    st.dataframe(tech_df, use_container_width=True, hide_index=True)
 
 st.divider()
 

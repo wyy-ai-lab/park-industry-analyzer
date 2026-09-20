@@ -213,6 +213,54 @@ if active_tab == "profile":
     active_fields = _DIAGNOSIS_TASKS[task]["fields"]
     show = lambda f: ("auto" in active_fields) or (f in active_fields)
 
+    # —— 画像完整度体检：按当前诊断任务的关键字段计算 ——
+    _PROFILE_FIELD_LABELS = {
+        "name": "企业名称", "revenue": "上年度营收", "profit": "上年度利润",
+        "employees": "员工人数", "rd_ratio": "研发投入占比", "rd_investment": "研发投入金额",
+        "rd_team_size": "研发人员数量", "rd_team_ratio": "研发人员占比",
+        "invention_patents": "发明专利", "utility_models": "实用新型专利",
+        "software_copyrights": "软件著作权", "high_tech_income_ratio": "高新技术产品收入占比",
+        "rd_accounting_system": "研发准备金制度", "is_high_tech_field": "属于高新技术领域",
+        "market_share_proof": "市场占有率证明", "core_product": "核心产品",
+        "qualifications": "已获资质",
+    }
+    _TASK_KEY_FIELDS = {
+        "hightech": ["name", "revenue", "rd_ratio", "rd_investment", "invention_patents",
+                     "high_tech_income_ratio", "rd_team_size", "rd_accounting_system", "core_product"],
+        "giant": ["name", "revenue", "rd_ratio", "invention_patents", "market_share_proof", "core_product"],
+        "segment": ["name", "revenue", "rd_ratio", "invention_patents", "core_product", "market_share_proof"],
+    }
+    if task == "auto":
+        key_fields = sorted({f for fields in _TASK_KEY_FIELDS.values() for f in fields})
+    else:
+        key_fields = _TASK_KEY_FIELDS[task]
+
+    _POSITIVE_CHECKBOXES = {"rd_accounting_system", "market_share_proof", "is_high_tech_field"}
+
+    def _field_filled(field):
+        if field in _POSITIVE_CHECKBOXES:
+            return bool(ep.get(field))
+        v = ep.get(field)
+        if isinstance(v, (list, tuple)):
+            return len(v) > 0
+        if isinstance(v, (int, float)):
+            return v > 0
+        return bool(v)
+
+    filled_fields = [f for f in key_fields if _field_filled(f)]
+    missing_fields = [f for f in key_fields if not _field_filled(f)]
+    completeness = len(filled_fields) / len(key_fields) if key_fields else 0
+
+    comp_col1, comp_col2 = st.columns([1, 2])
+    with comp_col1:
+        st.markdown("**🩺 画像完整度**")
+        st.progress(completeness, text=f"{len(filled_fields)}/{len(key_fields)} 项关键信息")
+    with comp_col2:
+        if missing_fields:
+            st.caption("待补充：" + "、".join(_PROFILE_FIELD_LABELS.get(f, f) for f in missing_fields))
+        else:
+            st.caption("✅ 当前诊断任务所需关键信息已填写完整")
+
     with st.form("enterprise_profile_form"):
         c1, c2, c3 = st.columns(3)
         with c1:
@@ -482,8 +530,16 @@ elif active_tab == "report":
     enterprise = st.session_state["enterprise_profile"]
     capability_scores = enterprise.get("capability_scores") or calculate_dimension_scores(enterprise)
 
-    # 雷达图
+    # 雷达图（含申报基准线）
     fig_radar = build_radar_chart(capability_scores, title=f"{enterprise.get('name', '企业')} 综合能力雷达图")
+    _radar_labels = list(capability_scores.keys())
+    fig_radar.add_trace(go.Scatterpolar(
+        r=[75] * (len(_radar_labels) + 1),
+        theta=_radar_labels + _radar_labels[:1],
+        line=dict(color="#ff9500", width=1.5, dash="dash"),
+        name="申报基准线（75分）",
+    ))
+    fig_radar.update_layout(showlegend=True, legend=dict(orientation="h", y=-0.12))
     st.plotly_chart(fig_radar, use_container_width=True, key="enterprise_radar")
 
     # TOP3
