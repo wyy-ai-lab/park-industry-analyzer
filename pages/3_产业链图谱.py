@@ -193,8 +193,8 @@ agg_view = st.toggle("聚合到环节视图（推荐，更清爽）", value=True
 if agg_view:
     st.markdown(
         "<p style='color: var(--apple-muted); margin-bottom: 0.75rem;'>"
-        "将企业间供需关系按「环节对」聚合：节点 = 产业链环节（数字为企业数），"
-        "边粗细 = 供需企业数，悬停查看具体企业对应关系。"
+        "读图：外部供应商 →[蓝]→ 各环节的原料从哪来；各环节 →[橙]→ 产品卖给谁（右端外部客户 = 销路外溢）；"
+        "绿色 = 园区内部企业互相配套。节点 = 产业链环节（标注企业数），边粗细 = 供需企业数。"
         "</p>",
         unsafe_allow_html=True,
     )

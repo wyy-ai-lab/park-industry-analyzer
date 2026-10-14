@@ -649,11 +649,11 @@ def build_segment_supply_chart(enterprises: List[Dict[str, Any]], height: int = 
             x=[pos[n]["x"] for n in names],
             y=[pos[n]["y"] for n in names],
             mode="markers+text",
-            text=[f"{n}（{seg_info[n]['count']}）" for n in names],
-            textposition="middle center",
-            textfont=dict(size=9, color="#ffffff", family=CHART_FONT),
+            text=[f"{n}（{seg_info[n]['count']}家）" for n in names],
+            textposition="bottom center",
+            textfont=dict(size=10.5, color="#1d1d1f", family=CHART_FONT),
             marker=dict(
-                size=[max(30, 22 + seg_info[n]["count"] * 5) for n in names],
+                size=[max(26, 20 + seg_info[n]["count"] * 4) for n in names],
                 color=palette[layer], opacity=0.94,
                 line=dict(color="#ffffff", width=1.5),
             ),
@@ -677,13 +677,29 @@ def build_segment_supply_chart(enterprises: List[Dict[str, Any]], height: int = 
             name=name, hoverinfo="name",
         ))
 
+    # 供需关系统计：一句话结论（蓝=上游对外依赖，橙=下游对外溢出，绿=内部配套）
+    n_internal = sum(a["count"] for (_, _, r), a in edge_agg.items() if r == "本地配套")
+    n_ext_up = sum(a["count"] for (_, _, r), a in edge_agg.items() if r == "上游供货")
+    n_down = sum(a["count"] for (_, _, r), a in edge_agg.items() if r == "下游客户")
+    n_ext_down = sum(a["count"] for (s, t, r), a in edge_agg.items() if r == "下游客户" and t == "外部客户")
+    if n_internal == 0:
+        takeaway = (f"⚠️ 台账记录的供需关系几乎全部为对外联系：外部供货 {n_ext_up} 对、下游客户 {n_down} 对"
+                    f"（其中外部 {n_ext_down} 对），园区内部企业间配套关系未被记录——本地配套是明显短板")
+    else:
+        takeaway = (f"内部本地配套 {n_internal} 对 · 外部供货依赖 {n_ext_up} 对 · "
+                    f"下游客户 {n_down} 对（其中外部 {n_ext_down} 对）")
+    fig.add_annotation(x=0.5, y=1.10, xref="paper", yref="paper", text=takeaway,
+                       showarrow=False, font=dict(size=12.5, color="#1d1d1f", family=CHART_FONT),
+                       bgcolor="rgba(255,149,0,0.10)", bordercolor="#ff9500", borderwidth=1,
+                       borderpad=6, xanchor="center")
+
     fig.update_layout(
         title=dict(text="环节供需聚合网络（边粗细 = 供需企业数）",
                    font=dict(size=16, family=CHART_FONT, color="#1d1d1f")),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family=CHART_FONT, size=12, color="#1d1d1f"),
-        margin=dict(l=20, r=20, t=70, b=20),
+        margin=dict(l=20, r=20, t=110, b=20),
         height=height,
         xaxis=dict(visible=False, range=[-2.0, 6.6]),
         yaxis=dict(visible=False),
