@@ -5,7 +5,7 @@
     "level": "国家级",
     "region": ["全国"],
     "category": "资质认定",
-    "deadline": "2026-09-30",
+    "deadline": "2026-12-15",
     "hard_conditions": {
       "years_in_operation": {"min": 1, "desc": "成立1年以上"},
       "is_high_tech_field": {"required": true, "desc": "属于高新技术领域"},
@@ -24,7 +24,7 @@
     "level": "省级",
     "region": ["安徽省"],
     "category": "资质认定",
-    "deadline": "2026-10-31",
+    "deadline": "2026-11-30",
     "hard_conditions": {
       "years_in_segment": {"min": 2, "desc": "从事细分市场2年以上"},
       "revenue": {"min": 1000, "desc": "上年度营收≥1000万"},
@@ -42,7 +42,7 @@
     "level": "国家级",
     "region": ["全国"],
     "category": "资质认定",
-    "deadline": "2026-06-05",
+    "deadline": "2027-05-31",
     "hard_conditions": {
       "qualifications": {"contains": ["安徽省专精特新中小企业"], "desc": "已是省级专精特新"},
       "revenue": {"min": 5000, "desc": "上年度营收≥5000万"},
@@ -77,7 +77,7 @@
     "level": "市级",
     "region": ["合肥市"],
     "category": "研发创新",
-    "deadline": "2026-09-30",
+    "deadline": "2026-11-30",
     "hard_conditions": {
       "rd_accounting_system": {"required": true, "desc": "建立研发准备金制度并在科技部门备案"},
       "rd_investment": {"min": 500, "desc": "研发费用500万元以上"},
@@ -93,7 +93,7 @@
     "level": "省级",
     "region": ["安徽省"],
     "category": "研发创新",
-    "deadline": "2026-08-31",
+    "deadline": "2027-03-31",
     "hard_conditions": {
       "years_in_operation": {"min": 2, "desc": "成立2年以上"},
       "rd_investment": {"min": 300, "desc": "年度研发投入300万元以上"},
@@ -110,10 +110,10 @@
     "level": "市级",
     "region": ["合肥市"],
     "category": "智能制造",
-    "deadline": "2026-06-09",
+    "deadline": "2027-05-31",
     "hard_conditions": {
-      "industry": {"in": ["制造业", "医疗器械制造"], "desc": "制造业企业"},
-      "scale": {"in": ["规模以上", "小型企业"], "desc": "规模以上工业企业或优质中小企业"},
+      "industry": {"in": ["制造业", "新能源汽车", "医疗器械制造"], "desc": "制造业企业"},
+      "scale": {"in": ["规模以上", "中型企业", "大型企业"], "desc": "规模以上工业企业或优质中小企业"},
       "smart_equipment_investment": {"min": 500, "desc": "智能化设备投资500万元以上"},
       "equipment_networking_rate": {"min": 0.60, "desc": "设备联网率≥60%"},
       "has_mes_erp": {"required": true, "desc": "部署MES/ERP等系统"}
@@ -127,9 +127,9 @@
     "level": "市级",
     "region": ["合肥市"],
     "category": "智能制造",
-    "deadline": "2026-06-09",
+    "deadline": "2027-05-31",
     "hard_conditions": {
-      "industry": {"in": ["制造业", "医疗器械制造"], "desc": "制造业企业"},
+      "industry": {"in": ["制造业", "新能源汽车", "医疗器械制造"], "desc": "制造业企业"},
       "smart_equipment_investment": {"min": 300, "desc": "整车间智能化设备投资300万元以上"},
       "equipment_networking_rate": {"min": 0.50, "desc": "设备联网率≥50%"},
       "has_mes": {"required": true, "desc": "部署MES系统"}
@@ -143,9 +143,9 @@
     "level": "市级",
     "region": ["合肥市"],
     "category": "智能制造",
-    "deadline": "2026-09-30",
+    "deadline": "2026-12-31",
     "hard_conditions": {
-      "industry": {"in": ["制造业", "医疗器械制造"], "desc": "制造业企业"},
+      "industry": {"in": ["制造业", "新能源汽车", "医疗器械制造"], "desc": "制造业企业"},
       "total_project_investment": {"min": 200, "desc": "机器换人项目总投资≥200万；普通技改按设备投资额"},
       "self_funding_ratio": {"min": 0.20, "desc": "自有资金比例≥20%"},
       "project_completion": {"required": true, "desc": "项目已完工"}
@@ -159,9 +159,9 @@
     "level": "省级",
     "region": ["安徽省"],
     "category": "产业扶持",
-    "deadline": "2026-08-31",
+    "deadline": "2027-03-31",
     "hard_conditions": {
-      "industry": {"in": ["制造业", "高端装备", "医疗器械制造"], "desc": "装备制造业企业"},
+      "industry": {"in": ["制造业", "高端装备", "新能源汽车", "医疗器械制造"], "desc": "装备制造业企业"},
       "invention_patents": {"min": 1, "desc": "拥有自主知识产权"},
       "is_first_application": {"required": true, "desc": "产品首次应用"},
       "has_test_report": {"required": true, "desc": "具备检测报告或鉴定意见"},
@@ -176,7 +176,7 @@
     "level": "省级/国家级",
     "region": ["安徽省"],
     "category": "产业扶持",
-    "deadline": "2026-07-31",
+    "deadline": "2027-04-30",
     "hard_conditions": {
       "years_in_segment": {"min": 10, "desc": "从事相关领域10年以上"},
       "revenue": {"min": 40000, "desc": "上年度营收≥4亿元（省级）"},
@@ -203,5 +203,200 @@
     },
     "benefit": "市天使基金最高1000万投资；人才贷最高500万",
     "priority": "低"
+  },
+  {
+    "policy_id": "HF-013",
+    "policy_name": "安徽省高新技术企业培育入库",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "资质培育",
+    "deadline": "2027-03-31",
+    "hard_conditions": {
+      "is_high_tech_field": {"required": true, "desc": "属于高新技术领域"},
+      "years_in_operation": {"min": 1, "desc": "成立1年以上"},
+      "revenue": {"min": 500, "desc": "上年度营收≥500万"},
+      "rd_ratio": {"min": 0.03, "desc": "研发投入占比≥3%"},
+      "invention_patents": {"min": 1, "desc": "拥有至少1项核心知识产权"},
+      "has_major_accident": {"required": false, "desc": "无重大安全/质量/环保事故"}
+    },
+    "benefit": "入库培育辅导；认定成功后省市奖补叠加最高约40万",
+    "priority": "高"
+  },
+  {
+    "policy_id": "HF-014",
+    "policy_name": "合肥市瞪羚企业认定",
+    "level": "市级",
+    "region": ["合肥市"],
+    "category": "企业成长",
+    "deadline": "2027-04-30",
+    "hard_conditions": {
+      "years_in_operation": {"min": 3, "desc": "成立3年以上、10年以内"},
+      "revenue": {"min": 2000, "desc": "上年度营收≥2000万"},
+      "revenue_growth_2yr": {"min": 0.20, "desc": "近两年营收复合增长率≥20%"},
+      "rd_ratio": {"min": 0.03, "desc": "研发投入占比≥3%"}
+    },
+    "benefit": "瞪羚企业认定奖励；贷款贴息与融资对接支持",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-015",
+    "policy_name": "安徽省创新型中小企业评价",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "资质培育",
+    "deadline": "2026-12-31",
+    "hard_conditions": {
+      "is_high_tech_field": {"required": true, "desc": "从事高新技术领域业务"},
+      "rd_ratio": {"min": 0.02, "desc": "研发投入占比≥2%"},
+      "invention_patents": {"min": 1, "desc": "拥有自主知识产权"},
+      "has_major_accident": {"required": false, "desc": "无重大安全/质量/环保事故"}
+    },
+    "benefit": "创新型中小企业证书（申报省专精特新的前置条件）",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-016",
+    "policy_name": "合肥市新能源汽车产业链配套协作奖励",
+    "level": "市级",
+    "region": ["合肥市"],
+    "category": "产业扶持",
+    "deadline": "2027-05-31",
+    "hard_conditions": {
+      "industry": {"in": ["新能源汽车"], "desc": "新能源汽车产业链企业"},
+      "scale": {"in": ["规模以上", "中型企业", "大型企业"], "desc": "规上或重点配套企业"},
+      "revenue": {"min": 2000, "desc": "上年度营收≥2000万"},
+      "invention_patents": {"min": 1, "desc": "拥有配套产品自主知识产权"}
+    },
+    "benefit": "按新增本地配套采购额比例奖励，支持整车-零部件本地协作",
+    "priority": "高"
+  },
+  {
+    "policy_id": "HF-017",
+    "policy_name": "安徽省绿色工厂认定",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "绿色制造",
+    "deadline": "2027-02-28",
+    "hard_conditions": {
+      "industry": {"in": ["制造业", "新能源汽车"], "desc": "制造业企业"},
+      "scale": {"in": ["规模以上", "中型企业", "大型企业"], "desc": "规模以上工业企业"},
+      "rd_ratio": {"min": 0.02, "desc": "研发投入占比≥2%"},
+      "has_major_accident": {"required": false, "desc": "近三年无安全/环保/质量处罚"}
+    },
+    "benefit": "省级绿色工厂奖补约50万；优先推荐国家级绿色工厂",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-018",
+    "policy_name": "国家级企业技术中心认定",
+    "level": "国家级",
+    "region": ["全国"],
+    "category": "研发创新",
+    "deadline": "2027-05-31",
+    "hard_conditions": {
+      "qualifications": {"contains": ["安徽省企业技术中心"], "desc": "已是省级企业技术中心"},
+      "revenue": {"min": 20000, "desc": "上年度营收≥2亿元"},
+      "rd_investment": {"min": 2000, "desc": "年度研发投入≥2000万"},
+      "rd_team_ratio": {"min": 0.10, "desc": "研发人员占比≥10%"},
+      "invention_patents": {"min": 3, "desc": "拥有3项以上发明专利"}
+    },
+    "benefit": "国家级研发平台资质；进口科研设备税收优惠",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-019",
+    "policy_name": "工信部智能制造示范工厂揭榜",
+    "level": "国家级",
+    "region": ["全国"],
+    "category": "智能制造",
+    "deadline": "2027-03-31",
+    "hard_conditions": {
+      "scale": {"in": ["规模以上", "中型企业", "大型企业"], "desc": "规模以上制造企业"},
+      "smart_equipment_investment": {"min": 1000, "desc": "智能制造装备与系统投资≥1000万"},
+      "equipment_networking_rate": {"min": 0.70, "desc": "关键设备联网率≥70%"},
+      "has_mes_erp": {"required": true, "desc": "已部署MES/ERP等工业软件"}
+    },
+    "benefit": "国家智能制造示范工厂称号；省级配套奖补",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-020",
+    "policy_name": "安徽省博士后科研工作站",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "人才引育",
+    "deadline": "2027-04-30",
+    "hard_conditions": {
+      "years_in_operation": {"min": 2, "desc": "注册成立2年以上"},
+      "rd_team_size": {"min": 30, "desc": "研发人员总数≥30人"},
+      "rd_investment": {"min": 500, "desc": "年度研发投入≥500万"},
+      "invention_patents": {"min": 2, "desc": "拥有至少2项发明专利"}
+    },
+    "benefit": "建站资助；博士后进站生活补贴与科研启动经费",
+    "priority": "低"
+  },
+  {
+    "policy_id": "HF-021",
+    "policy_name": "安徽省科技重大专项（揭榜挂帅）",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "研发创新",
+    "deadline": "2027-01-31",
+    "hard_conditions": {
+      "revenue": {"min": 3000, "desc": "上年度营收≥3000万"},
+      "rd_investment": {"min": 500, "desc": "年度研发投入≥500万"},
+      "rd_team_size": {"min": 20, "desc": "项目研发团队≥20人"},
+      "invention_patents": {"min": 2, "desc": "拥有相关领域核心专利"}
+    },
+    "benefit": "单个项目省拨经费最高500万元",
+    "priority": "高"
+  },
+  {
+    "policy_id": "HF-022",
+    "policy_name": "安徽省人民政府质量奖",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "质量品牌",
+    "deadline": "2027-02-28",
+    "hard_conditions": {
+      "years_in_operation": {"min": 3, "desc": "注册成立3年以上"},
+      "scale": {"in": ["规模以上", "中型企业", "大型企业"], "desc": "规模以上企业"},
+      "revenue": {"min": 5000, "desc": "上年度营收≥5000万"},
+      "has_major_accident": {"required": false, "desc": "近三年无重大质量/安全/环保事故"}
+    },
+    "benefit": "省政府质量奖荣誉及奖励；品牌信用背书",
+    "priority": "低"
+  },
+  {
+    "policy_id": "HF-023",
+    "policy_name": "安徽省工业精品认定",
+    "level": "省级",
+    "region": ["安徽省"],
+    "category": "产业扶持",
+    "deadline": "2026-12-31",
+    "hard_conditions": {
+      "industry": {"in": ["制造业", "新能源汽车"], "desc": "制造业企业"},
+      "revenue": {"min": 2000, "desc": "上年度营收≥2000万"},
+      "invention_patents": {"min": 1, "desc": "产品拥有自主知识产权"},
+      "has_major_accident": {"required": false, "desc": "无质量抽检不合格记录"}
+    },
+    "benefit": "“安徽工业精品”称号；政府采购与推广目录优先",
+    "priority": "中"
+  },
+  {
+    "policy_id": "HF-024",
+    "policy_name": "中央财政支持专精特新“小巨人”企业高质量发展项目",
+    "level": "国家级",
+    "region": ["全国"],
+    "category": "产业扶持",
+    "deadline": "2027-03-31",
+    "hard_conditions": {
+      "qualifications": {"contains": ["国家级专精特新小巨人"], "desc": "已是国家级小巨人"},
+      "revenue_growth_2yr": {"min": 0.05, "desc": "近两年营收保持增长"},
+      "rd_ratio": {"min": 0.03, "desc": "研发投入占比≥3%"},
+      "invention_patents": {"min": 2, "desc": "实施期内新增发明专利≥2项"}
+    },
+    "benefit": "中央财政奖补最高300万元（重点“小巨人”）",
+    "priority": "高"
   }
 ]

@@ -126,6 +126,12 @@ def check_condition(value: Any, condition: Dict[str, Any], condition_name: str) 
         if value not in allowed:
             return False, f"{label}：当前 {value}，不在允许范围 {allowed} 内"
 
+    if 'or' in condition:
+        options = condition['or']
+        values = value if isinstance(value, list) else [value]
+        if not any(v in options for v in values):
+            return False, f"{label}：当前 {value}，需满足其中之一 {options}"
+
     return True, f"{label}：满足"
 
 
