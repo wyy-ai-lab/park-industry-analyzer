@@ -673,7 +673,7 @@ def build_segment_supply_chart(enterprises: List[Dict[str, Any]], height: int = 
             textposition="middle center",
             textfont=dict(size=10, color="#6e6e73", family=CHART_FONT),
             marker=dict(size=44, color="rgba(142,142,147,0.25)",
-                        line=dict(color="#8e8e93", width=1.5, dash="dot")),
+                        line=dict(color="#8e8e93", width=1.5)),
             name=name, hoverinfo="name",
         ))
 
