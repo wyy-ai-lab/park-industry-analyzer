@@ -288,6 +288,75 @@ def _resources_llm(industry: str) -> Optional[Dict[str, Any]]:
     return _llm_call(RESOURCES_PROMPT.format(industry=industry))
 
 
+# ---------------------------------------------------------------- 本地行业知识库
+
+_KB_CACHE: Dict[str, Any] = {}
+
+
+def _load_kb(file_path: str) -> Dict[str, Any]:
+    """加载本地知识库（带进程内缓存）"""
+    if file_path not in _KB_CACHE:
+        import os
+        if not os.path.exists(file_path):
+            _KB_CACHE[file_path] = {}
+        else:
+            with open(file_path, encoding="utf-8") as f:
+                _KB_CACHE[file_path] = json.load(f)
+    return _KB_CACHE[file_path]
+
+
+def _match_industry_key(industries: Dict[str, Any], industry: str) -> Optional[str]:
+    """产业方向模糊匹配知识库键（精确 → 包含 → 被包含）"""
+    if not industry or industry.startswith("待确认"):
+        return None
+    if industry in industries:
+        return industry
+    for key in industries:
+        if industry in key or key in industry:
+            return key
+    return None
+
+
+def _resolve_kb_key(industries: Dict[str, Any], industry: str,
+                    corpus_text: str = "") -> Optional[str]:
+    """匹配知识库产业键；industry 未命中时回退到从材料全文中识别（如标题含"锂电新材料"）"""
+    key = _match_industry_key(industries, industry)
+    if key:
+        return key
+    for k in industries:
+        if k in corpus_text:
+            return k
+    return None
+
+
+def kb_targets(industry: str, corpus_text: str) -> List[Dict[str, Any]]:
+    """
+    从本地知识库检索招商目标企业。
+    corpus_text：环节名 + 企业产品描述等全部文本，用于包含匹配环节键。
+    命中结果标注 source=知识库。
+    """
+    kb = _load_kb("data/invest_targets.json").get("industries", {})
+    key = _resolve_kb_key(kb, industry, corpus_text)
+    if not key:
+        return []
+    hits = []
+    for segment, companies in kb[key].items():
+        if segment in corpus_text:
+            for c in companies:
+                hits.append({"segment": segment, "source": "知识库",
+                             **{k: c.get(k, "") for k in ("name", "region", "reason", "signal")}})
+    return hits
+
+
+def kb_resources(industry: str, corpus_text: str = "") -> Dict[str, Any]:
+    """从本地知识库检索研究院/协会资源；industry 未命中时回退到材料全文识别"""
+    kb = _load_kb("data/industry_resources.json").get("industries", {})
+    key = _resolve_kb_key(kb, industry, corpus_text)
+    if not key:
+        return {}
+    return kb[key]
+
+
 # ---------------------------------------------------------------- 主编排
 
 def run_industry_analysis(material: str, focus_hint: str = "",
@@ -326,12 +395,26 @@ def run_industry_analysis(material: str, focus_hint: str = "",
     if not paths:
         paths = _paths_template(gaps)
 
-    # 阶段5：招商目标（仅 LLM 模式生成真实企业，模板模式明确留空）
+    # 阶段5：招商目标——本地知识库（已核实）打底，LLM 补全（待核实）
     industry_main = classification["industries"][0]["industry"] if classification.get("industries") else ""
-    targets = _targets_llm(industry_main, region, gaps) if llm_on else None
+    corpus_text = " ".join(
+        [s.get("segment", "") for s in chain_map.get("segments", [])]
+        + [e.get("products", "") for g in classification.get("industries", [])
+           for e in g.get("enterprises", [])]
+        + [material[:2000]]
+    )
+    targets = kb_targets(industry_main, corpus_text)
+    seen_names = {t["name"] for t in targets}
+    if _llm_available():
+        for t in (_targets_llm(industry_main, region, gaps) or []):
+            if t.get("name") and t["name"] not in seen_names:
+                seen_names.add(t["name"])
+                targets.append({"source": "AI生成", **t})
 
-    # 阶段6：产业资源（仅 LLM 模式）
-    resources = _resources_llm(industry_main) if llm_on else None
+    # 阶段6：产业资源——知识库优先，LLM 补充库外产业
+    resources = kb_resources(industry_main, corpus_text)
+    if not resources and _llm_available():
+        resources = _resources_llm(industry_main) or {}
 
     return {
         "mode": "llm" if llm_on else "template",
@@ -387,15 +470,16 @@ def to_markdown(result: Dict[str, Any]) -> str:
     # 招商目标
     lines.append("## 四、招商目标企业清单")
     if result.get("targets"):
-        lines.append("| 企业 | 环节 | 所在地 | 配套逻辑 | 落地线索 |")
-        lines.append("|---|---|---|---|---|")
+        lines.append("| 企业 | 环节 | 所在地 | 配套逻辑 | 落地线索 | 来源 |")
+        lines.append("|---|---|---|---|---|---|")
         for t in result["targets"]:
+            src = "知识库·已核实" if t.get("source") == "知识库" else "AI生成·待核实"
             lines.append(f"| {t.get('name','')} | {t.get('segment','')} | {t.get('region','')} "
-                         f"| {t.get('reason','')} | {t.get('signal','')} |")
+                         f"| {t.get('reason','')} | {t.get('signal','')} | {src} |")
         lines.append("")
-        lines.append("> ⚠️ 本清单由 AI 生成，对接前请逐一核实企业真实性与落地意愿。")
+        lines.append("> ⚠️ AI 生成条目对接前请逐一核实企业真实性与落地意愿；知识库条目已人工整理，仍建议联系前复核。")
     else:
-        lines.append("（模板模式未生成；配置 API Key 后自动输出目标企业清单）")
+        lines.append("（未命中知识库且未配置 API Key；维护 data/invest_targets.json 知识库或配置 Key 后输出清单）")
     lines.append("")
 
     # 产业资源

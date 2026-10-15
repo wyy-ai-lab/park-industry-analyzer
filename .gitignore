@@ -17,6 +17,8 @@ output/
 !data/policies_v2.json
 !data/enterprise.json
 !data/park_enterprises.json
+!data/invest_targets.json
+!data/industry_resources.json
 *.docx
 *.pdf
 !README.md

@@ -463,16 +463,23 @@ st.markdown('<div class="ia-section"><span class="ia-section-num">⑤</span>'
             f'<span class="ia-section-note">{"目标区域偏好：" + esc(result.get("region")) if result.get("region") else ""}</span></div>',
             unsafe_allow_html=True)
 if result.get("targets"):
-    st.markdown('<div class="ia-alert">⚠️ 本清单由 AI 基于公开信息生成，企业名称、所在地与落地线索'
-                '请在正式对接前逐一人工核实。</div>', unsafe_allow_html=True)
+    n_kb = sum(1 for t in result["targets"] if t.get("source") == "知识库")
+    n_ai = len(result["targets"]) - n_kb
+    st.markdown('<div class="ia-alert">🟢 <b>知识库条目</b>：人工整理、已核实，对接前建议复核最新动态；'
+                '🟠 <b>AI 生成条目</b>：基于公开信息生成，企业名称、所在地与落地线索请在正式对接前逐一人工核实。</div>',
+                unsafe_allow_html=True)
     trows = [{"目标企业": t.get("name", ""), "对应环节": t.get("segment", ""),
               "所在地": t.get("region", ""), "配套逻辑": t.get("reason", ""),
               "落地线索": t.get("signal", ""),
-              "核实状态": "待核实"} for t in result["targets"]]
+              "来源": "🟢 知识库·已核实" if t.get("source") == "知识库" else "🟠 AI生成·待核实"}
+             for t in result["targets"]]
     st.dataframe(trows, use_container_width=True, hide_index=True)
+    st.caption(f"共 {len(result['targets'])} 家目标企业：知识库已核实 {n_kb} 家"
+               + (f"，AI 生成待核实 {n_ai} 家" if n_ai else ""))
 else:
-    st.markdown('<div class="ia-tip">模板模式不生成目标企业（避免虚构企业误导招商）。'
-                '配置 ANTHROPIC_API_KEY / OPENAI_API_KEY 后，基于缺失与薄弱环节自动输出真实目标企业清单。</div>',
+    st.markdown('<div class="ia-tip">未命中本地招商知识库，且未配置 API Key。'
+                '可在 <code>data/invest_targets.json</code> 中按「产业 → 环节 → 企业」维护已核实目标企业，'
+                '或配置 ANTHROPIC_API_KEY / OPENAI_API_KEY 后由 AI 基于缺失与薄弱环节自动补全。</div>',
                 unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- ⑥ 产业资源
@@ -503,7 +510,8 @@ if res:
                 unsafe_allow_html=True)
         st.markdown('</div>', unsafe_allow_html=True)
 else:
-    st.markdown('<div class="ia-tip">模板模式不生成产业资源清单。配置 API Key 后自动梳理该产业有影响力的研究院、协会与联盟。</div>',
+    st.markdown('<div class="ia-tip">未命中本地产业资源知识库。可在 <code>data/industry_resources.json</code> 中按产业维护'
+                '已核实的研究院、协会与联盟，或配置 API Key 后由 AI 自动梳理该产业有影响力的机构。</div>',
                 unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 导出
