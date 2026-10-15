@@ -16,6 +16,7 @@ import streamlit as st
 
 from engine.ui_helpers import inject_apple_theme
 from engine.industry_analyzer import run_industry_analysis, to_markdown
+from engine.industry_report_export import build_industry_word_report, build_industry_pdf_report
 
 inject_apple_theme()
 
@@ -516,9 +517,42 @@ else:
 
 # ---------------------------------------------------------------- 导出
 st.divider()
+st.markdown('<div class="ia-section"><span class="ia-section-title">导出完整梳理报告</span>'
+            '<span class="ia-section-note">Markdown / Word / PDF 三种格式</span></div>',
+            unsafe_allow_html=True)
 md_report = to_markdown(result)
-export_col, _ = st.columns([1, 3])
-with export_col:
-    st.download_button("📥 导出完整梳理报告（Markdown）", data=md_report.encode("utf-8"),
+md_bytes = md_report.encode("utf-8")
+docx_bytes = pdf_bytes = None
+docx_err = pdf_err = None
+try:
+    docx_bytes = build_industry_word_report(result).getvalue()
+except Exception as exc:  # noqa: BLE001
+    docx_err = str(exc)
+try:
+    pdf_bytes = build_industry_pdf_report(result).getvalue()
+except Exception as exc:  # noqa: BLE001
+    pdf_err = str(exc)
+
+export_cols = st.columns(3)
+with export_cols[0]:
+    st.download_button("📥 Markdown", data=md_bytes,
                        file_name="产业梳理报告.md", mime="text/markdown",
                        use_container_width=True)
+with export_cols[1]:
+    if docx_bytes:
+        st.download_button("📥 Word", data=docx_bytes,
+                           file_name="产业梳理报告.docx",
+                           mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                           use_container_width=True)
+    else:
+        st.button("📥 Word（不可用）", disabled=True, use_container_width=True)
+with export_cols[2]:
+    if pdf_bytes:
+        st.download_button("📥 PDF", data=pdf_bytes,
+                           file_name="产业梳理报告.pdf", mime="application/pdf",
+                           use_container_width=True)
+    else:
+        st.button("📥 PDF（不可用）", disabled=True, use_container_width=True)
+for fmt, err in (("Word", docx_err), ("PDF", pdf_err)):
+    if err:
+        st.warning(f"{fmt} 导出失败：{err}")
