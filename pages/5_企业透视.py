@@ -5,13 +5,6 @@ from engine.ui_helpers import inject_apple_theme
 from engine.park_metrics import load_park_enterprises
 from engine.industry_classifier import classify
 
-st.set_page_config(
-    page_title="企业透视 - 园区产业分析智能体",
-    page_icon="🔍",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 inject_apple_theme()
 
 st.markdown("""

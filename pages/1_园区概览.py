@@ -14,13 +14,6 @@ from engine.park_charts import (
     build_metric_trend_chart,
 )
 
-st.set_page_config(
-    page_title="园区概览 - 园区产业分析智能体",
-    page_icon="🏞️",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 inject_apple_theme()
 
 # 汇报模式切换

@@ -21,13 +21,6 @@ from engine.park_report_export import (
     build_park_html_report,
 )
 
-st.set_page_config(
-    page_title="发展建议 - 园区产业分析智能体",
-    page_icon="💡",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 inject_apple_theme()
 
 st.markdown("""

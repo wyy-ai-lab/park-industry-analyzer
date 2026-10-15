@@ -12,13 +12,6 @@ from engine.park_charts import (
     build_tech_track_chart,
 )
 
-st.set_page_config(
-    page_title="产业地图 - 园区产业分析智能体",
-    page_icon="🗺️",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 inject_apple_theme()
 
 st.markdown("""

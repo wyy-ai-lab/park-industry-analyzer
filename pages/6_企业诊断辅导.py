@@ -25,13 +25,6 @@ from engine.cultivation_roadmap import (
 )
 from engine.llm_scorer import generate_material_outline
 
-st.set_page_config(
-    page_title="企业诊断辅导 - 园区产业分析智能体",
-    page_icon="🩺",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 inject_apple_theme()
 
 st.markdown("""

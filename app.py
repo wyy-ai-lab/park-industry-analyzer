@@ -1,15 +1,23 @@
-import re
+"""
+园区产业分析智能体 · 首页
+==========================
+导航宿主：st.navigation 三段式信息架构
+
+- 主入口：产业智能梳理（材料 → 分类 → 环节 → 路径 → 清单 → 资源）
+- 演示园区 · 示例数据：原有五个演示分析页（50 家示例企业）
+- 企业服务：单企业诊断辅导
+"""
+
 import textwrap
 
 import streamlit as st
 from engine.ui_helpers import inject_apple_theme, render_demo_controls
-from engine.park_metrics import load_park_enterprises, compute_metrics
 
 st.set_page_config(
     page_title="园区产业分析智能体",
     page_icon="🏭",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="expanded",
 )
 
 inject_apple_theme()
@@ -137,41 +145,44 @@ a.home-card-link:hover .home-card {
     line-height: 1.55;
 }
 
-.capability-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem;
-}
-.capability-grid-item {
-    background: var(--apple-card-solid);
-    border: 1px solid var(--apple-border);
-    border-radius: var(--radius-md);
-    padding: 1.1rem 1.25rem;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: flex-start;
-    gap: 0.75rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.capability-grid-item:hover {
-    transform: translateY(-2px);
+.home-entry {
+    display: block;
+    background: linear-gradient(135deg, #0052D9 0%, #2B7FFF 100%);
+    border-radius: var(--radius-lg);
+    padding: 1.75rem 2rem;
+    color: #fff;
+    text-decoration: none;
     box-shadow: var(--shadow-md);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    margin-bottom: 1.25rem;
 }
-.capability-grid-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 10px;
+a.home-entry-link { text-decoration: none; }
+a.home-entry-link:hover .home-entry {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg, 0 12px 32px rgba(0, 82, 217, 0.25));
+}
+.home-entry-title {
+    font-size: 1.35rem;
+    font-weight: 700;
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    flex-shrink: 0;
+    gap: 0.6rem;
 }
-.capability-grid-text {
+.home-entry-desc {
     font-size: 0.92rem;
-    color: var(--apple-text);
-    line-height: 1.5;
-    font-weight: 500;
+    opacity: 0.92;
+    margin-top: 0.45rem;
+    line-height: 1.6;
+}
+.home-entry-cta {
+    display: inline-block;
+    margin-top: 0.85rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
 }
 
 .home-footer {
@@ -193,118 +204,140 @@ a.home-card-link:hover .home-card {
 </style>
 """, unsafe_allow_html=True)
 
-# 侧边栏品牌头
-st.sidebar.markdown(textwrap.dedent("""
-<div class="sidebar-brand">
-    <div class="sidebar-brand-icon">🏭</div>
-    <div class="sidebar-brand-title">园区产业分析</div>
-    <div class="sidebar-brand-tagline">智能体 v1.0 · Demo</div>
-</div>
-"""), unsafe_allow_html=True)
 
-# 侧边栏：演示控制区（数据开关 / 双故事线切换 / 一键重置）
-render_demo_controls()
+def home():
+    """首页：主入口大卡片 + 核心指标 + 演示模块快速入口"""
+    from engine.park_metrics import load_park_enterprises, compute_metrics
 
-# 加载园区指标，用于首页数据看板
-try:
-    park_data = load_park_enterprises()
-    park_metrics = compute_metrics(park_data) if park_data else {}
-except Exception:
-    park_data = {}
-    park_metrics = {}
+    # 加载园区指标，用于首页数据看板
+    try:
+        park_data = load_park_enterprises()
+        park_metrics = compute_metrics(park_data) if park_data else {}
+    except Exception:
+        park_data = {}
+        park_metrics = {}
 
-# 是否已接入园区企业数据：未接入时不展示虚构指标，只显示占位符
-has_park_data = bool(park_data and park_data.get("enterprises"))
+    has_park_data = bool(park_data and park_data.get("enterprises"))
 
-if has_park_data:
-    total_enterprises = park_metrics.get("total_enterprises", 0)
-    completeness = park_metrics.get("completeness_score", 0)
-    local_support = park_metrics.get("local_support_rate", 0)
-    stat_enterprise = f"{total_enterprises}"
-    stat_completeness = f"{completeness:.1f}"
-    stat_support = f"{local_support:.1f}%"
-else:
-    stat_enterprise = "—"
-    stat_completeness = "—"
-    stat_support = "—"
-
-# Hero
-st.markdown(textwrap.dedent(f"""
-<div class="home-hero">
-    <div class="home-hero-title">🏭 园区产业分析智能体</div>
-    <div class="home-hero-subtitle">
-        看清园区产业全局 · 识别产业链强弱 · 下钻企业诊断<br>
-        为园区管委会提供数据驱动的产业洞察与招商培育建议
-    </div>
-</div>
-"""), unsafe_allow_html=True)
-
-# 核心数据条
-st.markdown(textwrap.dedent(f"""
-<div class="home-stats">
-    <div class="home-stat-card">
-        <div class="home-stat-value">{stat_enterprise}</div>
-        <div class="home-stat-label">园区企业</div>
-    </div>
-    <div class="home-stat-card">
-        <div class="home-stat-value">7</div>
-        <div class="home-stat-label">分析模块</div>
-    </div>
-    <div class="home-stat-card">
-        <div class="home-stat-value">{stat_completeness}</div>
-        <div class="home-stat-label">产业链完整度</div>
-    </div>
-    <div class="home-stat-card">
-        <div class="home-stat-value">{stat_support}</div>
-        <div class="home-stat-label">本地配套率</div>
-    </div>
-</div>
-"""), unsafe_allow_html=True)
-
-# 未接入数据时的空状态提示
-if not has_park_data:
-    if st.session_state.get("use_demo_data", True):
-        st.info("ℹ️ 尚未接入园区企业数据，园区类指标暂不可计算。请先在「园区概览」页录入园区信息，或上传企业台账数据后，首页指标将自动更新。")
+    if has_park_data:
+        stat_enterprise = f"{park_metrics.get('total_enterprises', 0)}"
+        stat_completeness = f"{park_metrics.get('completeness_score', 0):.1f}"
+        stat_support = f"{park_metrics.get('local_support_rate', 0):.1f}%"
     else:
-        st.info("📦 演示数据已关闭，当前为「未接入数据」状态。打开左侧开关「载入演示数据」，即可查看演示园区的完整分析。")
+        stat_enterprise = "—"
+        stat_completeness = "—"
+        stat_support = "—"
 
-st.divider()
+    # 主入口大卡片
+    st.markdown(textwrap.dedent("""
+    <a href="产业智能梳理" class="home-entry-link">
+        <div class="home-entry">
+            <div class="home-entry-title">🧭 产业智能梳理 <span style="font-size:0.8rem;font-weight:500;opacity:0.85">主入口</span></div>
+            <div class="home-entry-desc">上传企业目录、园区介绍等基础材料，自动完成产业分类 → 上中下游分环节梳理 →
+            强弱缺失诊断 → 强链补链延链路径 → 招商目标企业清单 + 研究院/协会资源。</div>
+            <div class="home-entry-cta">进入梳理 →</div>
+        </div>
+    </a>
+    """), unsafe_allow_html=True)
 
-# 快速入口
-st.subheader("🚀 快速入口")
+    # Hero
+    st.markdown(textwrap.dedent("""
+    <div class="home-hero">
+        <div class="home-hero-title">🏭 园区产业分析智能体</div>
+        <div class="home-hero-subtitle">
+            看清园区产业全局 · 识别产业链强弱 · 下钻企业诊断<br>
+            为园区管委会提供数据驱动的产业洞察与招商培育建议
+        </div>
+    </div>
+    """), unsafe_allow_html=True)
 
-quick_links = [
-    ("🧭", "pages/7_产业智能梳理.py", "产业智能梳理", "上传企业目录等材料，自动分类梳理产业链，生成强链补链延链路径与招商清单"),
-    ("🏞️", "pages/1_园区概览.py", "园区概览", "核心经济指标、产业分布、头部企业一览"),
-    ("🗺️", "pages/2_产业地图.py", "产业地图", "梯队金字塔、产业链层级、创新密度"),
-    ("🕸️", "pages/3_产业链图谱.py", "产业链图谱", "完整度、本地配套率、强弱缺失分析"),
-    ("💡", "pages/4_发展建议.py", "发展建议", "LLM / 模板生成招商补链与培育建议"),
-    ("🔍", "pages/5_企业透视.py", "企业透视", "演示企业搜索、筛选、下钻诊断"),
-    ("🩺", "pages/6_企业诊断辅导.py", "企业诊断辅导", "单企业画像、政策诊断、报告导出"),
-]
+    # 核心数据条（演示园区）
+    st.markdown(textwrap.dedent(f"""
+    <div class="home-stats">
+        <div class="home-stat-card">
+            <div class="home-stat-value">{stat_enterprise}</div>
+            <div class="home-stat-label">演示园区企业</div>
+        </div>
+        <div class="home-stat-card">
+            <div class="home-stat-value">7</div>
+            <div class="home-stat-label">分析模块</div>
+        </div>
+        <div class="home-stat-card">
+            <div class="home-stat-value">{stat_completeness}</div>
+            <div class="home-stat-label">产业链完整度</div>
+        </div>
+        <div class="home-stat-card">
+            <div class="home-stat-value">{stat_support}</div>
+            <div class="home-stat-label">本地配套率</div>
+        </div>
+    </div>
+    """), unsafe_allow_html=True)
 
-rows = [quick_links[i:i+3] for i in range(0, len(quick_links), 3)]
-for row in rows:
-    cols = st.columns(len(row))
-    for col, (icon, page, title, desc) in zip(cols, row):
-        with col:
-            page_label = re.sub(r"^\d+_", "", page.rsplit("/", 1)[-1].replace(".py", ""))
-            st.markdown(textwrap.dedent(f"""
-            <a href="{page_label}" class="home-card-link">
-                <div class="home-card">
-                    <div class="home-card-icon">{icon}</div>
-                    <div class="home-card-title">{title}</div>
-                    <div class="home-card-desc">{desc}</div>
-                </div>
-            </a>
-            """), unsafe_allow_html=True)
+    if not has_park_data:
+        st.info("📦 演示数据已关闭，上方为「未接入数据」状态。打开左侧开关「载入演示数据」，即可查看演示园区的完整分析。")
 
-st.divider()
+    st.divider()
 
-# Footer
-st.markdown(textwrap.dedent("""
-<div class="home-footer">
-    园区产业分析智能体 · Demo 版本 · 基于 Streamlit 构建<br>
-    数据为演示数据，仅供内部汇报使用
-</div>
-"""), unsafe_allow_html=True)
+    # 演示模块快速入口
+    st.subheader("📊 演示园区 · 示例数据（新能源汽车主题，50 家企业）")
+    st.caption("以下模块基于内置演示数据运行，用于展示分析能力；实际项目请从「产业智能梳理」上传真实材料。")
+
+    quick_links = [
+        ("🏞️", "园区概览", "园区概览", "核心经济指标、产业分布、头部企业一览"),
+        ("🗺️", "产业地图", "产业地图", "梯队金字塔、产业链层级、创新密度"),
+        ("🕸️", "产业链图谱", "产业链图谱", "完整度、本地配套率、强弱缺失分析"),
+        ("💡", "发展建议", "发展建议", "LLM / 模板生成招商补链与培育建议"),
+        ("🔍", "企业透视", "企业透视", "演示企业搜索、筛选、下钻诊断"),
+        ("🩺", "企业诊断辅导", "企业诊断辅导", "单企业画像、政策诊断、报告导出"),
+    ]
+
+    rows = [quick_links[i:i+3] for i in range(0, len(quick_links), 3)]
+    for row in rows:
+        cols = st.columns(len(row))
+        for col, (icon, href, title, desc) in zip(cols, row):
+            with col:
+                st.markdown(textwrap.dedent(f"""
+                <a href="{href}" class="home-card-link">
+                    <div class="home-card">
+                        <div class="home-card-icon">{icon}</div>
+                        <div class="home-card-title">{title}</div>
+                        <div class="home-card-desc">{desc}</div>
+                    </div>
+                </a>
+                """), unsafe_allow_html=True)
+
+    st.divider()
+
+    # Footer
+    st.markdown(textwrap.dedent("""
+    <div class="home-footer">
+        园区产业分析智能体 · Demo 版本 · 基于 Streamlit 构建<br>
+        演示模块数据为示例数据，仅供能力演示；产业智能梳理支持上传真实材料
+    </div>
+    """), unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------------- 三段式导航
+NAV_SECTIONS = {
+    "": [
+        st.Page(home, title="首页", icon="🏠", default=True),
+    ],
+    "主入口": [
+        st.Page("pages/7_产业智能梳理.py", title="产业智能梳理", icon="🧭",
+                url_path="产业智能梳理"),
+    ],
+    "演示园区 · 示例数据": [
+        st.Page("pages/1_园区概览.py", title="园区概览", icon="🏞️", url_path="园区概览"),
+        st.Page("pages/2_产业地图.py", title="产业地图", icon="🗺️", url_path="产业地图"),
+        st.Page("pages/3_产业链图谱.py", title="产业链图谱", icon="🕸️", url_path="产业链图谱"),
+        st.Page("pages/4_发展建议.py", title="发展建议", icon="💡", url_path="发展建议"),
+        st.Page("pages/5_企业透视.py", title="企业透视", icon="🔍", url_path="企业透视"),
+    ],
+    "企业服务": [
+        st.Page("pages/6_企业诊断辅导.py", title="企业诊断辅导", icon="🩺", url_path="企业诊断辅导"),
+    ],
+}
+
+nav = st.navigation(NAV_SECTIONS)
+render_demo_controls()
+nav.run()

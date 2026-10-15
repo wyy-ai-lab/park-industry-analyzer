@@ -10,13 +10,6 @@ from engine.park_charts import (
     build_segment_supply_chart,
 )
 
-st.set_page_config(
-    page_title="产业链图谱 - 园区产业分析智能体",
-    page_icon="🕸️",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 inject_apple_theme()
 
 st.markdown("""

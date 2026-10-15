@@ -17,13 +17,6 @@ import streamlit as st
 from engine.ui_helpers import inject_apple_theme
 from engine.industry_analyzer import run_industry_analysis, to_markdown
 
-st.set_page_config(
-    page_title="产业智能梳理 - 园区产业分析智能体",
-    page_icon="🧭",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
 inject_apple_theme()
 
 # 示例材料：锂电新材料园区企业目录（演示模板模式/供 LLM 模式试用）
