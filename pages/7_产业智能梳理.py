@@ -306,6 +306,17 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# 会话写入须在文本域等组件创建之前完成（Streamlit 禁止对已实例化组件的 key 赋值）：
+# 用标志位 + rerun 的方式，在脚本最前置位应用填入内容
+if st.session_state.pop("_fill_example", None):
+    st.session_state["industry_material"] = EXAMPLE_MATERIAL
+    st.session_state["_notice"] = "已填入示例材料，可直接点击「开始产业梳理」"
+if st.session_state.pop("_fill_upload", None):
+    st.session_state["industry_material"] = st.session_state.pop("_uploaded_text", "")
+_notice = st.session_state.pop("_notice", None)
+if _notice:
+    st.success(_notice)
+
 render_stepbar(current_stage)
 
 # ---------------------------------------------------------------- 第一步：材料输入
@@ -329,13 +340,16 @@ with input_col:
         if up is not None:
             try:
                 if up.name.endswith(".txt"):
-                    material = up.read().decode("utf-8", errors="ignore")
+                    uploaded_text = up.read().decode("utf-8", errors="ignore")
                 else:
                     import pandas as pd
                     df = pd.read_csv(up) if up.name.endswith(".csv") else pd.read_excel(up)
-                    material = df.to_string(index=False)
-                st.success(f"已读取 {up.name}（{len(material)} 字符），点击下方开始梳理")
-                st.session_state["industry_material"] = material
+                    uploaded_text = df.to_string(index=False)
+                # 组件已渲染，不能直写其 key：置标志位后 rerun，由脚本前置位统一填入
+                st.session_state["_uploaded_text"] = uploaded_text
+                st.session_state["_fill_upload"] = True
+                st.session_state["_notice"] = f"已读取 {up.name}（{len(uploaded_text)} 字符），内容已填入左侧文本域"
+                st.rerun()
             except Exception as e:
                 st.error(f"文件读取失败:{e}")
                 material = st.session_state.get("industry_material", "")
@@ -347,7 +361,7 @@ with input_col:
         run_clicked = st.button("🚀 开始产业梳理", type="primary", use_container_width=True)
     with tip_col:
         if st.button("📋 填入示例材料", use_container_width=True):
-            st.session_state["industry_material"] = EXAMPLE_MATERIAL
+            st.session_state["_fill_example"] = True
             st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
