@@ -6,7 +6,7 @@ import streamlit as st
 import plotly.graph_objects as go
 
 from engine.ui_helpers import inject_apple_theme
-from engine.matcher import load_json
+from engine.matcher import load_json, load_policies
 from engine.diagnosis import run_enhanced_diagnosis, get_api_config
 from engine.dashboard import compute_dashboard_metrics, sort_results_for_display
 from engine.radar_chart import calculate_dimension_scores, build_radar_chart, fig_to_image_bytes
@@ -388,7 +388,7 @@ elif active_tab == "diagnosis":
 
     if st.button("🚀 运行政策诊断", type="primary", use_container_width=True):
         with st.status("正在加载政策库并运行诊断...", expanded=True) as status:
-            policies = load_json("data/policies.json")
+            policies = load_policies()
             status.update(label=f"已加载 {len(policies)} 条政策，正在匹配...")
             result = run_enhanced_diagnosis(
                 enterprise=enterprise,
@@ -445,7 +445,7 @@ elif active_tab == "diagnosis":
     sort_by = st.selectbox("排序方式", ["行动优先级", "综合分数降序", "截止日由近到远", "政策优先级"], index=0)
     sorted_results = sort_results_for_display(result.get("results", []), sort_by)
 
-    policy_map = {p["policy_id"]: p for p in load_json("data/policies.json")}
+    policy_map = {p["policy_id"]: p for p in load_policies()}
 
     for r in sorted_results:
         diag = r.get("diagnosis", "")

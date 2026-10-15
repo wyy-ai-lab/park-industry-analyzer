@@ -132,6 +132,8 @@ def format_value(value: Any) -> str:
     """格式化值用于提示词"""
     if value is None:
         return "未知"
+    if isinstance(value, dict):
+        return format_value(value.get("summary"))
     if isinstance(value, list):
         return "、".join(str(v) for v in value) if value else "无"
     if isinstance(value, float):

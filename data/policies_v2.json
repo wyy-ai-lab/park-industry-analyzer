@@ -1,0 +1,1909 @@
+[
+  {
+    "policy_id": "HF-001",
+    "schema_version": "2.0",
+    "policy_name": "国家高新技术企业认定",
+    "level": "国家级",
+    "region": [
+      "全国"
+    ],
+    "category": "资质认定",
+    "status": "有效",
+    "application_deadline": "2026-12-15",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "years_in_operation",
+          "desc": "成立1年以上",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        },
+        {
+          "field": "is_high_tech_field",
+          "desc": "属于高新技术领域",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        },
+        {
+          "field": "rd_team_ratio",
+          "desc": "科技人员占比≥10%",
+          "operator": ">=",
+          "value": 0.1,
+          "source_quote": null
+        },
+        {
+          "field": "high_tech_income_ratio",
+          "desc": "高新技术产品收入占比≥60%",
+          "operator": ">=",
+          "value": 0.6,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有核心知识产权",
+          "operator": ">=",
+          "value": 0,
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "operator": ">=",
+          "tier_key": "revenue_band",
+          "desc": "研发费用占比达到营收对应档位要求（三档制）",
+          "source_quote": "最近一年销售收入小于5,000万元（含）的企业，比例不低于5%；在5,000万元至2亿元（含）的企业，比例不低于4%；在2亿元以上的企业，比例不低于3%。"
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "近一年无重大安全/质量/环保事故",
+          "source_quote": null
+        }
+      ],
+      "soft": [],
+      "tiers": {
+        "revenue_band": {
+          "basis_field": "annual_revenue",
+          "basis_desc": "最近一年销售收入（万元）",
+          "bands": [
+            {
+              "max": 5000,
+              "require": {
+                "rd_ratio": 0.05
+              },
+              "desc": "最近一年销售收入 ≤ 5,000 万元，研发费用占比 ≥ 5%"
+            },
+            {
+              "min": 5000,
+              "max": 20000,
+              "require": {
+                "rd_ratio": 0.04
+              },
+              "desc": "最近一年销售收入 5,000 万–2 亿元，研发费用占比 ≥ 4%"
+            },
+            {
+              "min": 20000,
+              "require": {
+                "rd_ratio": 0.03
+              },
+              "desc": "最近一年销售收入 > 2 亿元，研发费用占比 ≥ 3%"
+            }
+          ],
+          "source_quote": "最近一年销售收入小于5,000万元（含）的企业，比例不低于5%；在5,000万元至2亿元（含）的企业，比例不低于4%；在2亿元以上的企业，比例不低于3%。"
+        }
+      }
+    },
+    "benefit": {
+      "summary": "企业所得税15%；合肥市奖励10万",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-002",
+    "schema_version": "2.0",
+    "policy_name": "安徽省专精特新中小企业认定",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "资质认定",
+    "status": "有效",
+    "application_deadline": "2026-11-30",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "years_in_segment",
+          "desc": "从事细分市场2年以上",
+          "operator": ">=",
+          "value": 2,
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥1000万",
+          "operator": ">=",
+          "value": 1000,
+          "source_quote": null
+        },
+        {
+          "field": "revenue_growth_2yr",
+          "desc": "近两年营收或净利润平均增长率≥5%",
+          "operator": ">=",
+          "value": 0.05,
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "desc": "研发投入占比≥3%",
+          "operator": ">=",
+          "value": 0.03,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "至少1项有效发明专利",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "近三年无重大安全/质量/环保事故",
+          "source_quote": null
+        }
+      ],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "省级一次性奖补约20万；各市配套",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": [
+        "HF-003"
+      ]
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-003",
+    "schema_version": "2.0",
+    "policy_name": "国家级专精特新“小巨人”企业认定",
+    "level": "国家级",
+    "region": [
+      "全国"
+    ],
+    "category": "资质认定",
+    "status": "有效",
+    "application_deadline": "2027-05-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "qualifications",
+          "desc": "已是省级专精特新",
+          "operator": "contains",
+          "value": [
+            "安徽省专精特新中小企业"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥5000万",
+          "operator": ">=",
+          "value": 5000,
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "desc": "研发投入占比≥3%",
+          "operator": ">=",
+          "value": 0.03,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "至少2项有效发明专利",
+          "operator": ">=",
+          "value": 2,
+          "source_quote": null
+        },
+        {
+          "field": "market_share_proof",
+          "desc": "细分市场占有率证明",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "近三年无重大安全/质量/环保事故",
+          "source_quote": null
+        }
+      ],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "省级奖补100万；市级配套最高100万",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [
+        "HF-002"
+      ],
+      "unlocks": [
+        "HF-024"
+      ]
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-004",
+    "schema_version": "2.0",
+    "policy_name": "科技型中小企业评价",
+    "level": "国家级",
+    "region": [
+      "全国"
+    ],
+    "category": "资质认定",
+    "status": "有效",
+    "application_deadline": "2026-10-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "employees",
+          "desc": "职工总数不超过500人",
+          "operator": "<=",
+          "value": 500,
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "年销售收入不超过2亿元",
+          "operator": "<=",
+          "value": 20000,
+          "source_quote": null
+        },
+        {
+          "field": "total_assets",
+          "desc": "资产总额不超过2亿元",
+          "operator": "<=",
+          "value": 20000,
+          "source_quote": null
+        },
+        {
+          "field": "is_high_tech_field",
+          "desc": "属于高新技术领域",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "无重大安全/质量/环保事故",
+          "source_quote": null
+        }
+      ],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "合肥市按加计扣除研发费15%补助，最高100万",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-005",
+    "schema_version": "2.0",
+    "policy_name": "合肥市新增研发费用补助",
+    "level": "市级",
+    "region": [
+      "合肥市"
+    ],
+    "category": "研发创新",
+    "status": "有效",
+    "application_deadline": "2026-11-30",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "rd_accounting_system",
+          "desc": "建立研发准备金制度并在科技部门备案",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        },
+        {
+          "field": "rd_investment",
+          "desc": "研发费用500万元以上",
+          "operator": ">=",
+          "value": 500,
+          "source_quote": null
+        },
+        {
+          "field": "rd_investment_growth",
+          "desc": "新增研发费用100万元以上",
+          "operator": ">=",
+          "value": 100,
+          "source_quote": null
+        },
+        {
+          "field": "is_high_tech_enterprise",
+          "desc": "高企或科技型中小企业",
+          "operator": "or",
+          "value": [
+            "国家高新技术企业",
+            "科技型中小企业"
+          ],
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "按新增研发费10%补助，最高500万",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-006",
+    "schema_version": "2.0",
+    "policy_name": "安徽省企业技术中心认定",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "研发创新",
+    "status": "有效",
+    "application_deadline": "2027-03-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "years_in_operation",
+          "desc": "成立2年以上",
+          "operator": ">=",
+          "value": 2,
+          "source_quote": null
+        },
+        {
+          "field": "rd_investment",
+          "desc": "年度研发投入300万元以上",
+          "operator": ">=",
+          "value": 300,
+          "source_quote": null
+        },
+        {
+          "field": "rd_team_ratio",
+          "desc": "研发人员占比≥10%",
+          "operator": ">=",
+          "value": 0.1,
+          "source_quote": null
+        },
+        {
+          "field": "rd_equipment",
+          "desc": "研发设备原值200万元以上",
+          "operator": ">=",
+          "value": 200,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有有效发明专利",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "省级资质；优先推荐国家级企业技术中心",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": [
+        "HF-018"
+      ]
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-007",
+    "schema_version": "2.0",
+    "policy_name": "合肥市智能工厂认定",
+    "level": "市级",
+    "region": [
+      "合肥市"
+    ],
+    "category": "智能制造",
+    "status": "有效",
+    "application_deadline": "2027-05-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "industry",
+          "desc": "制造业企业",
+          "operator": "in",
+          "value": [
+            "制造业",
+            "新能源汽车",
+            "医疗器械制造"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "scale",
+          "desc": "规模以上工业企业或优质中小企业",
+          "operator": "in",
+          "value": [
+            "规模以上",
+            "中型企业",
+            "大型企业"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "smart_equipment_investment",
+          "desc": "智能化设备投资500万元以上",
+          "operator": ">=",
+          "value": 500,
+          "source_quote": null
+        },
+        {
+          "field": "equipment_networking_rate",
+          "desc": "设备联网率≥60%",
+          "operator": ">=",
+          "value": 0.6,
+          "source_quote": null
+        },
+        {
+          "field": "has_mes_erp",
+          "desc": "部署MES/ERP等系统",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "设备投资（含软件）20%奖补",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-008",
+    "schema_version": "2.0",
+    "policy_name": "合肥市数字化车间认定",
+    "level": "市级",
+    "region": [
+      "合肥市"
+    ],
+    "category": "智能制造",
+    "status": "有效",
+    "application_deadline": "2027-05-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "industry",
+          "desc": "制造业企业",
+          "operator": "in",
+          "value": [
+            "制造业",
+            "新能源汽车",
+            "医疗器械制造"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "smart_equipment_investment",
+          "desc": "整车间智能化设备投资300万元以上",
+          "operator": ">=",
+          "value": 300,
+          "source_quote": null
+        },
+        {
+          "field": "equipment_networking_rate",
+          "desc": "设备联网率≥50%",
+          "operator": ">=",
+          "value": 0.5,
+          "source_quote": null
+        },
+        {
+          "field": "has_mes",
+          "desc": "部署MES系统",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "设备投资（含软件）15%奖补",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-009",
+    "schema_version": "2.0",
+    "policy_name": "合肥市技术改造补贴",
+    "level": "市级",
+    "region": [
+      "合肥市"
+    ],
+    "category": "智能制造",
+    "status": "有效",
+    "application_deadline": "2026-12-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "industry",
+          "desc": "制造业企业",
+          "operator": "in",
+          "value": [
+            "制造业",
+            "新能源汽车",
+            "医疗器械制造"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "total_project_investment",
+          "desc": "机器换人项目总投资≥200万；普通技改按设备投资额",
+          "operator": ">=",
+          "value": 200,
+          "source_quote": null
+        },
+        {
+          "field": "self_funding_ratio",
+          "desc": "自有资金比例≥20%",
+          "operator": ">=",
+          "value": 0.2,
+          "source_quote": null
+        },
+        {
+          "field": "project_completion",
+          "desc": "项目已完工",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "设备投资10%-12%奖补",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-010",
+    "schema_version": "2.0",
+    "policy_name": "安徽省首台（套）重大技术装备认定",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "产业扶持",
+    "status": "有效",
+    "application_deadline": "2027-03-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "industry",
+          "desc": "装备制造业企业",
+          "operator": "in",
+          "value": [
+            "制造业",
+            "高端装备",
+            "新能源汽车",
+            "医疗器械制造"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有自主知识产权",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        },
+        {
+          "field": "is_first_application",
+          "desc": "产品首次应用",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        },
+        {
+          "field": "has_test_report",
+          "desc": "具备检测报告或鉴定意见",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        },
+        {
+          "field": "has_sales_contract",
+          "desc": "有销售合同或用户证明",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "保险补偿、应用奖励、资金补助",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-011",
+    "schema_version": "2.0",
+    "policy_name": "安徽省制造业单项冠军培育",
+    "level": "省级/国家级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "产业扶持",
+    "status": "有效",
+    "application_deadline": "2027-04-30",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "years_in_segment",
+          "desc": "从事相关领域10年以上",
+          "operator": ">=",
+          "value": 10,
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥4亿元（省级）",
+          "operator": ">=",
+          "value": 40000,
+          "source_quote": null
+        },
+        {
+          "field": "market_share_proof",
+          "desc": "细分市场全国领先证明",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有核心发明专利",
+          "operator": ">=",
+          "value": 3,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "省级冠军奖补；国家级单项冠军200万",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "低",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-012",
+    "schema_version": "2.0",
+    "policy_name": "合肥市高层次人才团队项目",
+    "level": "市级",
+    "region": [
+      "合肥市"
+    ],
+    "category": "人才引育",
+    "status": "有效",
+    "application_deadline": "2026-12-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "years_in_operation",
+          "desc": "注册成立不超过3年",
+          "operator": "<=",
+          "value": 3,
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "年销售额不超过2000万",
+          "operator": "<=",
+          "value": 2000,
+          "source_quote": null
+        },
+        {
+          "field": "rd_team_ratio",
+          "desc": "研发人员占比≥20%",
+          "operator": ">=",
+          "value": 0.2,
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "desc": "研发费用占销售额≥10%",
+          "operator": ">=",
+          "value": 0.1,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有自主知识产权",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        },
+        {
+          "field": "team_core_members",
+          "desc": "团队核心成员≥3人",
+          "operator": ">=",
+          "value": 3,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "市天使基金最高1000万投资；人才贷最高500万",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "低",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-013",
+    "schema_version": "2.0",
+    "policy_name": "安徽省高新技术企业培育入库",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "资质培育",
+    "status": "有效",
+    "application_deadline": "2027-03-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "is_high_tech_field",
+          "desc": "属于高新技术领域",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        },
+        {
+          "field": "years_in_operation",
+          "desc": "成立1年以上",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥500万",
+          "operator": ">=",
+          "value": 500,
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "desc": "研发投入占比≥3%",
+          "operator": ">=",
+          "value": 0.03,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有至少1项核心知识产权",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "无重大安全/质量/环保事故",
+          "source_quote": null
+        }
+      ],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "入库培育辅导；认定成功后省市奖补叠加最高约40万",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-014",
+    "schema_version": "2.0",
+    "policy_name": "合肥市瞪羚企业认定",
+    "level": "市级",
+    "region": [
+      "合肥市"
+    ],
+    "category": "企业成长",
+    "status": "有效",
+    "application_deadline": "2027-04-30",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "years_in_operation",
+          "desc": "成立3年以上、10年以内",
+          "operator": ">=",
+          "value": 3,
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥2000万",
+          "operator": ">=",
+          "value": 2000,
+          "source_quote": null
+        },
+        {
+          "field": "revenue_growth_2yr",
+          "desc": "近两年营收复合增长率≥20%",
+          "operator": ">=",
+          "value": 0.2,
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "desc": "研发投入占比≥3%",
+          "operator": ">=",
+          "value": 0.03,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "瞪羚企业认定奖励；贷款贴息与融资对接支持",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-015",
+    "schema_version": "2.0",
+    "policy_name": "安徽省创新型中小企业评价",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "资质培育",
+    "status": "有效",
+    "application_deadline": "2026-12-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "is_high_tech_field",
+          "desc": "从事高新技术领域业务",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "desc": "研发投入占比≥2%",
+          "operator": ">=",
+          "value": 0.02,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有自主知识产权",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "无重大安全/质量/环保事故",
+          "source_quote": null
+        }
+      ],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "创新型中小企业证书（申报省专精特新的前置条件）",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-016",
+    "schema_version": "2.0",
+    "policy_name": "合肥市新能源汽车产业链配套协作奖励",
+    "level": "市级",
+    "region": [
+      "合肥市"
+    ],
+    "category": "产业扶持",
+    "status": "有效",
+    "application_deadline": "2027-05-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "industry",
+          "desc": "新能源汽车产业链企业",
+          "operator": "in",
+          "value": [
+            "新能源汽车"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "scale",
+          "desc": "规上或重点配套企业",
+          "operator": "in",
+          "value": [
+            "规模以上",
+            "中型企业",
+            "大型企业"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥2000万",
+          "operator": ">=",
+          "value": 2000,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有配套产品自主知识产权",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "按新增本地配套采购额比例奖励，支持整车-零部件本地协作",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-017",
+    "schema_version": "2.0",
+    "policy_name": "安徽省绿色工厂认定",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "绿色制造",
+    "status": "有效",
+    "application_deadline": "2027-02-28",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "industry",
+          "desc": "制造业企业",
+          "operator": "in",
+          "value": [
+            "制造业",
+            "新能源汽车"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "scale",
+          "desc": "规模以上工业企业",
+          "operator": "in",
+          "value": [
+            "规模以上",
+            "中型企业",
+            "大型企业"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "desc": "研发投入占比≥2%",
+          "operator": ">=",
+          "value": 0.02,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "近三年无安全/环保/质量处罚",
+          "source_quote": null
+        }
+      ],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "省级绿色工厂奖补约50万；优先推荐国家级绿色工厂",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-018",
+    "schema_version": "2.0",
+    "policy_name": "国家级企业技术中心认定",
+    "level": "国家级",
+    "region": [
+      "全国"
+    ],
+    "category": "研发创新",
+    "status": "有效",
+    "application_deadline": "2027-05-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "qualifications",
+          "desc": "已是省级企业技术中心",
+          "operator": "contains",
+          "value": [
+            "安徽省企业技术中心"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥2亿元",
+          "operator": ">=",
+          "value": 20000,
+          "source_quote": null
+        },
+        {
+          "field": "rd_investment",
+          "desc": "年度研发投入≥2000万",
+          "operator": ">=",
+          "value": 2000,
+          "source_quote": null
+        },
+        {
+          "field": "rd_team_ratio",
+          "desc": "研发人员占比≥10%",
+          "operator": ">=",
+          "value": 0.1,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有3项以上发明专利",
+          "operator": ">=",
+          "value": 3,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "国家级研发平台资质；进口科研设备税收优惠",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [
+        "HF-006"
+      ],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-019",
+    "schema_version": "2.0",
+    "policy_name": "工信部智能制造示范工厂揭榜",
+    "level": "国家级",
+    "region": [
+      "全国"
+    ],
+    "category": "智能制造",
+    "status": "有效",
+    "application_deadline": "2027-03-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "scale",
+          "desc": "规模以上制造企业",
+          "operator": "in",
+          "value": [
+            "规模以上",
+            "中型企业",
+            "大型企业"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "smart_equipment_investment",
+          "desc": "智能制造装备与系统投资≥1000万",
+          "operator": ">=",
+          "value": 1000,
+          "source_quote": null
+        },
+        {
+          "field": "equipment_networking_rate",
+          "desc": "关键设备联网率≥70%",
+          "operator": ">=",
+          "value": 0.7,
+          "source_quote": null
+        },
+        {
+          "field": "has_mes_erp",
+          "desc": "已部署MES/ERP等工业软件",
+          "operator": "required",
+          "value": true,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "国家智能制造示范工厂称号；省级配套奖补",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-020",
+    "schema_version": "2.0",
+    "policy_name": "安徽省博士后科研工作站",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "人才引育",
+    "status": "有效",
+    "application_deadline": "2027-04-30",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "years_in_operation",
+          "desc": "注册成立2年以上",
+          "operator": ">=",
+          "value": 2,
+          "source_quote": null
+        },
+        {
+          "field": "rd_team_size",
+          "desc": "研发人员总数≥30人",
+          "operator": ">=",
+          "value": 30,
+          "source_quote": null
+        },
+        {
+          "field": "rd_investment",
+          "desc": "年度研发投入≥500万",
+          "operator": ">=",
+          "value": 500,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有至少2项发明专利",
+          "operator": ">=",
+          "value": 2,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "建站资助；博士后进站生活补贴与科研启动经费",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "低",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-021",
+    "schema_version": "2.0",
+    "policy_name": "安徽省科技重大专项（揭榜挂帅）",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "研发创新",
+    "status": "有效",
+    "application_deadline": "2027-01-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥3000万",
+          "operator": ">=",
+          "value": 3000,
+          "source_quote": null
+        },
+        {
+          "field": "rd_investment",
+          "desc": "年度研发投入≥500万",
+          "operator": ">=",
+          "value": 500,
+          "source_quote": null
+        },
+        {
+          "field": "rd_team_size",
+          "desc": "项目研发团队≥20人",
+          "operator": ">=",
+          "value": 20,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "拥有相关领域核心专利",
+          "operator": ">=",
+          "value": 2,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "单个项目省拨经费最高500万元",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-022",
+    "schema_version": "2.0",
+    "policy_name": "安徽省人民政府质量奖",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "质量品牌",
+    "status": "有效",
+    "application_deadline": "2027-02-28",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "years_in_operation",
+          "desc": "注册成立3年以上",
+          "operator": ">=",
+          "value": 3,
+          "source_quote": null
+        },
+        {
+          "field": "scale",
+          "desc": "规模以上企业",
+          "operator": "in",
+          "value": [
+            "规模以上",
+            "中型企业",
+            "大型企业"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥5000万",
+          "operator": ">=",
+          "value": 5000,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "近三年无重大质量/安全/环保事故",
+          "source_quote": null
+        }
+      ],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "省政府质量奖荣誉及奖励；品牌信用背书",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "低",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-023",
+    "schema_version": "2.0",
+    "policy_name": "安徽省工业精品认定",
+    "level": "省级",
+    "region": [
+      "安徽省"
+    ],
+    "category": "产业扶持",
+    "status": "有效",
+    "application_deadline": "2026-12-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "industry",
+          "desc": "制造业企业",
+          "operator": "in",
+          "value": [
+            "制造业",
+            "新能源汽车"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "revenue",
+          "desc": "上年度营收≥2000万",
+          "operator": ">=",
+          "value": 2000,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "产品拥有自主知识产权",
+          "operator": ">=",
+          "value": 1,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [
+        {
+          "field": "has_major_accident",
+          "operator": "==",
+          "value": true,
+          "effect": "一票否决",
+          "desc": "无质量抽检不合格记录",
+          "source_quote": null
+        }
+      ],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "“安徽工业精品”称号；政府采购与推广目录优先",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [],
+      "unlocks": []
+    },
+    "priority": "中",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  },
+  {
+    "policy_id": "HF-024",
+    "schema_version": "2.0",
+    "policy_name": "中央财政支持专精特新“小巨人”企业高质量发展项目",
+    "level": "国家级",
+    "region": [
+      "全国"
+    ],
+    "category": "产业扶持",
+    "status": "有效",
+    "application_deadline": "2027-03-31",
+    "application": {
+      "window": null,
+      "channel": null,
+      "materials": [],
+      "review_cycle_months": null
+    },
+    "conditions": {
+      "hard": [
+        {
+          "field": "qualifications",
+          "desc": "已是国家级小巨人",
+          "operator": "contains",
+          "value": [
+            "国家级专精特新小巨人"
+          ],
+          "source_quote": null
+        },
+        {
+          "field": "revenue_growth_2yr",
+          "desc": "近两年营收保持增长",
+          "operator": ">=",
+          "value": 0.05,
+          "source_quote": null
+        },
+        {
+          "field": "rd_ratio",
+          "desc": "研发投入占比≥3%",
+          "operator": ">=",
+          "value": 0.03,
+          "source_quote": null
+        },
+        {
+          "field": "invention_patents",
+          "desc": "实施期内新增发明专利≥2项",
+          "operator": ">=",
+          "value": 2,
+          "source_quote": null
+        }
+      ],
+      "exclusions": [],
+      "soft": []
+    },
+    "benefit": {
+      "summary": "中央财政奖补最高300万元（重点“小巨人”）",
+      "lump_sum": null,
+      "tax": null
+    },
+    "policy_chain": {
+      "prerequisite": [
+        "HF-003"
+      ],
+      "unlocks": []
+    },
+    "priority": "高",
+    "review": {
+      "structured_by": "v1-migration",
+      "reviewed_by": null,
+      "reviewed_at": null,
+      "confidence": "medium"
+    },
+    "version": 1,
+    "updated_at": "2026-10-15"
+  }
+]

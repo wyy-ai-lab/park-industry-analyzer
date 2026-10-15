@@ -14,8 +14,10 @@ output/
 
 # Keep default policy library, enterprise profile and demo park enterprises
 !data/policies.json
+!data/policies_v2.json
 !data/enterprise.json
 !data/park_enterprises.json
+!data/park_enterprises_problem.json
 *.docx
 *.pdf
 !README.md

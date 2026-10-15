@@ -2,7 +2,7 @@ import re
 import textwrap
 
 import streamlit as st
-from engine.ui_helpers import inject_apple_theme
+from engine.ui_helpers import inject_apple_theme, render_demo_controls
 from engine.park_metrics import load_park_enterprises, compute_metrics
 
 st.set_page_config(
@@ -202,14 +202,8 @@ st.sidebar.markdown(textwrap.dedent("""
 </div>
 """), unsafe_allow_html=True)
 
-# 侧边栏：演示数据开关（用于演示“未接入数据 → 载入数据”的过程）
-st.sidebar.divider()
-st.sidebar.toggle(
-    "📦 载入演示数据（50 家企业）",
-    value=True,
-    key="use_demo_data",
-    help="关闭后，全站将模拟“尚未接入园区企业数据”的空状态。",
-)
+# 侧边栏：演示控制区（数据开关 / 双故事线切换 / 一键重置）
+render_demo_controls()
 
 # 加载园区指标，用于首页数据看板
 try:
@@ -284,7 +278,7 @@ quick_links = [
     ("🗺️", "pages/2_产业地图.py", "产业地图", "梯队金字塔、产业链层级、创新密度"),
     ("🕸️", "pages/3_产业链图谱.py", "产业链图谱", "完整度、本地配套率、强弱缺失分析"),
     ("💡", "pages/4_发展建议.py", "发展建议", "LLM / 模板生成招商补链与培育建议"),
-    ("🔍", "pages/5_企业透视.py", "企业透视", "50 家演示企业搜索、筛选、下钻诊断"),
+    ("🔍", "pages/5_企业透视.py", "企业透视", "演示企业搜索、筛选、下钻诊断"),
     ("🩺", "pages/6_企业诊断辅导.py", "企业诊断辅导", "单企业画像、政策诊断、报告导出"),
 ]
 

@@ -15,6 +15,16 @@ def load_json(file_path: str) -> Dict[str, Any]:
         return json.load(f)
 
 
+def load_policies() -> List[Dict[str, Any]]:
+    """加载政策库：优先 v2 结构化政策库，缺失时回退 v1"""
+    import os
+    for path in ("data/policies_v2.json", "data/policies.json"):
+        if os.path.exists(path):
+            with open(path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+    return []
+
+
 # 企业画像字段 → 中文可读名称
 FIELD_LABELS = {
     "name": "企业名称",
@@ -90,6 +100,126 @@ def save_json(file_path: str, data: Dict[str, Any]) -> None:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
+# v2 条件项中"取值字段"的兼容别名：不同数据源营收字段名不同
+_FIELD_ALIASES = {
+    "annual_revenue": ["annual_revenue", "revenue"],
+    "revenue": ["revenue", "annual_revenue"],
+}
+
+
+def _field_value(enterprise: Dict[str, Any], field: str) -> Any:
+    """取企业字段值，支持别名兼容"""
+    for key in _FIELD_ALIASES.get(field, [field]):
+        if key in enterprise:
+            return enterprise.get(key)
+    return enterprise.get(field)
+
+
+def check_condition_v2(value: Any, item: Dict[str, Any]) -> Tuple[bool, str]:
+    """检查 v2 标准条件项（operator/value 规范化）"""
+    label = label_for(item.get("field", ""))
+    operator = item.get("operator")
+    required = item.get("value")
+
+    if value is None and operator != "required":
+        return False, f"{label}：数据缺失，需补充"
+
+    if operator == ">=":
+        if value < required:
+            return False, f"{label}：当前 {value}，要求 ≥ {required}，差 {required - value:.2f}"
+    elif operator == "<=":
+        if value > required:
+            return False, f"{label}：当前 {value}，要求 ≤ {required}，超出 {value - required:.2f}"
+    elif operator == "==":
+        if bool(value) != bool(required):
+            return False, f"{label}：当前为“{'是' if value else '否'}”，政策要求必须为“{'是' if required else '否'}”"
+    elif operator == "required":
+        if bool(value) != bool(required):
+            current = "是" if value else "否"
+            expected = "是" if required else "否"
+            return False, f"{label}：当前为“{current}”，政策要求必须为“{expected}”"
+    elif operator == "contains":
+        values = value if isinstance(value, list) else [value]
+        missing = [v for v in required if v not in values]
+        if missing:
+            return False, f"{label}：缺少资质 {missing}"
+    elif operator == "in":
+        if value not in required:
+            return False, f"{label}：当前 {value}，不在允许范围 {required} 内"
+    elif operator == "or":
+        values = value if isinstance(value, list) else [value]
+        if not any(v in required for v in values):
+            return False, f"{label}：当前 {value}，需满足其中之一 {required}"
+
+    return True, f"{label}：满足"
+
+
+def check_tier_condition(enterprise: Dict[str, Any], item: Dict[str, Any],
+                         tiers: Dict[str, Any]) -> Tuple[bool, str]:
+    """
+    检查分档条件（如高企研发费用比例按营收三档）。
+    按 basis_field 定位档位后，校验该档要求的字段阈值。
+    """
+    label = label_for(item.get("field", ""))
+    tier_key = item.get("tier_key")
+    tier_def = tiers.get(tier_key, {})
+    basis_field = tier_def.get("basis_field", "")
+    basis = _field_value(enterprise, basis_field)
+
+    if basis is None:
+        return False, f"{label}：{label_for(basis_field)}数据缺失，无法确定适用档位"
+
+    band_hit = None
+    for band in tier_def.get("bands", []):
+        lo = band.get("min", float("-inf"))
+        hi = band.get("max", float("inf"))
+        in_band = (basis >= lo) if hi == float("inf") else (lo <= basis < hi)
+        if in_band:
+            band_hit = band
+            break
+
+    if band_hit is None:
+        return False, f"{label}：未匹配到适用档位，请人工核对"
+
+    require = band_hit.get("require", {})
+    target_field = item.get("field")
+    if target_field not in require:
+        return True, f"{label}：满足（{band_hit.get('desc', '')}）"
+
+    value = _field_value(enterprise, target_field)
+    threshold = require[target_field]
+    if value is None:
+        return False, f"{label}：数据缺失，需补充（适用档位：{band_hit.get('desc', '')}）"
+    if value < threshold:
+        return False, (f"{label}：当前 {value}，要求 ≥ {threshold}，差 {threshold - value:.2f}"
+                       f"（适用档位：{band_hit.get('desc', '')}）")
+    return True, f"{label}：满足（{band_hit.get('desc', '')}）"
+
+
+def check_exclusion(enterprise: Dict[str, Any], item: Dict[str, Any]) -> Tuple[bool, str]:
+    """检查一票否决项；返回 (触发否决, 说明)"""
+    label = label_for(item.get("field", ""))
+    value = _field_value(enterprise, item.get("field", ""))
+    if value is None:
+        return False, f"{label}：未声明，默认无（建议核实）"
+    triggered = bool(value) == bool(item.get("value"))
+    if triggered:
+        return True, f"{label}：{item.get('desc', '触及否决情形')}（一票否决）"
+    return False, f"{label}：无（满足）"
+
+
+def check_prerequisite(enterprise: Dict[str, Any], prereq_ids: List[str],
+                       policy_map: Dict[str, Dict[str, Any]]) -> List[str]:
+    """检查政策依赖链前置资质；返回未满足的前置政策名称列表"""
+    quals = enterprise.get("qualifications") or []
+    missing = []
+    for pid in prereq_ids:
+        name = (policy_map.get(pid) or {}).get("policy_name", pid)
+        if not any(q in name or name in q for q in quals):
+            missing.append(name)
+    return missing
+
+
 def check_condition(value: Any, condition: Dict[str, Any], condition_name: str) -> Tuple[bool, str]:
     """检查单个条件是否满足"""
     label = label_for(condition_name)
@@ -135,7 +265,79 @@ def check_condition(value: Any, condition: Dict[str, Any], condition_name: str) 
     return True, f"{label}：满足"
 
 
-def match_policy(enterprise: Dict[str, Any], policy: Dict[str, Any]) -> Dict[str, Any]:
+def match_policy(enterprise: Dict[str, Any], policy: Dict[str, Any],
+                 policy_map: Dict[str, Dict[str, Any]] = None) -> Dict[str, Any]:
+    """对单条政策进行硬条件匹配（v2 conditions 优先，兼容 v1 hard_conditions）"""
+    if "conditions" in policy:
+        return match_policy_v2(enterprise, policy, policy_map or {})
+    return match_policy_v1(enterprise, policy)
+
+
+def match_policy_v2(enterprise: Dict[str, Any], policy: Dict[str, Any],
+                    policy_map: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    """v2 结构化政策匹配：标准条件项 + 分档条件 + 一票否决 + 政策依赖链"""
+    passed, failed, unknown = [], [], []
+
+    # 时效：非"有效"状态的政策不出申报结论
+    status = policy.get("status", "有效")
+    if status not in ("有效", None):
+        return _result(policy, "持续关注", f"政策当前状态为「{status}」，仅作参考",
+                       passed, failed + [f"政策状态：{status}"], unknown)
+
+    # 地区匹配（与 v1 同一套逻辑）
+    policy_regions = policy.get("region", [])
+    enterprise_region = str(enterprise.get('province', '')) + str(enterprise.get('city', ''))
+    region_match = any(
+        r == '全国' or (r in enterprise_region or enterprise_region in r)
+        for r in policy_regions
+    )
+    if not region_match:
+        failed.append(f"{label_for('region')}：当前 {enterprise.get('region')}，政策适用 {policy_regions}")
+    else:
+        passed.append(f"{label_for('region')}：{enterprise.get('region')} 在政策适用范围内")
+
+    conditions = policy.get("conditions", {})
+
+    # 政策依赖链：前置资质
+    prereq_missing = check_prerequisite(
+        enterprise, policy.get("policy_chain", {}).get("prerequisite", []), policy_map)
+    for name in prereq_missing:
+        failed.append(f"前置资质：需先获得《{name}》")
+
+    # 标准条件项（tier_key 项走分档校验）
+    tiers = conditions.get("tiers", {})
+    for item in conditions.get("hard", []):
+        if item.get("tier_key"):
+            ok, message = check_tier_condition(enterprise, item, tiers)
+        else:
+            value = _field_value(enterprise, item.get("field", ""))
+            ok, message = check_condition_v2(value, item)
+        if ok:
+            passed.append(message)
+        elif "数据缺失" in message:
+            unknown.append(message)
+        else:
+            failed.append(message)
+
+    # 一票否决项
+    veto_triggered = False
+    for item in conditions.get("exclusions", []):
+        triggered, message = check_exclusion(enterprise, item)
+        if triggered:
+            veto_triggered = True
+            failed.append(message)
+        else:
+            passed.append(message)
+
+    if veto_triggered:
+        diagnosis, reason = "暂不适合", "触及一票否决情形"
+    else:
+        diagnosis, reason = determine_diagnosis(passed, failed, unknown, policy)
+
+    return _result(policy, diagnosis, reason, passed, failed, unknown)
+
+
+def match_policy_v1(enterprise: Dict[str, Any], policy: Dict[str, Any]) -> Dict[str, Any]:
     """对单条政策进行硬条件匹配"""
     hard_conditions = policy.get('hard_conditions', {})
     passed = []
@@ -172,12 +374,21 @@ def match_policy(enterprise: Dict[str, Any], policy: Dict[str, Any]) -> Dict[str
 
     diagnosis, reason = determine_diagnosis(passed, failed, unknown, policy)
 
+    return _result(policy, diagnosis, reason, passed, failed, unknown)
+
+
+def _result(policy: Dict[str, Any], diagnosis: str, reason: str,
+            passed: List[str], failed: List[str], unknown: List[str]) -> Dict[str, Any]:
+    """统一匹配结果结构（v1/v2 共用）"""
+    benefit = policy.get('benefit', '')
+    if isinstance(benefit, dict):
+        benefit = benefit.get('summary', '')
     return {
         "policy_id": policy['policy_id'],
         "policy_name": policy['policy_name'],
         "level": policy['level'],
         "category": policy['category'],
-        "deadline": policy.get('deadline', ''),
+        "deadline": policy.get('deadline') or policy.get('application_deadline', ''),
         "diagnosis": diagnosis,
         "reason": reason,
         "passed_count": len(passed),
@@ -186,14 +397,14 @@ def match_policy(enterprise: Dict[str, Any], policy: Dict[str, Any]) -> Dict[str
         "passed": passed,
         "failed": failed,
         "unknown": unknown,
-        "benefit": policy.get('benefit', ''),
+        "benefit": benefit,
         "priority": policy.get('priority', '中')
     }
 
 
 def determine_diagnosis(passed: List[str], failed: List[str], unknown: List[str], policy: Dict[str, Any]) -> Tuple[str, str]:
     """根据条件检查结果判断诊断结果"""
-    deadline_str = policy.get('deadline', '')
+    deadline_str = policy.get('deadline') or policy.get('application_deadline', '')
 
     if deadline_str:
         try:
@@ -233,9 +444,10 @@ def calculate_match_score(result: Dict[str, Any]) -> int:
 
 def run_diagnosis(enterprise: Dict[str, Any], policies: List[Dict[str, Any]]) -> Dict[str, Any]:
     """运行完整诊断"""
+    policy_map = {p['policy_id']: p for p in policies}
     results = []
     for policy in policies:
-        result = match_policy(enterprise, policy)
+        result = match_policy(enterprise, policy, policy_map)
         result['match_score'] = calculate_match_score(result)
         results.append(result)
 

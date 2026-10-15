@@ -39,10 +39,15 @@ park-industry-analyzer/
 │   ├── dashboard.py                # 诊断结果看板
 │   └── cultivation_roadmap.py      # 培育路线图
 ├── data/
-│   ├── park_enterprises.json       # 50 家演示园区企业数据
+│   ├── park_enterprises.json       # 健康型园区演示数据（50 家，成绩汇报场景）
+│   ├── park_enterprises_problem.json # 问题型园区演示数据（24 家，诊断招商场景）
 │   ├── enterprise.json             # 单个企业画像（示例）
-│   ├── policies.json               # 示例政策库
+│   ├── policies.json               # 示例政策库（v1）
+│   ├── policies_v2.json            # 结构化政策库 v2（分档条件/依赖链/时效状态）
 │   └── cases/                      # 企业画像案例
+├── scripts/
+│   ├── generate_problem_park.py    # 问题型园区演示数据生成器（确定性可复现）
+│   └── migrate_policies_v1_to_v2.py # 政策库 v1→v2 迁移脚本
 ├── .streamlit/
 │   └── config.toml                 # Streamlit 主题与配置
 ├── requirements.txt

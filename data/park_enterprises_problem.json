@@ -1,0 +1,903 @@
+{
+  "park_name": "芜湖江北新能源汽车零部件产业园",
+  "total_enterprises": 24,
+  "strong_segments": [
+    "乘用车制造",
+    "商用车制造",
+    "充电桩",
+    "售后服务"
+  ],
+  "weak_segments": [
+    "电池包集成",
+    "电机控制器",
+    "BMS系统",
+    "驱动电机"
+  ],
+  "missing_segments": [
+    "锂盐/锂矿",
+    "正极材料",
+    "负极材料",
+    "电解液",
+    "动力电池隔膜",
+    "动力电池电芯",
+    "电机材料",
+    "车载芯片",
+    "激光雷达",
+    "车载操作系统",
+    "高精地图",
+    "高精度传感器"
+  ],
+  "generated_at": "2026-10-15 11:45:22",
+  "enterprises": [
+    {
+      "enterprise_id": "ENT001",
+      "name": "江北智造汽车有限公司",
+      "founded_year": 2016,
+      "registered_capital": 28400,
+      "employees": 5200,
+      "annual_revenue": 45.0,
+      "net_profit": 2.52,
+      "industry": "新能源汽车",
+      "sub_industry": "整车制造",
+      "niche": "乘用车制造",
+      "chain_position": "下游",
+      "chain_position_detail": "终端应用",
+      "enterprise_role": "链主企业",
+      "core_technology": "整车轻量化集成",
+      "rd_investment_ratio": 0.035,
+      "patents": 88,
+      "invention_patents": 31,
+      "software_copyrights": 4,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "纯电动乘用车",
+      "upstream_suppliers": [
+        "（园区外）苏州汇川电驱",
+        "（园区外）宁波容百正极材料"
+      ],
+      "downstream_customers": [
+        "（市外）省网约车采购平台",
+        "（市外）长三角公交集团"
+      ],
+      "local_suppliers": [
+        "江城电驱动科技有限公司",
+        "江北安捷售后服务有限公司"
+      ],
+      "local_customers": [
+        "江城电驱动科技有限公司",
+        "江北安捷售后服务有限公司"
+      ],
+      "rd_personnel": 163,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 0,
+      "university_cooperation": true
+    },
+    {
+      "enterprise_id": "ENT002",
+      "name": "（演示）整车股份有限公司",
+      "founded_year": 2017,
+      "registered_capital": 48800,
+      "employees": 1581,
+      "annual_revenue": 14.88,
+      "net_profit": 1.07,
+      "industry": "新能源汽车",
+      "sub_industry": "整车制造",
+      "niche": "乘用车制造",
+      "chain_position": "下游",
+      "chain_position_detail": "终端应用",
+      "enterprise_role": "骨干企业",
+      "core_technology": "整车轻量化集成",
+      "rd_investment_ratio": 0.041,
+      "patents": 27,
+      "invention_patents": 6,
+      "software_copyrights": 3,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "纯电动乘用车",
+      "upstream_suppliers": [
+        "（园区外）苏州绿的谐波"
+      ],
+      "downstream_customers": [
+        "（市外）省内政务采购平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 58,
+      "master_doctor_ratio": 0.05,
+      "leading_talents": 2,
+      "university_cooperation": true
+    },
+    {
+      "enterprise_id": "ENT003",
+      "name": "（演示）整车有限公司",
+      "founded_year": 2014,
+      "registered_capital": 9200,
+      "employees": 1284,
+      "annual_revenue": 9.6,
+      "net_profit": 0.46,
+      "industry": "新能源汽车",
+      "sub_industry": "整车制造",
+      "niche": "乘用车制造",
+      "chain_position": "下游",
+      "chain_position_detail": "终端应用",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "整车轻量化集成",
+      "rd_investment_ratio": 0.029,
+      "patents": 15,
+      "invention_patents": 3,
+      "software_copyrights": 2,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "纯电动乘用车",
+      "upstream_suppliers": [
+        "（园区外）江西赣锋锂业"
+      ],
+      "downstream_customers": [
+        "（市外）省新能源物流车队"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 33,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 1,
+      "university_cooperation": true
+    },
+    {
+      "enterprise_id": "ENT004",
+      "name": "（演示）商用股份有限公司",
+      "founded_year": 2015,
+      "registered_capital": 58400,
+      "employees": 1951,
+      "annual_revenue": 17.76,
+      "net_profit": 0.99,
+      "industry": "新能源汽车",
+      "sub_industry": "整车制造",
+      "niche": "商用车制造",
+      "chain_position": "下游",
+      "chain_position_detail": "终端应用",
+      "enterprise_role": "骨干企业",
+      "core_technology": "商用车电动化平台",
+      "rd_investment_ratio": 0.033,
+      "patents": 29,
+      "invention_patents": 7,
+      "software_copyrights": 5,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "电动物流车",
+      "upstream_suppliers": [
+        "（园区外）上海电驱动"
+      ],
+      "downstream_customers": [
+        "（市外）省内政务采购平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 57,
+      "master_doctor_ratio": 0.05,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT005",
+      "name": "（演示）商用有限公司",
+      "founded_year": 2022,
+      "registered_capital": 18800,
+      "employees": 582,
+      "annual_revenue": 1.2,
+      "net_profit": 0.09,
+      "industry": "新能源汽车",
+      "sub_industry": "整车制造",
+      "niche": "商用车制造",
+      "chain_position": "下游",
+      "chain_position_detail": "终端应用",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "商用车电动化平台",
+      "rd_investment_ratio": 0.041,
+      "patents": 4,
+      "invention_patents": 0,
+      "software_copyrights": 4,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "电动物流车",
+      "upstream_suppliers": [
+        "（园区外）深圳德赛西威"
+      ],
+      "downstream_customers": [
+        "（市外）省新能源物流车队"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 21,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 0,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT006",
+      "name": "（演示）绿能充电有限公司",
+      "founded_year": 2014,
+      "registered_capital": 57200,
+      "employees": 855,
+      "annual_revenue": 8.88,
+      "net_profit": 0.43,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "充电桩",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "大功率快充模块",
+      "rd_investment_ratio": 0.029,
+      "patents": 15,
+      "invention_patents": 3,
+      "software_copyrights": 2,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "直流快充桩",
+      "upstream_suppliers": [
+        "（园区外）江西赣锋锂业"
+      ],
+      "downstream_customers": [
+        "（市外）长三角网约车平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 22,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT007",
+      "name": "（演示）绿能充电科技有限公司",
+      "founded_year": 2021,
+      "registered_capital": 17600,
+      "employees": 425,
+      "annual_revenue": 2.2,
+      "net_profit": 0.14,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "充电桩",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "大功率快充模块",
+      "rd_investment_ratio": 0.037,
+      "patents": 4,
+      "invention_patents": 0,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "直流快充桩",
+      "upstream_suppliers": [
+        "（园区外）常州中创新航电芯"
+      ],
+      "downstream_customers": [
+        "（市外）省内政务采购平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 14,
+      "master_doctor_ratio": 0.05,
+      "leading_talents": 0,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT008",
+      "name": "（演示）绿能充电有限公司",
+      "founded_year": 2018,
+      "registered_capital": 38000,
+      "employees": 574,
+      "annual_revenue": 1.63,
+      "net_profit": 0.07,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "充电桩",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "大功率快充模块",
+      "rd_investment_ratio": 0.025,
+      "patents": 6,
+      "invention_patents": 0,
+      "software_copyrights": 6,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "直流快充桩",
+      "upstream_suppliers": [
+        "（园区外）合肥国轩材料"
+      ],
+      "downstream_customers": [
+        "（市外）省新能源物流车队"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 12,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 2,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT009",
+      "name": "（演示）迅捷换电科技有限公司",
+      "founded_year": 2022,
+      "registered_capital": 66800,
+      "employees": 417,
+      "annual_revenue": 3.26,
+      "net_profit": 0.23,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "换电站",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "全自动换电机构",
+      "rd_investment_ratio": 0.041,
+      "patents": 5,
+      "invention_patents": 0,
+      "software_copyrights": 2,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "乘用车换电站",
+      "upstream_suppliers": [
+        "（园区外）江西赣锋锂业"
+      ],
+      "downstream_customers": [
+        "（市外）长三角网约车平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 15,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT010",
+      "name": "（演示）车联智行科技有限公司",
+      "founded_year": 2015,
+      "registered_capital": 46400,
+      "employees": 283,
+      "annual_revenue": 2.73,
+      "net_profit": 0.15,
+      "industry": "新能源汽车",
+      "sub_industry": "充换电设施",
+      "niche": "运营平台",
+      "chain_position": "下游",
+      "chain_position_detail": "运营服务",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "充电调度算法",
+      "rd_investment_ratio": 0.033,
+      "patents": 8,
+      "invention_patents": 0,
+      "software_copyrights": 5,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "车桩一体化运营平台",
+      "upstream_suppliers": [
+        "（园区外）上海电驱动"
+      ],
+      "downstream_customers": [
+        "（市外）省内政务采购平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 8,
+      "master_doctor_ratio": 0.05,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT011",
+      "name": "（演示）安捷售后有限公司",
+      "founded_year": 2018,
+      "registered_capital": 62000,
+      "employees": 214,
+      "annual_revenue": 1.63,
+      "net_profit": 0.07,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "售后服务",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "高压系统检修工艺",
+      "rd_investment_ratio": 0.025,
+      "patents": 2,
+      "invention_patents": 0,
+      "software_copyrights": 2,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "新能源车维保服务",
+      "upstream_suppliers": [
+        "（园区外）江西赣锋锂业"
+      ],
+      "downstream_customers": [
+        "（市外）长三角网约车平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "江北智造汽车有限公司"
+      ],
+      "rd_personnel": 4,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT012",
+      "name": "（演示）安捷售后有限公司",
+      "founded_year": 2015,
+      "registered_capital": 22400,
+      "employees": 459,
+      "annual_revenue": 2.06,
+      "net_profit": 0.12,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "售后服务",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "高压系统检修工艺",
+      "rd_investment_ratio": 0.033,
+      "patents": 1,
+      "invention_patents": 0,
+      "software_copyrights": 1,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "新能源车维保服务",
+      "upstream_suppliers": [
+        "（园区外）常州中创新航电芯"
+      ],
+      "downstream_customers": [
+        "（市外）省内政务采购平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 13,
+      "master_doctor_ratio": 0.05,
+      "leading_talents": 0,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT013",
+      "name": "（演示）产融有限公司",
+      "founded_year": 2018,
+      "registered_capital": 50000,
+      "employees": 427,
+      "annual_revenue": 1.34,
+      "net_profit": 0.05,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "金融服务",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "电池银行租赁模式",
+      "rd_investment_ratio": 0.025,
+      "patents": 2,
+      "invention_patents": 0,
+      "software_copyrights": 2,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "汽车融资租赁",
+      "upstream_suppliers": [
+        "（园区外）江西赣锋锂业"
+      ],
+      "downstream_customers": [
+        "（市外）长三角网约车平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 9,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT014",
+      "name": "（演示）循环再生有限公司",
+      "founded_year": 2017,
+      "registered_capital": 24800,
+      "employees": 337,
+      "annual_revenue": 1.78,
+      "net_profit": 0.13,
+      "industry": "新能源汽车",
+      "sub_industry": "汽车服务",
+      "niche": "二手车/回收",
+      "chain_position": "下游",
+      "chain_position_detail": "后市场",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "电池残值评估",
+      "rd_investment_ratio": 0.041,
+      "patents": 5,
+      "invention_patents": 0,
+      "software_copyrights": 5,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "动力电池回收梯次利用",
+      "upstream_suppliers": [
+        "（园区外）上海电驱动"
+      ],
+      "downstream_customers": [
+        "（市外）省内政务采购平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 12,
+      "master_doctor_ratio": 0.05,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT015",
+      "name": "（演示）江城电驱动有限公司",
+      "founded_year": 2016,
+      "registered_capital": 47600,
+      "employees": 846,
+      "annual_revenue": 6.0,
+      "net_profit": 0.38,
+      "industry": "新能源汽车",
+      "sub_industry": "电驱动系统",
+      "niche": "驱动电机",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "高功率密度电机设计",
+      "rd_investment_ratio": 0.037,
+      "patents": 19,
+      "invention_patents": 4,
+      "software_copyrights": 6,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "永磁同步驱动电机",
+      "upstream_suppliers": [
+        "（园区外）合肥国轩材料"
+      ],
+      "downstream_customers": [
+        "（市外）省新能源物流车队"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "江北智造汽车有限公司"
+      ],
+      "rd_personnel": 28,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 2,
+      "university_cooperation": true
+    },
+    {
+      "enterprise_id": "ENT016",
+      "name": "（演示）江城电驱动科技有限公司",
+      "founded_year": 2013,
+      "registered_capital": 8000,
+      "employees": 284,
+      "annual_revenue": 2.99,
+      "net_profit": 0.12,
+      "industry": "新能源汽车",
+      "sub_industry": "电驱动系统",
+      "niche": "驱动电机",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "高功率密度电机设计",
+      "rd_investment_ratio": 0.025,
+      "patents": 8,
+      "invention_patents": 0,
+      "software_copyrights": 5,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "永磁同步驱动电机",
+      "upstream_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "downstream_customers": [
+        "（市外）周边城市公交公司"
+      ],
+      "local_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "local_customers": [
+        "江北智造汽车有限公司"
+      ],
+      "rd_personnel": 6,
+      "master_doctor_ratio": 0.03,
+      "leading_talents": 1,
+      "university_cooperation": true
+    },
+    {
+      "enterprise_id": "ENT017",
+      "name": "（演示）精控电驱有限公司",
+      "founded_year": 2020,
+      "registered_capital": 64400,
+      "employees": 1424,
+      "annual_revenue": 10.32,
+      "net_profit": 0.58,
+      "industry": "新能源汽车",
+      "sub_industry": "电驱动系统",
+      "niche": "电机控制器",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "IGBT功率模块应用",
+      "rd_investment_ratio": 0.033,
+      "patents": 17,
+      "invention_patents": 4,
+      "software_copyrights": 4,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "电机控制器总成",
+      "upstream_suppliers": [
+        "（园区外）深圳德赛西威"
+      ],
+      "downstream_customers": [
+        "（市外）长三角网约车平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 42,
+      "master_doctor_ratio": 0.04,
+      "leading_talents": 0,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT018",
+      "name": "（演示）恒力传动科技有限公司",
+      "founded_year": 2017,
+      "registered_capital": 24800,
+      "employees": 547,
+      "annual_revenue": 2.73,
+      "net_profit": 0.2,
+      "industry": "新能源汽车",
+      "sub_industry": "电驱动系统",
+      "niche": "减速器",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "高精度齿轮加工",
+      "rd_investment_ratio": 0.041,
+      "patents": 6,
+      "invention_patents": 0,
+      "software_copyrights": 3,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "电驱动减速器",
+      "upstream_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "downstream_customers": [
+        "（市外）周边城市公交公司"
+      ],
+      "local_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "local_customers": [
+        "江北智造汽车有限公司"
+      ],
+      "rd_personnel": 20,
+      "master_doctor_ratio": 0.03,
+      "leading_talents": 2,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT019",
+      "name": "（演示）智芯电池管理科技有限公司",
+      "founded_year": 2016,
+      "registered_capital": 35600,
+      "employees": 485,
+      "annual_revenue": 2.2,
+      "net_profit": 0.14,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "BMS系统",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "电池状态估算算法",
+      "rd_investment_ratio": 0.037,
+      "patents": 5,
+      "invention_patents": 0,
+      "software_copyrights": 2,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "动力电池管理系统",
+      "upstream_suppliers": [
+        "（园区外）江西赣锋锂业"
+      ],
+      "downstream_customers": [
+        "（市外）省新能源物流车队"
+      ],
+      "local_suppliers": [],
+      "local_customers": [
+        "江北智造汽车有限公司"
+      ],
+      "rd_personnel": 16,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 1,
+      "university_cooperation": true
+    },
+    {
+      "enterprise_id": "ENT020",
+      "name": "（演示）聚能电池系统有限公司",
+      "founded_year": 2017,
+      "registered_capital": 60800,
+      "employees": 1028,
+      "annual_revenue": 10.32,
+      "net_profit": 0.74,
+      "industry": "新能源汽车",
+      "sub_industry": "动力电池",
+      "niche": "电池包集成",
+      "chain_position": "中游",
+      "chain_position_detail": "核心制造",
+      "enterprise_role": "高新技术企业",
+      "core_technology": "Pack结构设计与热管理",
+      "rd_investment_ratio": 0.041,
+      "patents": 18,
+      "invention_patents": 4,
+      "software_copyrights": 5,
+      "high_tech_enterprise": true,
+      "little_giant": false,
+      "main_products": "动力电池Pack集成",
+      "upstream_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "downstream_customers": [
+        "（市外）周边城市公交公司"
+      ],
+      "local_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "local_customers": [
+        "江北智造汽车有限公司"
+      ],
+      "rd_personnel": 37,
+      "master_doctor_ratio": 0.03,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT021",
+      "name": "（演示）鼎力装备有限公司",
+      "founded_year": 2013,
+      "registered_capital": 56000,
+      "employees": 127,
+      "annual_revenue": 1.34,
+      "net_profit": 0.05,
+      "industry": "新能源汽车",
+      "sub_industry": "装备制造",
+      "niche": "生产设备",
+      "chain_position": "上游",
+      "chain_position_detail": "生产设备",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "产线自动化集成",
+      "rd_investment_ratio": 0.025,
+      "patents": 3,
+      "invention_patents": 0,
+      "software_copyrights": 3,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "焊装线配套设备",
+      "upstream_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "downstream_customers": [
+        "（市外）周边城市公交公司"
+      ],
+      "local_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "local_customers": [],
+      "rd_personnel": 2,
+      "master_doctor_ratio": 0.03,
+      "leading_talents": 2,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT022",
+      "name": "（演示）精测仪器科技有限公司",
+      "founded_year": 2017,
+      "registered_capital": 48800,
+      "employees": 502,
+      "annual_revenue": 3.52,
+      "net_profit": 0.25,
+      "industry": "新能源汽车",
+      "sub_industry": "装备制造",
+      "niche": "检测设备",
+      "chain_position": "上游",
+      "chain_position_detail": "生产设备",
+      "enterprise_role": "科技型中小企业",
+      "core_technology": "EOL下线检测",
+      "rd_investment_ratio": 0.041,
+      "patents": 8,
+      "invention_patents": 0,
+      "software_copyrights": 5,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "整车下线检测设备",
+      "upstream_suppliers": [
+        "（园区外）上海电驱动"
+      ],
+      "downstream_customers": [
+        "（市外）省内政务采购平台"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 18,
+      "master_doctor_ratio": 0.05,
+      "leading_talents": 1,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT023",
+      "name": "（演示）迅达物流有限公司",
+      "founded_year": 2018,
+      "registered_capital": 62000,
+      "employees": 321,
+      "annual_revenue": 1.49,
+      "net_profit": 0.06,
+      "industry": "新能源汽车",
+      "sub_industry": "其他配套",
+      "niche": "其他配套",
+      "chain_position": "上游",
+      "chain_position_detail": "服务支撑",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "供应链协同",
+      "rd_investment_ratio": 0.025,
+      "patents": 6,
+      "invention_patents": 0,
+      "software_copyrights": 6,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "物流与仓储配套",
+      "upstream_suppliers": [
+        "（园区外）合肥国轩材料"
+      ],
+      "downstream_customers": [
+        "（市外）省新能源物流车队"
+      ],
+      "local_suppliers": [],
+      "local_customers": [],
+      "rd_personnel": 7,
+      "master_doctor_ratio": 0.06,
+      "leading_talents": 2,
+      "university_cooperation": false
+    },
+    {
+      "enterprise_id": "ENT024",
+      "name": "（演示）迅达物流有限公司",
+      "founded_year": 2015,
+      "registered_capital": 22400,
+      "employees": 566,
+      "annual_revenue": 1.92,
+      "net_profit": 0.11,
+      "industry": "新能源汽车",
+      "sub_industry": "其他配套",
+      "niche": "其他配套",
+      "chain_position": "上游",
+      "chain_position_detail": "服务支撑",
+      "enterprise_role": "配套服务企业",
+      "core_technology": "供应链协同",
+      "rd_investment_ratio": 0.033,
+      "patents": 5,
+      "invention_patents": 0,
+      "software_copyrights": 5,
+      "high_tech_enterprise": false,
+      "little_giant": false,
+      "main_products": "物流与仓储配套",
+      "upstream_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "downstream_customers": [
+        "（市外）周边城市公交公司"
+      ],
+      "local_suppliers": [
+        "江北智造汽车有限公司"
+      ],
+      "local_customers": [],
+      "rd_personnel": 16,
+      "master_doctor_ratio": 0.03,
+      "leading_talents": 1,
+      "university_cooperation": false
+    }
+  ]
+}

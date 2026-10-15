@@ -17,11 +17,41 @@ from .chain_position import (
 )
 
 
-def load_park_enterprises(file_path: str = "data/park_enterprises.json") -> Dict[str, Any]:
+# 演示数据集注册表：双故事线演示
+# healthy  健康型园区：完整度高、配套率高，讲"成绩汇报"场景
+# problem  问题型园区：链条残缺、配套断裂、梯队单薄，讲"诊断 + 招商补链"场景
+DEMO_DATASETS = {
+    "healthy": {
+        "file": "data/park_enterprises.json",
+        "label": "健康型园区（合肥高新 · 50 家）",
+        "story": "成绩汇报场景：完整度高、配套成熟、梯队健全",
+    },
+    "problem": {
+        "file": "data/park_enterprises_problem.json",
+        "label": "问题型园区（芜湖江北 · 24 家）",
+        "story": "诊断招商场景：上游空心、配套断裂、单点依赖",
+    },
+}
+
+DEFAULT_DATASET = "healthy"
+
+
+def get_demo_dataset() -> str:
+    """获取当前选中的演示数据集 key（不依赖 streamlit 时返回默认集）"""
+    try:
+        import streamlit as st
+        ds = st.session_state.get("demo_dataset", DEFAULT_DATASET)
+        return ds if ds in DEMO_DATASETS else DEFAULT_DATASET
+    except Exception:
+        return DEFAULT_DATASET
+
+
+def load_park_enterprises(file_path: str = None) -> Dict[str, Any]:
     """加载园区企业数据
 
-    支持「演示数据开关」：当用户在界面关闭演示数据时，
-    返回空数据以模拟“尚未接入园区数据”的状态。
+    支持「演示数据开关」与「双故事线数据集切换」：
+    - 关闭演示数据时返回空数据，模拟"尚未接入园区数据"的状态
+    - 数据集按 session_state["demo_dataset"] 在健康型/问题型之间切换
     """
     try:
         import streamlit as st
@@ -29,6 +59,9 @@ def load_park_enterprises(file_path: str = "data/park_enterprises.json") -> Dict
             return {}
     except Exception:
         pass
+
+    if file_path is None:
+        file_path = DEMO_DATASETS[get_demo_dataset()]["file"]
 
     if not os.path.exists(file_path):
         return {}
