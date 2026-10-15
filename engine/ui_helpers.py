@@ -465,39 +465,15 @@ def check_prerequisite(prerequisite: str, current_page: str) -> bool:
 
 def render_demo_controls() -> None:
     """
-    侧边栏演示控制区（双故事线演示）：
+    侧边栏演示控制区：演示数据开关。
 
-    - 演示数据开关：关闭后全站模拟"尚未接入园区数据"的空状态
-    - 数据集切换：健康型园区（讲成绩汇报）/ 问题型园区（讲诊断招商）
-    - 一键重置：清空会话状态并回到首页，演示中途翻车可立刻恢复
+    关闭后全站模拟"尚未接入园区数据"的空状态，
+    用于演示"客户数据一接入，指标自动出现"的过程。
     """
-    from engine.park_metrics import DEMO_DATASETS, get_demo_dataset
-
     st.sidebar.divider()
-    st.sidebar.caption("🎬 演示控制")
-
-    demo_on = st.sidebar.toggle(
-        "📦 载入演示数据",
+    st.sidebar.toggle(
+        "📦 载入演示数据（50 家企业）",
         value=True,
         key="use_demo_data",
-        help="关闭后，全站将模拟“尚未接入园区数据”的空状态。",
+        help="关闭后，全站将模拟“尚未接入园区企业数据”的空状态。",
     )
-
-    if demo_on:
-        current = get_demo_dataset()
-        options = list(DEMO_DATASETS.keys())
-        labels = {k: v["label"] for k, v in DEMO_DATASETS.items()}
-        selected = st.sidebar.radio(
-            "演示数据集",
-            options=options,
-            index=options.index(current),
-            format_func=lambda k: labels[k],
-            key="demo_dataset",
-            help="健康型讲成绩汇报，问题型讲诊断与招商补链。",
-        )
-        st.sidebar.caption(f"💡 {DEMO_DATASETS[selected]['story']}")
-
-    if st.sidebar.button("🔄 重置演示", help="清空本会话的全部修改与缓存，回到初始状态"):
-        st.cache_data.clear()
-        st.session_state.clear()
-        st.rerun()

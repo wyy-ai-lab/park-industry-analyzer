@@ -247,7 +247,7 @@ st.markdown(textwrap.dedent(f"""
         <div class="home-stat-label">园区企业</div>
     </div>
     <div class="home-stat-card">
-        <div class="home-stat-value">6</div>
+        <div class="home-stat-value">7</div>
         <div class="home-stat-label">分析模块</div>
     </div>
     <div class="home-stat-card">
@@ -274,6 +274,7 @@ st.divider()
 st.subheader("🚀 快速入口")
 
 quick_links = [
+    ("🧭", "pages/7_产业智能梳理.py", "产业智能梳理", "上传企业目录等材料，自动分类梳理产业链，生成强链补链延链路径与招商清单"),
     ("🏞️", "pages/1_园区概览.py", "园区概览", "核心经济指标、产业分布、头部企业一览"),
     ("🗺️", "pages/2_产业地图.py", "产业地图", "梯队金字塔、产业链层级、创新密度"),
     ("🕸️", "pages/3_产业链图谱.py", "产业链图谱", "完整度、本地配套率、强弱缺失分析"),
