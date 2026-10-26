@@ -114,6 +114,9 @@ if "park_diagnosis" not in st.session_state or st.session_state.get("regenerate_
 
 diagnosis = st.session_state["park_diagnosis"]
 
+if diagnosis.get("llm_error"):
+    st.warning(f"⚠️ LLM 调用失败，已降级为模板模式：{diagnosis['llm_error']}")
+
 # 顶部操作栏
 header_col, action_col = st.columns([4, 1])
 with header_col:
@@ -368,4 +371,5 @@ with export_col4:
         use_container_width=True,
     )
 
-st.info("💡 提示：诊断结论默认使用规则模板生成；配置 ANTHROPIC_API_KEY 或 OPENAI_API_KEY 后可启用 LLM 智能生成。")
+st.info("💡 提示：诊断结论默认使用规则模板生成；在 `.streamlit/secrets.toml` 或环境变量中配置 "
+        "ANTHROPIC_API_KEY / OPENAI_API_KEY（可选 LLM_PROVIDER、LLM_MODEL、LLM_BASE_URL）后可启用 LLM 智能生成。")

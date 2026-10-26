@@ -307,6 +307,10 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
+# LLM 已配置但调用失败 → 显式提示降级原因（不再静默退回模板模式）
+if result and result.get("llm_error"):
+    st.warning(f"⚠️ LLM 调用失败，本次结果为模板模式兜底：{result['llm_error']}")
+
 # 会话写入须在文本域等组件创建之前完成（Streamlit 禁止对已实例化组件的 key 赋值）：
 # 用标志位 + rerun 的方式，在脚本最前置位应用填入内容
 if st.session_state.pop("_fill_example", None):
@@ -480,7 +484,8 @@ if result.get("targets"):
 else:
     st.markdown('<div class="ia-tip">未命中本地招商知识库，且未配置 API Key。'
                 '可在 <code>data/invest_targets.json</code> 中按「产业 → 环节 → 企业」维护已核实目标企业，'
-                '或配置 ANTHROPIC_API_KEY / OPENAI_API_KEY 后由 AI 基于缺失与薄弱环节自动补全。</div>',
+                '或在 <code>.streamlit/secrets.toml</code> / 环境变量中配置 '
+                'ANTHROPIC_API_KEY / OPENAI_API_KEY 后由 AI 自动补全。</div>',
                 unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- ⑥ 产业资源

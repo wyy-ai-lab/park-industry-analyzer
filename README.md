@@ -93,9 +93,19 @@ python -m streamlit run app.py
 
 如需使用真实 LLM 生成园区诊断或企业软条件评估：
 
-1. 复制 `.env.example` 为 `.env`
-2. 填入 `ANTHROPIC_API_KEY` 或 `OPENAI_API_KEY`
-3. 在对应页面关闭演示模式或保持默认（无 Key 时自动使用模板/演示模式）
+**本地运行**：复制 `.env.example` 为 `.env`，填入 `ANTHROPIC_API_KEY` 或 `OPENAI_API_KEY`。
+
+**Streamlit Cloud 部署**：在 **Settings → Secrets** 中配置（Secrets 优先于环境变量）：
+
+```toml
+LLM_PROVIDER = "anthropic"            # 或 "openai"
+ANTHROPIC_API_KEY = "your-key"
+# OPENAI_API_KEY = "your-key"         # OpenAI 或国内模型（DeepSeek/通义/文心等）
+# LLM_MODEL = "claude-opus-4-7"       # 模型名，默认 anthropic 路径 claude-opus-4-7 / openai 路径 gpt-4o-mini
+# LLM_BASE_URL = "https://api.deepseek.com/v1"  # OpenAI 兼容接口地址（国内模型必填）
+```
+
+无 Key 时自动使用模板/演示模式；LLM 已配置但调用失败时，页面会显式提示降级原因。
 
 ## 在线访问
 

@@ -20,27 +20,28 @@ import os
 import re
 from typing import Dict, List, Any, Optional
 
-from .park_llm import _call_anthropic, _call_openai, _parse_llm_response
+from .park_llm import (
+    _call_anthropic, _call_openai, _parse_llm_response,
+    get_llm_config, get_llm_error, clear_llm_error,
+)
 
 
 # ---------------------------------------------------------------- LLM 开关
 
 def _llm_available() -> Optional[str]:
-    """返回可用 provider 名称（anthropic/openai），不可用返回 None"""
-    provider = os.getenv("LLM_PROVIDER", "anthropic")
-    if provider == "anthropic" and os.getenv("ANTHROPIC_API_KEY"):
-        return "anthropic"
-    if provider == "openai" and os.getenv("OPENAI_API_KEY"):
-        return "openai"
-    return None
+    """返回可用 provider 名称（anthropic/openai），不可用返回 None。
+    配置来源：Streamlit Secrets 优先，环境变量兜底。"""
+    cfg = get_llm_config()
+    return cfg["provider"] if cfg["api_key"] else None
 
 
 def _llm_call(prompt: str) -> Optional[Dict[str, Any]]:
     provider = _llm_available()
     if not provider:
         return None
-    text = _call_anthropic(prompt, os.getenv("ANTHROPIC_API_KEY")) \
-        if provider == "anthropic" else _call_openai(prompt, os.getenv("OPENAI_API_KEY"))
+    cfg = get_llm_config()
+    text = _call_anthropic(prompt, cfg["api_key"], cfg["model"]) \
+        if provider == "anthropic" else _call_openai(prompt, cfg["api_key"], cfg["model"], cfg["base_url"])
     return _parse_llm_response(text) or None
 
 
@@ -376,6 +377,7 @@ def run_industry_analysis(material: str, focus_hint: str = "",
     }
     """
     llm_on = _llm_available() is not None
+    clear_llm_error()
 
     # 阶段1：产业分类
     classification = _classify_llm(material, focus_hint) if llm_on else None
@@ -416,7 +418,7 @@ def run_industry_analysis(material: str, focus_hint: str = "",
     if not resources and _llm_available():
         resources = _resources_llm(industry_main) or {}
 
-    return {
+    result = {
         "mode": "llm" if llm_on else "template",
         "classification": classification,
         "chain_map": chain_map,
@@ -427,6 +429,10 @@ def run_industry_analysis(material: str, focus_hint: str = "",
         "focus_hint": focus_hint,
         "region": region,
     }
+    # LLM 已配置但各阶段均未能产出 → 页面需要显式提示降级原因
+    if llm_on and get_llm_error():
+        result["llm_error"] = get_llm_error()
+    return result
 
 
 def to_markdown(result: Dict[str, Any]) -> str:

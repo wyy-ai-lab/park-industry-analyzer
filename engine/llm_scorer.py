@@ -7,6 +7,8 @@ import json
 import os
 from typing import Dict, List, Any, Optional
 
+from .park_llm import DEFAULT_ANTHROPIC_MODEL, DEFAULT_OPENAI_MODEL, _read_config
+
 
 SOFT_CONDITION_PROMPT = """你是一位资深的政策申报评审专家，擅长评估企业与政策的匹配度。
 
@@ -208,15 +210,15 @@ def build_material_prompt(enterprise: Dict[str, Any], policy: Dict[str, Any],
     )
 
 
-def call_anthropic(prompt: str, api_key: str, model: str = "claude-3-5-sonnet-20241022") -> Optional[str]:
-    """调用 Anthropic Claude API"""
+def call_anthropic(prompt: str, api_key: str, model: str = DEFAULT_ANTHROPIC_MODEL) -> Optional[str]:
+    """调用 Anthropic Claude API。Opus 4.7 移除了 temperature 参数，使用自适应思考。"""
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)
         response = client.messages.create(
             model=model,
             max_tokens=2000,
-            temperature=0.3,
+            thinking={"type": "adaptive"},
             messages=[{"role": "user", "content": prompt}]
         )
         return response.content[0].text
@@ -228,7 +230,7 @@ def call_anthropic(prompt: str, api_key: str, model: str = "claude-3-5-sonnet-20
         return None
 
 
-def call_anthropic_http(prompt: str, api_key: str, model: str = "claude-3-5-sonnet-20241022") -> Optional[str]:
+def call_anthropic_http(prompt: str, api_key: str, model: str = DEFAULT_ANTHROPIC_MODEL) -> Optional[str]:
     """使用 HTTP 直接调用 Anthropic API"""
     import requests
     headers = {
@@ -239,7 +241,7 @@ def call_anthropic_http(prompt: str, api_key: str, model: str = "claude-3-5-sonn
     data = {
         "model": model,
         "max_tokens": 2000,
-        "temperature": 0.3,
+        "thinking": {"type": "adaptive"},
         "messages": [{"role": "user", "content": prompt}]
     }
     try:
@@ -251,11 +253,17 @@ def call_anthropic_http(prompt: str, api_key: str, model: str = "claude-3-5-sonn
         return None
 
 
-def call_openai(prompt: str, api_key: str, model: str = "gpt-4o-mini") -> Optional[str]:
-    """调用 OpenAI API"""
+def call_openai(prompt: str, api_key: str, model: Optional[str] = None,
+                base_url: Optional[str] = None) -> Optional[str]:
+    """调用 OpenAI 兼容 API；base_url 可指向 DeepSeek / 通义 / 文心等国内模型服务。"""
+    model = model or _read_config("LLM_MODEL") or DEFAULT_OPENAI_MODEL
+    base_url = base_url or _read_config("LLM_BASE_URL") or _read_config("OPENAI_BASE_URL")
     try:
         import openai
-        client = openai.OpenAI(api_key=api_key)
+        kwargs: Dict[str, Any] = {"api_key": api_key}
+        if base_url:
+            kwargs["base_url"] = base_url
+        client = openai.OpenAI(**kwargs)
         response = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
@@ -264,15 +272,18 @@ def call_openai(prompt: str, api_key: str, model: str = "gpt-4o-mini") -> Option
         )
         return response.choices[0].message.content
     except ImportError:
-        return call_openai_http(prompt, api_key, model)
+        return call_openai_http(prompt, api_key, model, base_url)
     except Exception as e:
-        print(f"OpenAI API 调用失败: {e}")
+        print(f"OpenAI 兼容接口调用失败: {e}")
         return None
 
 
-def call_openai_http(prompt: str, api_key: str, model: str = "gpt-4o-mini") -> Optional[str]:
-    """使用 HTTP 直接调用 OpenAI API"""
+def call_openai_http(prompt: str, api_key: str, model: Optional[str] = None,
+                     base_url: Optional[str] = None) -> Optional[str]:
+    """使用 HTTP 直接调用 OpenAI 兼容 API"""
     import requests
+    model = model or DEFAULT_OPENAI_MODEL
+    url = (base_url or "https://api.openai.com/v1").rstrip("/") + "/chat/completions"
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json"
@@ -284,11 +295,11 @@ def call_openai_http(prompt: str, api_key: str, model: str = "gpt-4o-mini") -> O
         "max_tokens": 2000
     }
     try:
-        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=data, timeout=60)
+        response = requests.post(url, headers=headers, json=data, timeout=60)
         response.raise_for_status()
         return response.json()["choices"][0]["message"]["content"]
     except Exception as e:
-        print(f"OpenAI HTTP 调用失败: {e}")
+        print(f"OpenAI 兼容 HTTP 调用失败: {e}")
         return None
 
 

@@ -8,6 +8,7 @@ from typing import Dict, List, Any, Optional
 
 from .matcher import run_diagnosis
 from .llm_scorer import score_soft_conditions, combine_scores
+from .park_llm import _read_config
 
 
 def load_env_file(env_path: str = ".env") -> None:
@@ -29,16 +30,16 @@ load_env_file()
 
 
 def get_api_config() -> Dict[str, Any]:
-    """获取 API 配置"""
-    provider = os.getenv('LLM_PROVIDER', 'anthropic')
+    """获取 API 配置（Streamlit Secrets 优先，环境变量兜底）"""
+    provider = _read_config('LLM_PROVIDER') or 'anthropic'
     api_key = None
 
     if provider == 'anthropic':
-        api_key = os.getenv('ANTHROPIC_API_KEY')
+        api_key = _read_config('ANTHROPIC_API_KEY')
     elif provider == 'openai':
-        api_key = os.getenv('OPENAI_API_KEY')
+        api_key = _read_config('OPENAI_API_KEY')
 
-    use_demo = os.getenv('USE_DEMO_MODE', 'false').lower() == 'true'
+    use_demo = (_read_config('USE_DEMO_MODE') or 'false').lower() == 'true'
 
     return {
         "provider": provider,

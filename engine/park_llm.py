@@ -1,11 +1,73 @@
 """
 园区 LLM 诊断
 根据园区指标生成结构化诊断结论与建议。
+
+配置来源（优先级从高到低）：
+1. Streamlit Secrets（`.streamlit/secrets.toml`，Streamlit Cloud 部署唯一方式）
+2. 环境变量 / 本地 `.env`
+
+支持的配置项：
+- LLM_PROVIDER   : anthropic（默认）/ openai
+- ANTHROPIC_API_KEY / OPENAI_API_KEY
+- LLM_MODEL        : 模型名，默认 anthropic 路径 claude-opus-4-7，openai 路径 gpt-4o-mini
+- LLM_BASE_URL     : OpenAI 兼容接口地址（DeepSeek / 通义 / 文心等国内模型）
 """
 
 import json
 import os
 from typing import Dict, List, Any, Optional
+
+
+DEFAULT_ANTHROPIC_MODEL = "claude-opus-4-7"
+DEFAULT_OPENAI_MODEL = "gpt-4o-mini"
+
+# 最近一次 LLM 调用失败原因（供页面显式提示，避免静默降级）
+_LLM_LAST_ERROR = ""
+
+
+def _read_config(key: str) -> Optional[str]:
+    """先读 Streamlit Secrets（部署到 Cloud 时唯一注入方式），再读环境变量。"""
+    try:
+        import streamlit as st
+        val = st.secrets.get(key)
+        if val:
+            return str(val)
+    except Exception:
+        pass
+    val = os.getenv(key)
+    return val if val else None
+
+
+def get_llm_config() -> Dict[str, Any]:
+    """返回统一 LLM 配置：provider / api_key / model / base_url"""
+    provider = (_read_config("LLM_PROVIDER") or "anthropic").lower()
+    anthropic_key = _read_config("ANTHROPIC_API_KEY")
+    openai_key = _read_config("OPENAI_API_KEY")
+    default_model = DEFAULT_ANTHROPIC_MODEL if provider == "anthropic" else DEFAULT_OPENAI_MODEL
+    return {
+        "provider": provider,
+        "anthropic_api_key": anthropic_key,
+        "openai_api_key": openai_key,
+        "api_key": anthropic_key if provider == "anthropic" else openai_key,
+        "model": _read_config("LLM_MODEL") or default_model,
+        "base_url": _read_config("LLM_BASE_URL") or _read_config("OPENAI_BASE_URL"),
+    }
+
+
+def get_llm_error() -> str:
+    """获取最近一次 LLM 调用失败原因（空串表示无失败）"""
+    return _LLM_LAST_ERROR
+
+
+def clear_llm_error() -> None:
+    global _LLM_LAST_ERROR
+    _LLM_LAST_ERROR = ""
+
+
+def _record_error(message: str) -> None:
+    global _LLM_LAST_ERROR
+    _LLM_LAST_ERROR = message
+    print(message)
 
 
 PARK_DIAGNOSIS_PROMPT = """你是一位资深的产业规划与园区经济专家。请根据以下园区产业分析数据，生成一份结构化的诊断结论与发展建议。
@@ -58,37 +120,41 @@ PARK_DIAGNOSIS_PROMPT = """你是一位资深的产业规划与园区经济专�
 """
 
 
-def _call_anthropic(prompt: str, api_key: str) -> Optional[str]:
-    """调用 Anthropic Claude API"""
+def _call_anthropic(prompt: str, api_key: str, model: str = DEFAULT_ANTHROPIC_MODEL) -> Optional[str]:
+    """调用 Anthropic Claude API。模型默认 claude-opus-4-7（不支持 temperature，使用自适应思考）。"""
     try:
         import anthropic
         client = anthropic.Anthropic(api_key=api_key)
         response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model=model,
             max_tokens=2000,
-            temperature=0.3,
+            thinking={"type": "adaptive"},
             messages=[{"role": "user", "content": prompt}]
         )
         return response.content[0].text
     except Exception as e:
-        print(f"Anthropic API 调用失败: {e}")
+        _record_error(f"Anthropic API 调用失败: {e}")
         return None
 
 
-def _call_openai(prompt: str, api_key: str) -> Optional[str]:
-    """调用 OpenAI API"""
+def _call_openai(prompt: str, api_key: str, model: str = DEFAULT_OPENAI_MODEL,
+                 base_url: Optional[str] = None) -> Optional[str]:
+    """调用 OpenAI 兼容 API；base_url 可指向 DeepSeek / 通义 / 文心等国内模型服务。"""
     try:
         import openai
-        client = openai.OpenAI(api_key=api_key)
+        kwargs: Dict[str, Any] = {"api_key": api_key}
+        if base_url:
+            kwargs["base_url"] = base_url
+        client = openai.OpenAI(**kwargs)
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.3,
             max_tokens=2000
         )
         return response.choices[0].message.content
     except Exception as e:
-        print(f"OpenAI API 调用失败: {e}")
+        _record_error(f"OpenAI 兼容接口调用失败: {e}")
         return None
 
 
@@ -127,16 +193,14 @@ def generate_diagnosis(metrics: Dict[str, Any]) -> Dict[str, Any]:
     """
     生成园区产业诊断结论。
 
-    如果配置了 ANTHROPIC_API_KEY 或 OPENAI_API_KEY，则调用真实 LLM；
-    否则返回基于模板的诊断结论。
+    如果配置了 ANTHROPIC_API_KEY 或 OPENAI_API_KEY（Secrets 或环境变量），
+    则调用真实 LLM；否则返回基于模板的诊断结论。
+    调用失败时降级为模板模式，失败原因可通过 get_llm_error() 获取。
     """
-    provider = os.getenv("LLM_PROVIDER", "anthropic")
-    api_key = None
-
-    if provider == "anthropic":
-        api_key = os.getenv("ANTHROPIC_API_KEY")
-    elif provider == "openai":
-        api_key = os.getenv("OPENAI_API_KEY")
+    clear_llm_error()
+    cfg = get_llm_config()
+    provider = cfg["provider"]
+    api_key = cfg["api_key"]
 
     totals = metrics.get("totals", {})
     segment_strength = metrics.get("segment_strength", {})
@@ -160,9 +224,9 @@ def generate_diagnosis(metrics: Dict[str, Any]) -> Dict[str, Any]:
 
     if api_key:
         if provider == "anthropic":
-            response_text = _call_anthropic(prompt, api_key)
+            response_text = _call_anthropic(prompt, api_key, cfg["model"])
         else:
-            response_text = _call_openai(prompt, api_key)
+            response_text = _call_openai(prompt, api_key, cfg["model"], cfg["base_url"])
 
         if response_text:
             result = _parse_llm_response(response_text)
@@ -171,9 +235,14 @@ def generate_diagnosis(metrics: Dict[str, Any]) -> Dict[str, Any]:
                 result["mode"] = "llm"
                 _enrich_diagnosis(result, metrics)
                 return result
+        if not get_llm_error():
+            _record_error("LLM 返回为空或无法解析为 JSON")
 
-    # 模板模式
+    # 模板模式（未配置 Key，或 LLM 调用失败后的降级）
     result = _template_diagnosis(metrics)
+    if api_key:
+        # 配置了 Key 但仍走到模板 → 说明 LLM 调用失败，显式带出原因供页面提示
+        result["llm_error"] = get_llm_error() or "LLM 调用失败"
     _enrich_diagnosis(result, metrics)
     return result
 
