@@ -459,7 +459,6 @@ def render_input_panel(run_label: str):
 
     with opt_col:
         with st.expander("⚙️ 园区背景（可选）", expanded=not result_exists()):
-            st.caption("提供背景可让分类与招商建议更贴合园区实际。")
             park_city = st.text_input("所在城市", placeholder="如：合肥")
             park_level = st.selectbox("园区级别",
                                       ["未指定", "国家级", "省级", "市级", "区县级"])
@@ -512,24 +511,8 @@ _notice = st.session_state.pop("_notice", None)
 if _notice:
     st.success(_notice)
 
-# 侧边栏二级目录：输入页显示可折叠的步骤说明，报告页显示可点击的报告结构
-with st.sidebar:
-    if result:
-        with st.expander("📋 报告结构", expanded=True):
-            st.markdown(
-                '<div style="font-size:0.85rem;line-height:2">'
-                '<a href="#ia-sec-classify">一、产业分类</a><br>'
-                '<a href="#ia-sec-chain">二、产业链上下游分析</a><br>'
-                '<a href="#ia-sec-advice">三、产业发展建议</a><br>'
-                '<a href="#ia-sec-invest">四、产业招商推荐</a><br>'
-                '<a href="#ia-export">导出报告</a></div>',
-                unsafe_allow_html=True)
-    else:
-        with st.expander("📋 梳理步骤"):
-            st.markdown("1. 提供园区材料\n2. 产业分类\n3. 产业链上下游分析\n"
-                        "4. 产业发展建议\n5. 产业招商推荐")
-
 # ---------------------------------------------------------------- 两阶段结构：输入页 / 报告页
+st.markdown('<div id="ia-sec-material"></div>', unsafe_allow_html=True)
 if result:
     # 报告页顶部：材料摘要 + 重新梳理入口
     _mat = st.session_state.get("industry_analysis_material", "")
@@ -569,8 +552,6 @@ if run_clicked:
         st.rerun()
 
 if not result:
-    st.markdown('<div class="ia-tip">👆 提供材料后点击「开始产业梳理」。可点「📋 填入示例材料」快速体验完整流程。</div>',
-                unsafe_allow_html=True)
     st.stop()
 
 # ---------------------------------------------------------------- KPI 摘要

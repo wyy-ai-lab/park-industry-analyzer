@@ -278,10 +278,49 @@ NAV_SECTIONS = {
 
 from engine.auth import require_auth, render_auth_controls
 
-nav = st.navigation(NAV_SECTIONS)
+
+def render_sidebar_nav() -> None:
+    """自定义侧边栏层级导航（替代 st.navigation 默认侧栏）。
+
+    一级：园区服务（产业智能梳理）/ 企业服务（企业诊断辅导）
+    二级：可点开的步骤列表——梳理页走锚点跳转，诊断页走 switch_page + 标签定位。
+    """
+    with st.sidebar:
+        st.markdown(
+            '<div style="font-size:0.9rem;margin-bottom:0.35rem">'
+            '<a href="首页">🏠 首页</a></div>',
+            unsafe_allow_html=True)
+
+        st.markdown('<div style="font-size:0.75rem;color:var(--apple-muted);'
+                    'font-weight:600;margin:0.5rem 0 0.15rem">园区服务</div>',
+                    unsafe_allow_html=True)
+        with st.expander("🧭 产业智能梳理", expanded=True):
+            st.markdown(
+                '<div style="font-size:0.85rem;line-height:2">'
+                '<a href="产业智能梳理#ia-sec-material">提供园区材料</a><br>'
+                '<a href="产业智能梳理#ia-sec-classify">产业分类</a><br>'
+                '<a href="产业智能梳理#ia-sec-chain">产业链上下游分析</a><br>'
+                '<a href="产业智能梳理#ia-sec-advice">产业发展建议</a><br>'
+                '<a href="产业智能梳理#ia-sec-invest">产业招商推荐</a></div>',
+                unsafe_allow_html=True)
+
+        st.markdown('<div style="font-size:0.75rem;color:var(--apple-muted);'
+                    'font-weight:600;margin:0.6rem 0 0.15rem">企业服务</div>',
+                    unsafe_allow_html=True)
+        with st.expander("🩺 企业诊断辅导"):
+            for label, tab_key in (("企业画像录入", "profile"), ("运行政策诊断", "diagnosis"),
+                                   ("诊断报告分析", "report"), ("企业培育路线", "roadmap")):
+                if st.button(label, key=f"nav_diag_{tab_key}",
+                             use_container_width=True):
+                    st.session_state["enterprise_active_tab"] = tab_key
+                    st.switch_page("pages/6_企业诊断辅导.py")
+        st.divider()
+
+
+nav = st.navigation(NAV_SECTIONS, position="hidden")
 require_auth()
-# 页面级侧边栏内容（如梳理页的步骤/报告结构）需紧跟导航项，
-# 因此徽标/演示开关等全局控件放到 nav.run() 之后渲染
+render_sidebar_nav()
 nav.run()
+# 全局控件放最后：自定义导航 + 页面级侧边栏内容优先展示
 render_auth_controls()
 render_demo_controls()
