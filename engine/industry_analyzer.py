@@ -96,25 +96,50 @@ _LAYER_OF_SEGMENT = {
 
 
 def _classify_template(material: str, focus_hint: str) -> Dict[str, Any]:
-    """模板模式：按行解析企业（含名称与简介拆分），关键词猜测产业环节"""
+    """模板模式：从材料中解析企业（含名称与简介拆分），关键词猜测产业环节。
+
+    兼容两种材料：规整清单（每行一家、——分隔）与原始文稿（企业名嵌在段落里、
+    一行多家），后者按企业名正则逐一提取。
+    """
     name_markers = ("公司", "厂", "集团", "中心", "院", "研究所", "工作室")
+    ent_re = re.compile(
+        r'([^，。；;：:、\s]{2,34}?'
+        r'(?:股份有限公司|有限责任公司|有限公司|集团有限公司|公司|研究院|研究所))')
     enterprises = []
     for line in material.splitlines():
         line = line.strip().lstrip("•·-0123456789.、）)")
         if len(line) < 4 or not any(m in line for m in name_markers):
             continue  # 跳过标题行、空行、非企业行
-        parts = re.split(r"[—\-–]|：|: {1}", line, maxsplit=1)
-        name = re.split(r"[，,（(]", parts[0])[0].strip()
-        products = parts[1].split("，")[0].strip(" ，。") if len(parts) > 1 else "未提及"
-        if not name or len(name) > 30:
+        matches = list(ent_re.finditer(line))
+        if not matches:
             continue
-        enterprises.append({"name": name, "products": products,
-                            "tech": "未提及", "scale": "未提及"})
-    # 去重保序
+        for m in matches:
+            # 名称清理：去掉粘连的前导叙述（"负极这块主要是硅源纳米…"→"硅源纳米…"）。
+            # 只用高精度动词切分；"有"需排除"有限公司"，避免误伤企业名
+            name = re.split(r'(找|向|如|包括|由|是|为|有(?!限公司)|块|厂(?!集团))',
+                            m.group(1))[-1]
+            # 去掉前导括号注解："（电池检测设备）和皖江…"→"皖江…"
+            name = re.sub(r'^[^（]{0,12}（[^）]*）(?:和|与|及)', '', name)
+            name = name.strip("，。；;：:、 ").lstrip("和与及、")
+            if not name or len(name) > 34:
+                continue
+            # 简介：名称之后到下一个企业名/句末之间的片段
+            tail = line[m.end():]
+            nxt = ent_re.search(tail)
+            if nxt:
+                tail = tail[:nxt.start()]
+            tail = re.split(r"[。；;]", tail)[0]
+            tail = tail.strip("—-–—，,。；;：: ")
+            tail = re.sub(r'^(主要|专业|专注)?(主要从事|从事|主营|生产|研发|制造|做|聚焦|供|提供|给)',
+                          '', tail).strip(" ，,。；;：: ")
+            products = (tail.split("，")[0] if tail else "") or "未提及"
+            enterprises.append({"name": name, "products": products,
+                                "tech": "未提及", "scale": "未提及"})
     seen, unique = set(), []
     for e in enterprises:
         if e["name"] not in seen:
             seen.add(e["name"])
+            e["name"] = e["name"].lstrip("和与及、")
             unique.append(e)
     industry = focus_hint or "待确认（模板模式建议填写产业方向）"
     return {"industries": [{"industry": industry, "enterprises": unique}]}

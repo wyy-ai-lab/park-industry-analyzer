@@ -27,3 +27,6 @@ output/
 # OS
 .DS_Store
 Thumbs.db
+
+# 梳理历史记录（本地保存，不入库）
+data/history/

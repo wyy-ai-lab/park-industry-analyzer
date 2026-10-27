@@ -17,6 +17,7 @@ except ImportError:
     def get_app_mode() -> str:
         return "demo"
 from engine.industry_analyzer import run_industry_analysis
+from engine import ia_history
 from engine.ia_sections import (
     inject_ia_css, render_ia_header, render_kpi_strip,
     render_classification, render_chain_analysis, render_paths_section,
@@ -42,6 +43,18 @@ EXAMPLE_MATERIAL = """园区企业目录（示例 · 锂电新材料方向）
 8. 皖江智能装备有限公司——材料生产线设备
 9. 安徽循环再生科技有限公司——退役电池回收梯次利用
 10. 合肥新能物流有限公司——危化品仓储与运输
+"""
+
+# 原始文稿示例：模拟公众号/园区动态的真实混乱格式（无编号、信息嵌在段落里），
+# 用于演示智能模式从乱材料中提取企业信息的能力
+MESSY_EXAMPLE = """【园区动态】聚焦新能源新材料，我区集聚效应初步显现
+近年来，我区聚焦新能源新材料主导产业，坚持招大引强、集群发展，产业集聚效应初步显现。目前区内已集聚一批产业链上下游企业，涵盖正极材料、负极材料、电解液、隔膜、电芯、系统集成等关键环节。
+
+在正极材料环节，安徽金泉新材料有限公司主要从事正极材料前驱体的研发生产，去年产值约8亿元，今年还在扩产。负极这块主要是硅源纳米科技（合肥）有限公司，做硅碳负极，核心团队来自中国科学技术大学，目前处于产能爬坡阶段。电解液由皖江电解液科技有限公司供货，是几家头部电池厂的合格供应商。隔膜厂安徽蓝科隔膜材料有限公司去年年底刚投产。
+
+电芯厂是合肥星恒电芯制造有限公司，主做磷酸铁锂；Pack集成可以找安徽聚能电池系统有限公司，两家一直有配套合作。设备与检测环节有合肥精测仪器股份有限公司（电池检测设备）和皖江智能装备有限公司（材料产线设备）。另外，安徽循环再生科技有限公司做退役电池回收梯次利用，合肥新能物流有限公司负责危化品仓储运输。
+
+据了解，目前园区在正负极头部企业、隔膜涂覆等环节仍存在短板，下一步将围绕补齐产业链短板精准招商……
 """
 
 # 企业清单模板（CSV，带 BOM 保证 Excel 打开不乱码）：用户照着填即可
@@ -140,12 +153,16 @@ def render_input_panel(run_label: str, has_result: bool):
                        ("。" if (_q["with_scale"] or _q["with_qualification"]) else
                         "，建议补充产值 / 员工数 / 资质，报告会更准。"))
 
-        btn_col, tip_col = st.columns([1, 2])
+        btn_col, ex_col, messy_col = st.columns([1.2, 1, 1])
         with btn_col:
             run_clicked = st.button(run_label, type="primary", use_container_width=True)
-        with tip_col:
+        with ex_col:
             if st.button("📋 填入示例材料", use_container_width=True):
                 st.session_state["_fill_example"] = True
+                st.rerun()
+        with messy_col:
+            if st.button("📄 填入原始文稿", use_container_width=True):
+                st.session_state["_fill_messy"] = True
                 st.rerun()
 
         with st.expander("📋 支持什么材料？三档规范（材料越全，报告越准）"):
@@ -170,6 +187,15 @@ def render_input_panel(run_label: str, has_result: bool):
 
 # ---------------------------------------------------------------- 标题区
 result = st.session_state.get(RESULT_KEY)
+# 启动自动恢复：无会话结果时载入最近一次梳理记录（内部试用，刷新/重启不丢）
+if not result:
+    _latest = ia_history.latest_record()
+    if _latest:
+        st.session_state[RESULT_KEY] = _latest["result"]
+        st.session_state["industry_analysis_material"] = _latest.get("material", "")
+        st.session_state["industry_analysis_time"] = _latest.get("saved_at", "")
+        result = _latest["result"]
+
 render_ia_header(
     "🏭 园区产业概况",
     "单页完成全流程：填入园区材料并运行梳理，产业分类、产业链分析、发展建议与"
@@ -201,6 +227,23 @@ def _render_advance(next_step: int, label: str) -> None:
             st.session_state["ia_step"] = 5
             st.rerun()
 
+# ---------------------------------------------------------------- 侧栏：梳理记录（历史保存 / 载入 / 删除）
+_records = ia_history.list_records()
+with st.sidebar:
+    st.markdown("🗂 **梳理记录**")
+    _sel = None
+    _load_clicked = _del_clicked = False
+    if _records:
+        _sel = st.selectbox("历史记录", [r["name"] for r in _records],
+                            label_visibility="collapsed")
+        _hc1, _hc2 = st.columns(2)
+        with _hc1:
+            _load_clicked = st.button("📂 载入", use_container_width=True)
+        with _hc2:
+            _del_clicked = st.button("🗑 删除", use_container_width=True)
+    else:
+        st.caption("暂无记录，运行梳理后自动保存")
+
 # ---------------------------------------------------------------- 步骤条（同页锚点）
 if result:
     st.markdown("""
@@ -223,6 +266,9 @@ else:
 if st.session_state.pop("_fill_example", None):
     st.session_state["industry_material"] = EXAMPLE_MATERIAL
     st.session_state["_notice"] = "已填入示例材料，可直接点击「开始产业梳理」"
+if st.session_state.pop("_fill_messy", None):
+    st.session_state["industry_material"] = MESSY_EXAMPLE
+    st.session_state["_notice"] = "已填入原始文稿示例（格式较乱，适合体验智能模式的信息提取）"
 if st.session_state.pop("_fill_upload", None):
     st.session_state["industry_material"] = st.session_state.pop("_uploaded_text", "")
 # 演示版：首次进入自动填入示例材料，客户零输入、一键体验完整链路
@@ -270,7 +316,33 @@ if run_clicked:
         st.session_state["industry_analysis_material"] = material.strip()
         st.session_state["industry_analysis_time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
         st.session_state["ia_step"] = 2  # 分步呈现：先出 ② 产业分类
+        # 自动保存为历史记录（同名覆盖；默认以城市命名，便于多园区管理）
+        _rec_name = (park_city.strip() + "产业园区") if (park_city or "").strip() \
+            else f"梳理记录 {st.session_state['industry_analysis_time']}"
+        ia_history.save_record(_rec_name, result, material.strip())
+        st.session_state["ia_record_name"] = _rec_name
+        st.session_state["_notice"] = f"梳理完成，已保存至「{_rec_name}」（左侧 🗂 可载入历史记录）"
         st.rerun()
+
+# ---------------------------------------------------------------- 历史记录：载入 / 删除
+if _load_clicked and _sel:
+    _rec = ia_history.load_record(_sel)
+    if _rec:
+        st.session_state[RESULT_KEY] = _rec["result"]
+        st.session_state["industry_analysis_material"] = _rec.get("material", "")
+        st.session_state["industry_analysis_time"] = _rec.get("saved_at", "")
+        st.session_state["ia_record_name"] = _sel
+        st.session_state["ia_step"] = 2
+        st.session_state["_notice"] = f"已载入记录「{_sel}」（{_rec.get('saved_at', '')}）"
+        st.rerun()
+if _del_clicked and _sel:
+    ia_history.delete_record(_sel)
+    st.session_state["_notice"] = f"已删除记录「{_sel}」"
+    if st.session_state.get("ia_record_name") == _sel:
+        for _k in (RESULT_KEY, "industry_analysis_material",
+                   "industry_analysis_time", "ia_record_name"):
+            st.session_state.pop(_k, None)
+    st.rerun()
 
 # ---------------------------------------------------------------- ②–⑤ 同页分步生成报告各部分
 if result:
@@ -279,6 +351,29 @@ if result:
 
     st.markdown('<div id="ia-sec-class"></div>', unsafe_allow_html=True)
     render_classification(result)
+    # 产业梳理 → 企业诊断 打通：选择园区内企业一键送入诊断
+    _ent_rows = [(g.get("industry", ""), e)
+                 for g in result["classification"].get("industries", [])
+                 for e in g.get("enterprises", [])]
+    if _ent_rows:
+        _d1, _d2 = st.columns([3, 1])
+        with _d1:
+            _pick = st.selectbox("🩺 选择园区内企业，直接进行政策诊断",
+                                 options=[""] + [e.get("name", "") for _, e in _ent_rows],
+                                 format_func=lambda x: x or "（选择企业）")
+        with _d2:
+            st.write("")
+            _go_diag = st.button("进入诊断 →", key="ia_go_diag",
+                                 use_container_width=True, disabled=not _pick)
+        if _go_diag and _pick:
+            _ind, _ent = next((i, e) for i, e in _ent_rows if e.get("name") == _pick)
+            st.session_state["pending_diag_profile"] = {
+                "name": _ent.get("name", ""),
+                "industry": _ind,
+                "sub_industry": _ind,
+                "core_product": _ent.get("products", ""),
+            }
+            st.switch_page("pages/6_企业诊断辅导.py")
     if step == 2:
         _render_advance(3, "③ 产业链分析")
 

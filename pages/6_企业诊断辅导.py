@@ -114,6 +114,16 @@ if "diagnosis_result" not in st.session_state and os.path.exists(DIAGNOSIS_FILE)
     except Exception:
         st.session_state["diagnosis_result"] = None
 
+# 接收「园区产业概况」一键送入的企业画像：预填表单、清空旧诊断结果
+_pending = st.session_state.pop("pending_diag_profile", None)
+if _pending:
+    _prof = st.session_state["enterprise_profile"]
+    _prof.update({k: v for k, v in _pending.items() if v})
+    st.session_state["enterprise_profile"] = _prof
+    st.session_state["diagnosis_result"] = None
+    st.session_state["enterprise_active_tab"] = "profile"
+    st.toast(f"已载入园区企业：{_pending.get('name', '')}，请核对画像后运行诊断")
+
 TABS = [
     {"key": "profile", "label": "🏢 企业画像"},
     {"key": "diagnosis", "label": "🔍 政策诊断"},

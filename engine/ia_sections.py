@@ -286,13 +286,18 @@ def _render_path_cards(paths):
 
 
 def _render_target_cards(targets):
-    """招商目标企业：企查查式卡片两列网格"""
+    """招商目标企业：企查查式卡片两列网格，附一键核实链接"""
+    from urllib.parse import quote
     for i in range(0, len(targets), 2):
         cols = st.columns(2)
         for col, t in zip(cols, targets[i:i + 2]):
             is_kb = t.get("source") == "知识库"
             badge = ('<span class="tc-badge kb">🟢 知识库·已核实</span>' if is_kb
                      else '<span class="tc-badge ai">🟠 AI生成·待核实</span>')
+            verify = (f'<a href="https://www.qcc.com/web/search?key={quote(t.get("name", ""))}"'
+                      f' target="_blank" title="跳转企查查搜索该企业，核实工商信息与最新动态"'
+                      f' style="font-size:0.74rem;color:var(--td-brand);text-decoration:none;'
+                      f'white-space:nowrap;flex-shrink:0">🔎 核实</a>')
             tags = [f'<span class="tc-tag">{esc(t.get("segment", ""))}</span>']
             if t.get("region"):
                 tags.append(f'<span class="tc-tag loc">📍 {esc(t["region"])}</span>')
@@ -304,7 +309,8 @@ def _render_target_cards(targets):
             with col:
                 st.markdown(
                     f'<div class="ia-tcard"><div class="tc-head">'
-                    f'<span class="tc-name">{esc(t.get("name", ""))}</span>{badge}</div>'
+                    f'<span class="tc-name">{esc(t.get("name", ""))}</span>'
+                    f'<span style="display:flex;align-items:center;gap:0.5rem">{badge}{verify}</span></div>'
                     f'<div class="tc-tags">{"".join(tags)}</div>{"".join(lines)}</div>',
                     unsafe_allow_html=True)
 
@@ -360,11 +366,11 @@ def render_gap_cards(result) -> None:
     empty = [s for s in segments if not s.get("enterprises")]
     cards = [
         ("gap-strong", "✅ 优势环节", f"{len(strong)} 个", strong,
-         "已有多家企业布局，具备配套基础"),
+         "判定依据：该环节 ≥2 家企业布局，具备集聚与配套基础"),
         ("gap-weak", "⚠️ 薄弱环节", f"{len(weak)} 个", weak,
-         "仅单一企业，抗风险与议价能力弱"),
+         "判定依据：该环节仅 1 家企业，抗风险与配套议价能力弱"),
         ("gap-empty", "⛔ 缺失环节", f"{len(empty)} 个", empty,
-         "链条断点，建议列入招商补链目标"),
+         "判定依据：该环节无企业布局，属链条断点，建议列入招商补链目标"),
     ]
     cols = st.columns(3)
     for col, (cls, title, badge, segs, note) in zip(cols, cards):
