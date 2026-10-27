@@ -29,6 +29,7 @@ from engine.llm_scorer import generate_material_outline
 inject_apple_theme()
 
 require_auth()
+st.session_state["_page_id"] = "diag"
 
 st.markdown("""
 <style>

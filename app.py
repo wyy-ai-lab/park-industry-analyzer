@@ -207,6 +207,7 @@ a.home-entry-link:hover .home-entry {
 
 def home():
     """首页：一句话价值主张 + 一个主入口 + 两个次要入口。"""
+    st.session_state["_page_id"] = "home"
     # Hero
     st.markdown(textwrap.dedent("""
     <div class="home-hero">
@@ -219,10 +220,10 @@ def home():
 
     # 主入口
     st.markdown(textwrap.dedent("""
-    <a href="产业智能梳理" class="home-entry-link">
+    <a href="园区产业概况" class="home-entry-link">
         <div class="home-entry">
-            <div class="home-entry-title">🧭 产业智能梳理 <span style="font-size:0.8rem;font-weight:500;opacity:0.85">主入口</span></div>
-            <div class="home-entry-desc">上传企业目录、园区介绍等基础材料，自动完成产业分类 → 上中下游分环节梳理 →
+            <div class="home-entry-title">🏭 园区产业概况 <span style="font-size:0.8rem;font-weight:500;opacity:0.85">主入口</span></div>
+            <div class="home-entry-desc">填入企业目录、园区介绍等基础材料，自动完成产业分类 → 上中下游分环节梳理 →
             强弱缺失诊断 → 强链补链延链路径 → 招商目标企业清单 + 研究院/协会资源。</div>
             <div class="home-entry-cta">开始梳理 →</div>
         </div>
@@ -262,16 +263,20 @@ def home():
     """), unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------------- 三段式导航
-# 极简三入口：演示分析页（园区概览等）不在侧边栏出现，
+# ---------------------------------------------------------------- 导航注册（隐藏默认侧栏，由 render_sidebar_nav 渲染）
+# 五个业务模块 + 首页；示例分析页（园区概览等）不在导航中，
 # 经首页「演示园区」卡片进入园区概览后横向跳转。
 NAV_SECTIONS = {
     "": [
         st.Page(home, title="首页", icon="🏠", default=True),
-        st.Page("pages/7_产业智能梳理.py", title="产业智能梳理", icon="🧭",
-                url_path="产业智能梳理"),
-    ],
-    "企业服务": [
+        st.Page("pages/7_园区产业概况.py", title="园区产业概况", icon="🏭",
+                url_path="园区产业概况"),
+        st.Page("pages/8_产业链分析.py", title="产业链分析", icon="🧬",
+                url_path="产业链分析"),
+        st.Page("pages/9_产业发展建议.py", title="产业发展建议", icon="💡",
+                url_path="产业发展建议"),
+        st.Page("pages/10_产业招商推荐.py", title="产业招商推荐", icon="🎯",
+                url_path="产业招商推荐"),
         st.Page("pages/6_企业诊断辅导.py", title="企业诊断辅导", icon="🩺", url_path="企业诊断辅导"),
     ],
 }
@@ -280,47 +285,37 @@ from engine.auth import require_auth, render_auth_controls
 
 
 def render_sidebar_nav() -> None:
-    """自定义侧边栏层级导航（替代 st.navigation 默认侧栏）。
+    """自定义侧边栏扁平导航（替代 st.navigation 默认侧栏，支持当前模块高亮）。
 
-    一级：园区服务（产业智能梳理）/ 企业服务（企业诊断辅导）
-    二级：可点开的步骤列表——梳理页走锚点跳转，诊断页走 switch_page + 标签定位。
+    在 nav.run() 之后调用：页面脚本已把自身 _page_id 写入 session_state。
     """
+    current = st.session_state.get("_page_id", "home")
+    items = [
+        ("home", "🏠 首页", "首页"),
+        ("overview", "🏭 园区产业概况", "园区产业概况"),
+        ("chain", "🧬 产业链分析", "产业链分析"),
+        ("advice", "💡 产业发展建议", "产业发展建议"),
+        ("invest", "🎯 产业招商推荐", "产业招商推荐"),
+        ("diag", "🩺 企业诊断辅导", "企业诊断辅导"),
+    ]
     with st.sidebar:
-        st.markdown(
-            '<div style="font-size:0.9rem;margin-bottom:0.35rem">'
-            '<a href="首页">🏠 首页</a></div>',
-            unsafe_allow_html=True)
-
-        st.markdown('<div style="font-size:0.75rem;color:var(--apple-muted);'
-                    'font-weight:600;margin:0.5rem 0 0.15rem">园区服务</div>',
+        for pid, label, url in items:
+            if pid == current:
+                st.markdown(
+                    f'<div style="padding:0.3rem 0.6rem;border-radius:8px;'
+                    f'background:var(--apple-blue-light);font-weight:600;font-size:0.9rem">'
+                    f'{label}</div>', unsafe_allow_html=True)
+            else:
+                st.markdown(
+                    f'<div style="padding:0.3rem 0.6rem;font-size:0.9rem">'
+                    f'<a href="{url}" style="text-decoration:none;color:inherit">{label}</a></div>',
                     unsafe_allow_html=True)
-        with st.expander("🧭 产业智能梳理", expanded=True):
-            st.markdown(
-                '<div style="font-size:0.85rem;line-height:2">'
-                '<a href="产业智能梳理#ia-sec-material">提供园区材料</a><br>'
-                '<a href="产业智能梳理#ia-sec-classify">产业分类</a><br>'
-                '<a href="产业智能梳理#ia-sec-chain">产业链上下游分析</a><br>'
-                '<a href="产业智能梳理#ia-sec-advice">产业发展建议</a><br>'
-                '<a href="产业智能梳理#ia-sec-invest">产业招商推荐</a></div>',
-                unsafe_allow_html=True)
-
-        st.markdown('<div style="font-size:0.75rem;color:var(--apple-muted);'
-                    'font-weight:600;margin:0.6rem 0 0.15rem">企业服务</div>',
-                    unsafe_allow_html=True)
-        with st.expander("🩺 企业诊断辅导"):
-            for label, tab_key in (("企业画像录入", "profile"), ("运行政策诊断", "diagnosis"),
-                                   ("诊断报告分析", "report"), ("企业培育路线", "roadmap")):
-                if st.button(label, key=f"nav_diag_{tab_key}",
-                             use_container_width=True):
-                    st.session_state["enterprise_active_tab"] = tab_key
-                    st.switch_page("pages/6_企业诊断辅导.py")
         st.divider()
 
 
 nav = st.navigation(NAV_SECTIONS, position="hidden")
 require_auth()
-render_sidebar_nav()
 nav.run()
-# 全局控件放最后：自定义导航 + 页面级侧边栏内容优先展示
+render_sidebar_nav()
 render_auth_controls()
 render_demo_controls()
