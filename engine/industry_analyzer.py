@@ -439,11 +439,50 @@ def run_industry_analysis(material: str, focus_hint: str = "",
     return result
 
 
+def _report_summary(result: Dict[str, Any]) -> List[str]:
+    """报告摘要要点（Markdown / Word / PDF 共用）"""
+    from datetime import datetime
+    all_ents = [e for g in result["classification"].get("industries", [])
+                for e in g.get("enterprises", [])]
+    segments = result["chain_map"].get("segments", [])
+    gaps = result.get("gaps", {})
+    n_weak = len(gaps.get("weak_segments", []))
+    n_empty = len(gaps.get("empty_segments", []))
+    paths = result.get("paths", {})
+    n_kb = sum(1 for t in result.get("targets", []) if t.get("source") == "知识库")
+    n_ai = len(result.get("targets", [])) - n_kb
+
+    mode = "LLM 智能梳理" if result.get("mode") == "llm" else "本地模板模式"
+    lines = [
+        f"- 编制日期：{datetime.now().strftime('%Y年%m月%d日')}；生成模式：{mode}",
+        f"- 本次梳理共识别企业 **{len(all_ents)}** 家，覆盖产业链环节 **{len(segments)}** 个"
+        f"（上游 {sum(1 for s in segments if s.get('layer') == '上游')} / "
+        f"中游 {sum(1 for s in segments if s.get('layer') == '中游')} / "
+        f"下游 {sum(1 for s in segments if s.get('layer') == '下游')}）。",
+        f"- 诊断出薄弱环节 **{n_weak}** 个、缺失环节 **{n_empty}** 个，"
+        f"据此生成强链建议 {len(paths.get('strengthen', []))} 条、"
+        f"补链建议 {len(paths.get('complete', []))} 条、延链建议 {len(paths.get('extend', []))} 条。",
+    ]
+    if result.get("targets"):
+        lines.append(f"- 输出招商目标企业 **{len(result['targets'])}** 家"
+                     f"（知识库已核实 {n_kb} 家" +
+                     (f"，AI 生成待核实 {n_ai} 家）" if n_ai else "）"))
+    if result.get("region"):
+        lines.append(f"- 园区背景：{result['region']}")
+    return lines
+
+
+def _report_disclaimer(result: Dict[str, Any]) -> str:
+    mode = "LLM 智能梳理" if result.get("mode") == "llm" else "本地模板模式（仅规则归位结果）"
+    return (f"本报告由「园区产业分析智能体」生成（{mode}），供园区产业研究与招商工作内部参考。"
+            "招商目标清单中 AI 生成条目基于公开信息整理，企业名称、所在地与落地线索请在正式对接前逐一人工核实；"
+            "知识库条目虽经人工整理，仍建议联系前复核最新动态。")
+
+
 def to_markdown(result: Dict[str, Any]) -> str:
     """导出梳理结果为 Markdown 报告"""
     lines = ["# 园区产业梳理报告", ""]
-    mode = result.get("mode")
-    lines.append(f"> 生成模式：{'LLM 智能梳理' if mode == 'llm' else '模板模式（未配置 API Key，仅基础归位）'}")
+    lines.extend(_report_summary(result))
     lines.append("")
 
     # 产业分类
@@ -505,4 +544,5 @@ def to_markdown(result: Dict[str, Any]) -> str:
     else:
         lines.append("（模板模式未生成；配置 API Key 后自动输出机构清单）")
 
+    lines += ["", "## 六、使用说明", "", _report_disclaimer(result), ""]
     return "\n".join(lines)

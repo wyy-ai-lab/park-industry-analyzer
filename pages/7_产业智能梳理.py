@@ -340,6 +340,53 @@ def render_path_cards(paths):
             st.markdown("".join(body), unsafe_allow_html=True)
 
 
+def render_target_cards(targets):
+    """招商目标企业：企查查式卡片两列网格"""
+    st.markdown("""
+    <style>
+    .ia-tcard { background:#fff; border:1px solid var(--td-border); border-radius:12px;
+                padding:0.95rem 1.1rem; margin-bottom:0.7rem;
+                box-shadow:0 1px 3px rgba(27,39,51,0.04); }
+    .ia-tcard .tc-head { display:flex; align-items:center; justify-content:space-between;
+                         gap:0.6rem; margin-bottom:0.5rem; }
+    .ia-tcard .tc-name { font-size:0.98rem; font-weight:700; color:var(--td-text); }
+    .ia-tcard .tc-badge { flex-shrink:0; font-size:0.72rem; font-weight:600;
+                          padding:0.14rem 0.6rem; border-radius:999px; }
+    .ia-tcard .tc-badge.kb { background:#E6F7F0; color:#00875A; border:1px solid #BDE8D4; }
+    .ia-tcard .tc-badge.ai { background:#FFF4E8; color:#D2661A; border:1px solid #FAD8B4; }
+    .ia-tcard .tc-tags { display:flex; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.55rem; }
+    .ia-tcard .tc-tag { font-size:0.74rem; font-weight:600; padding:0.12rem 0.55rem;
+                        border-radius:6px; background:var(--td-brand-light); color:var(--td-brand); }
+    .ia-tcard .tc-tag.loc { background:var(--td-bg); color:var(--td-muted); font-weight:500; }
+    .ia-tcard .tc-line { font-size:0.83rem; line-height:1.55; color:var(--td-text);
+                         margin-top:0.3rem; }
+    .ia-tcard .tc-k { display:inline-block; font-size:0.72rem; font-weight:600;
+                      color:var(--td-muted); background:var(--td-bg); border-radius:5px;
+                      padding:0.05rem 0.45rem; margin-right:0.4rem; }
+    </style>
+    """, unsafe_allow_html=True)
+    for i in range(0, len(targets), 2):
+        cols = st.columns(2)
+        for col, t in zip(cols, targets[i:i + 2]):
+            is_kb = t.get("source") == "知识库"
+            badge = ('<span class="tc-badge kb">🟢 知识库·已核实</span>' if is_kb
+                     else '<span class="tc-badge ai">🟠 AI生成·待核实</span>')
+            tags = [f'<span class="tc-tag">{esc(t.get("segment", ""))}</span>']
+            if t.get("region"):
+                tags.append(f'<span class="tc-tag loc">📍 {esc(t["region"])}</span>')
+            lines = []
+            if t.get("reason"):
+                lines.append(f'<div class="tc-line"><span class="tc-k">配套逻辑</span>{esc(t["reason"])}</div>')
+            if t.get("signal"):
+                lines.append(f'<div class="tc-line"><span class="tc-k">落地线索</span>{esc(t["signal"])}</div>')
+            with col:
+                st.markdown(
+                    f'<div class="ia-tcard"><div class="tc-head">'
+                    f'<span class="tc-name">{esc(t.get("name", ""))}</span>{badge}</div>'
+                    f'<div class="tc-tags">{"".join(tags)}</div>{"".join(lines)}</div>',
+                    unsafe_allow_html=True)
+
+
 # ---------------------------------------------------------------- 标题区
 result = st.session_state.get("industry_analysis_result")
 current_stage = 6 if result else 1
@@ -546,12 +593,7 @@ if result.get("targets"):
     st.markdown('<div class="ia-alert">🟢 <b>知识库条目</b>：人工整理、已核实，对接前建议复核最新动态；'
                 '🟠 <b>AI 生成条目</b>：基于公开信息生成，企业名称、所在地与落地线索请在正式对接前逐一人工核实。</div>',
                 unsafe_allow_html=True)
-    trows = [{"目标企业": t.get("name", ""), "对应环节": t.get("segment", ""),
-              "所在地": t.get("region", ""), "配套逻辑": t.get("reason", ""),
-              "落地线索": t.get("signal", ""),
-              "来源": "🟢 知识库·已核实" if t.get("source") == "知识库" else "🟠 AI生成·待核实"}
-             for t in result["targets"]]
-    st.dataframe(trows, use_container_width=True, hide_index=True)
+    render_target_cards(result["targets"])
     st.caption(f"共 {len(result['targets'])} 家目标企业：知识库已核实 {n_kb} 家"
                + (f"，AI 生成待核实 {n_ai} 家" if n_ai else ""))
 else:

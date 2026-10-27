@@ -14,6 +14,7 @@ from typing import Any, Dict, List, Tuple
 
 from engine.report_export import _find_cjk_font
 from engine.park_report_export import _pdf_safe_multi_cell, _pdf_table_row
+from engine.industry_analyzer import _report_summary, _report_disclaimer
 
 
 def _today() -> str:
@@ -73,6 +74,14 @@ def build_industry_word_report(result: Dict[str, Any]) -> io.BytesIO:
         if result.get("region"):
             parts.append(f"目标区域偏好：{result['region']}")
         extra.add_run("　".join(parts)).font.size = Pt(12)
+    doc.add_page_break()
+
+    # 摘要
+    doc.add_heading("摘  要", level=1)
+    for line in _report_summary(result):
+        # 去掉 Markdown 加粗记号
+        p = doc.add_paragraph(style="List Bullet")
+        p.add_run(line.replace("**", ""))
     doc.add_page_break()
 
     # 一、产业分类
@@ -155,6 +164,10 @@ def build_industry_word_report(result: Dict[str, Any]) -> io.BytesIO:
     else:
         doc.add_paragraph("（未生成产业资源清单）")
 
+    # 六、使用说明
+    doc.add_heading("六、使用说明", level=1)
+    doc.add_paragraph(_report_disclaimer(result))
+
     buf = io.BytesIO()
     doc.save(buf)
     buf.seek(0)
@@ -193,6 +206,16 @@ def build_industry_pdf_report(result: Dict[str, Any]) -> io.BytesIO:
         pdf.cell(0, 9, f"产业方向提示：{result['focus_hint']}", ln=True, align="C")
     if result.get("region"):
         pdf.cell(0, 9, f"目标区域偏好：{result['region']}", ln=True, align="C")
+
+    # 摘要
+    pdf.add_page()
+    pdf.set_font("cn", "B", 16)
+    pdf.cell(0, 10, "摘  要", ln=True)
+    pdf.ln(1)
+    pdf.set_font("cn", "", 10)
+    for line in _report_summary(result):
+        _pdf_safe_multi_cell(pdf, "· " + line.replace("**", ""), line_height=5.8)
+    pdf.ln(2)
 
     # 一、产业分类
     pdf.add_page()
@@ -292,5 +315,13 @@ def build_industry_pdf_report(result: Dict[str, Any]) -> io.BytesIO:
     else:
         pdf.set_font("cn", "", 10)
         _pdf_safe_multi_cell(pdf, "（未生成产业资源清单）", line_height=5.8)
+
+    # 六、使用说明
+    pdf.ln(2)
+    pdf.set_font("cn", "B", 16)
+    pdf.cell(0, 10, "六、使用说明", ln=True)
+    pdf.ln(1)
+    pdf.set_font("cn", "", 10)
+    _pdf_safe_multi_cell(pdf, _report_disclaimer(result), line_height=5.8)
 
     return io.BytesIO(pdf.output())
