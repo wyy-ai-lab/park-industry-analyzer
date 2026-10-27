@@ -280,6 +280,8 @@ from engine.auth import require_auth, render_auth_controls
 
 nav = st.navigation(NAV_SECTIONS)
 require_auth()
+# 页面级侧边栏内容（如梳理页的步骤/报告结构）需紧跟导航项，
+# 因此徽标/演示开关等全局控件放到 nav.run() 之后渲染
+nav.run()
 render_auth_controls()
 render_demo_controls()
-nav.run()

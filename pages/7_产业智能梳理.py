@@ -512,22 +512,22 @@ _notice = st.session_state.pop("_notice", None)
 if _notice:
     st.success(_notice)
 
-# 侧边栏二级目录：输入页显示步骤说明，报告页显示可点击的报告结构
+# 侧边栏二级目录：输入页显示可折叠的步骤说明，报告页显示可点击的报告结构
 with st.sidebar:
     if result:
-        st.markdown("**📋 报告结构**")
-        st.markdown(
-            '<div style="font-size:0.85rem;line-height:2">'
-            '<a href="#ia-sec-classify">一、产业分类</a><br>'
-            '<a href="#ia-sec-chain">二、产业链上下游分析</a><br>'
-            '<a href="#ia-sec-advice">三、产业发展建议</a><br>'
-            '<a href="#ia-sec-invest">四、产业招商推荐</a><br>'
-            '<a href="#ia-export">导出报告</a></div>',
-            unsafe_allow_html=True)
+        with st.expander("📋 报告结构", expanded=True):
+            st.markdown(
+                '<div style="font-size:0.85rem;line-height:2">'
+                '<a href="#ia-sec-classify">一、产业分类</a><br>'
+                '<a href="#ia-sec-chain">二、产业链上下游分析</a><br>'
+                '<a href="#ia-sec-advice">三、产业发展建议</a><br>'
+                '<a href="#ia-sec-invest">四、产业招商推荐</a><br>'
+                '<a href="#ia-export">导出报告</a></div>',
+                unsafe_allow_html=True)
     else:
-        st.markdown("**📋 梳理步骤**\n\n"
-                    "1. 提供园区材料\n2. 产业分类\n3. 产业链上下游分析\n"
-                    "4. 产业发展建议\n5. 产业招商推荐")
+        with st.expander("📋 梳理步骤"):
+            st.markdown("1. 提供园区材料\n2. 产业分类\n3. 产业链上下游分析\n"
+                        "4. 产业发展建议\n5. 产业招商推荐")
 
 # ---------------------------------------------------------------- 两阶段结构：输入页 / 报告页
 if result:
