@@ -263,20 +263,13 @@ def home():
 
 
 # ---------------------------------------------------------------- 三段式导航
+# 极简三入口：演示分析页（园区概览等）不在侧边栏出现，
+# 经首页「演示园区」卡片进入园区概览后横向跳转。
 NAV_SECTIONS = {
     "": [
         st.Page(home, title="首页", icon="🏠", default=True),
-    ],
-    "主入口": [
         st.Page("pages/7_产业智能梳理.py", title="产业智能梳理", icon="🧭",
                 url_path="产业智能梳理"),
-    ],
-    "演示园区 · 示例数据": [
-        st.Page("pages/1_园区概览.py", title="园区概览", icon="🏞️", url_path="园区概览"),
-        st.Page("pages/2_产业地图.py", title="产业地图", icon="🗺️", url_path="产业地图"),
-        st.Page("pages/3_产业链图谱.py", title="产业链图谱", icon="🕸️", url_path="产业链图谱"),
-        st.Page("pages/4_发展建议.py", title="发展建议", icon="💡", url_path="发展建议"),
-        st.Page("pages/5_企业透视.py", title="企业透视", icon="🔍", url_path="企业透视"),
     ],
     "企业服务": [
         st.Page("pages/6_企业诊断辅导.py", title="企业诊断辅导", icon="🩺", url_path="企业诊断辅导"),

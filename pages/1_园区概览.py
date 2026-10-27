@@ -19,6 +19,17 @@ inject_apple_theme()
 
 require_auth()
 
+# 示例数据模块横向跳转（极简导航下，演示页之间互达）
+st.markdown(
+    '<div style="font-size:0.8rem;color:var(--apple-muted);margin-bottom:0.35rem">'
+    '示例数据模块：'
+    '<a href="园区概览" style="margin-right:0.9rem;font-weight:600">🏞️ 园区概览</a>'
+    '<a href="产业地图" style="margin-right:0.9rem">🗺️ 产业地图</a>'
+    '<a href="产业链图谱" style="margin-right:0.9rem">🕸️ 产业链图谱</a>'
+    '<a href="发展建议" style="margin-right:0.9rem">💡 发展建议</a>'
+    '<a href="企业透视">🔍 企业透视</a></div>',
+    unsafe_allow_html=True)
+
 # 汇报模式切换
 presentation_mode = st.toggle("🎤 汇报模式", key="park_presentation_mode")
 
