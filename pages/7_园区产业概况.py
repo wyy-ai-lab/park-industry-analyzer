@@ -177,15 +177,39 @@ render_ia_header(
     result,
 )
 
+# 侧栏 / 步骤条经查询参数（ia_step）定位时，自动展开到对应步骤
+_qp_step = st.query_params.get("ia_step")
+if _qp_step and result:
+    try:
+        st.session_state["ia_step"] = max(int(_qp_step),
+                                          st.session_state.get("ia_step") or 2)
+    except (TypeError, ValueError):
+        pass
+
+
+def _render_advance(next_step: int, label: str) -> None:
+    """分步推进：主按钮展开下一部分，副按钮一次展开全部。"""
+    c1, c2, _ = st.columns([1.3, 1.3, 2.6])
+    with c1:
+        if st.button(f"下一步：{label} →", key=f"ia_adv_{next_step}", type="primary",
+                     use_container_width=True):
+            st.session_state["ia_step"] = next_step
+            st.rerun()
+    with c2:
+        if st.button("⤵ 一次展开全部", key=f"ia_adv_all_{next_step}",
+                     use_container_width=True):
+            st.session_state["ia_step"] = 5
+            st.rerun()
+
 # ---------------------------------------------------------------- 步骤条（同页锚点）
 if result:
     st.markdown("""
     <div class="ia-steps">
-        <a href="#ia-input">① 填入基本信息</a><span class="ia-steps-sep">→</span>
-        <a href="#ia-sec-class">② 产业分类</a><span class="ia-steps-sep">→</span>
-        <a href="#ia-sec-chain">③ 产业链分析</a><span class="ia-steps-sep">→</span>
-        <a href="#ia-sec-paths">④ 产业发展建议</a><span class="ia-steps-sep">→</span>
-        <a href="#ia-sec-invest">⑤ 产业招商推荐</a>
+        <a href="?ia_step=2#ia-input">① 填入基本信息</a><span class="ia-steps-sep">→</span>
+        <a href="?ia_step=2#ia-sec-class">② 产业分类</a><span class="ia-steps-sep">→</span>
+        <a href="?ia_step=3#ia-sec-chain">③ 产业链分析</a><span class="ia-steps-sep">→</span>
+        <a href="?ia_step=4#ia-sec-paths">④ 产业发展建议</a><span class="ia-steps-sep">→</span>
+        <a href="?ia_step=5#ia-sec-invest">⑤ 产业招商推荐</a>
     </div>
     """, unsafe_allow_html=True)
 else:
@@ -245,23 +269,34 @@ if run_clicked:
         st.session_state[RESULT_KEY] = result
         st.session_state["industry_analysis_material"] = material.strip()
         st.session_state["industry_analysis_time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+        st.session_state["ia_step"] = 2  # 分步呈现：先出 ② 产业分类
         st.rerun()
 
-# ---------------------------------------------------------------- ②–⑤ 同页依次生成报告各部分
+# ---------------------------------------------------------------- ②–⑤ 同页分步生成报告各部分
 if result:
     render_kpi_strip(result)
+    step = st.session_state.get("ia_step") or 2
 
     st.markdown('<div id="ia-sec-class"></div>', unsafe_allow_html=True)
     render_classification(result)
+    if step == 2:
+        _render_advance(3, "③ 产业链分析")
 
-    st.markdown('<div id="ia-sec-chain"></div>', unsafe_allow_html=True)
-    render_chain_analysis(result)
+    if step >= 3:
+        st.markdown('<div id="ia-sec-chain"></div>', unsafe_allow_html=True)
+        render_chain_analysis(result)
+        if step == 3:
+            _render_advance(4, "④ 产业发展建议")
 
-    st.markdown('<div id="ia-sec-paths"></div>', unsafe_allow_html=True)
-    render_paths_section(result)
+    if step >= 4:
+        st.markdown('<div id="ia-sec-paths"></div>', unsafe_allow_html=True)
+        render_paths_section(result)
+        if step == 4:
+            _render_advance(5, "⑤ 产业招商推荐")
 
-    st.markdown('<div id="ia-sec-invest"></div>', unsafe_allow_html=True)
-    render_targets_section(result)
-    render_resources_subsection(result)
-    render_export_block(result)
+    if step >= 5:
+        st.markdown('<div id="ia-sec-invest"></div>', unsafe_allow_html=True)
+        render_targets_section(result)
+        render_resources_subsection(result)
+        render_export_block(result)
 

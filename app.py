@@ -288,9 +288,9 @@ def render_sidebar_nav() -> None:
     items = [
         ("home", "🏠 首页", "首页"),
         ("overview", "🏭 园区产业概况", "园区产业概况"),
-        ("chain", "🧬 产业链分析", "园区产业概况#ia-sec-chain"),
-        ("advice", "💡 产业发展建议", "园区产业概况#ia-sec-paths"),
-        ("invest", "🎯 产业招商推荐", "园区产业概况#ia-sec-invest"),
+        ("chain", "🧬 产业链分析", "园区产业概况?ia_step=3#ia-sec-chain"),
+        ("advice", "💡 产业发展建议", "园区产业概况?ia_step=4#ia-sec-paths"),
+        ("invest", "🎯 产业招商推荐", "园区产业概况?ia_step=5#ia-sec-invest"),
         ("diag", "🩺 企业诊断辅导", "企业诊断辅导"),
     ]
     with st.sidebar:
