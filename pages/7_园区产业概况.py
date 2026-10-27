@@ -1,10 +1,8 @@
 """
 园区产业概况
 ============
-模块一：填入基本信息。粘贴/上传园区企业材料，选择智能或本地模式运行梳理，
-产出核心指标（识别企业 / 覆盖环节 / 薄弱环节 / 缺失环节）。
-
-后续模块（产业链分析 / 产业发展建议 / 产业招商推荐）共享本次结果。
+单页五段式：填入基本信息 → 产业分类 → 产业链上下游分析 → 产业发展建议 → 产业招商推荐。
+全部内容在本页面内自上而下生成，左侧导航与页内步骤条仅做锚点滚动定位，不跳转新页面。
 """
 
 from datetime import datetime
@@ -21,6 +19,8 @@ except ImportError:
 from engine.industry_analyzer import run_industry_analysis
 from engine.ia_sections import (
     inject_ia_css, render_ia_header, render_kpi_strip,
+    render_classification, render_chain_analysis, render_paths_section,
+    render_targets_section, render_resources_subsection, render_export_block,
     analyze_material_quality, RESULT_KEY,
 )
 
@@ -172,10 +172,27 @@ def render_input_panel(run_label: str, has_result: bool):
 result = st.session_state.get(RESULT_KEY)
 render_ia_header(
     "🏭 园区产业概况",
-    "填入基本信息：粘贴园区企业材料并运行梳理，自动生成产业分类、"
-    "产业链分析、发展建议与招商推荐。",
+    "单页完成全流程：填入园区材料并运行梳理，产业分类、产业链分析、发展建议与"
+    "招商推荐依次在本页生成，可点左侧导航或下方步骤条定位。",
     result,
 )
+
+# ---------------------------------------------------------------- 步骤条（同页锚点）
+if result:
+    st.markdown("""
+    <div class="ia-steps">
+        <a href="#ia-input">① 填入基本信息</a><span class="ia-steps-sep">→</span>
+        <a href="#ia-sec-class">② 产业分类</a><span class="ia-steps-sep">→</span>
+        <a href="#ia-sec-chain">③ 产业链分析</a><span class="ia-steps-sep">→</span>
+        <a href="#ia-sec-paths">④ 产业发展建议</a><span class="ia-steps-sep">→</span>
+        <a href="#ia-sec-invest">⑤ 产业招商推荐</a>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown('<div class="ia-tip">👇 在下方填入园区材料并运行梳理，'
+                '②–⑤ 各部分报告将在<b>本页面内</b>依次生成；'
+                '左侧导航与本步骤条只做页内定位，不会跳转新页面。</div>',
+                unsafe_allow_html=True)
 
 # 会话写入须在文本域等组件创建之前完成（Streamlit 禁止对已实例化组件的 key 赋值）：
 # 用标志位 + rerun 的方式，在脚本最前置位应用填入内容
@@ -191,7 +208,8 @@ _notice = st.session_state.pop("_notice", None)
 if _notice:
     st.success(_notice)
 
-# ---------------------------------------------------------------- 输入面板（已有结果时收进折叠面板，便于修改重跑）
+# ---------------------------------------------------------------- ① 填入基本信息（已有结果时收进折叠面板，便于修改重跑）
+st.markdown('<div id="ia-input"></div>', unsafe_allow_html=True)
 if result:
     _mat = st.session_state.get("industry_analysis_material", "")
     _qq = analyze_material_quality(_mat)
@@ -229,12 +247,21 @@ if run_clicked:
         st.session_state["industry_analysis_time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
         st.rerun()
 
-# ---------------------------------------------------------------- 核心指标
+# ---------------------------------------------------------------- ②–⑤ 同页依次生成报告各部分
 if result:
     render_kpi_strip(result)
-    st.markdown('<div style="font-size:0.85rem;color:var(--td-muted);margin-bottom:1rem">'
-                '下一步：'
-                '<a href="产业链分析" style="margin-right:0.9rem">🧬 产业链分析</a>'
-                '<a href="产业发展建议" style="margin-right:0.9rem">💡 产业发展建议</a>'
-                '<a href="产业招商推荐">🎯 产业招商推荐</a></div>',
-                unsafe_allow_html=True)
+
+    st.markdown('<div id="ia-sec-class"></div>', unsafe_allow_html=True)
+    render_classification(result)
+
+    st.markdown('<div id="ia-sec-chain"></div>', unsafe_allow_html=True)
+    render_chain_analysis(result)
+
+    st.markdown('<div id="ia-sec-paths"></div>', unsafe_allow_html=True)
+    render_paths_section(result)
+
+    st.markdown('<div id="ia-sec-invest"></div>', unsafe_allow_html=True)
+    render_targets_section(result)
+    render_resources_subsection(result)
+    render_export_block(result)
+

@@ -264,19 +264,13 @@ def home():
 
 
 # ---------------------------------------------------------------- 导航注册（隐藏默认侧栏，由 render_sidebar_nav 渲染）
-# 五个业务模块 + 首页；示例分析页（园区概览等）不在导航中，
-# 经首页「演示园区」卡片进入园区概览后横向跳转。
+# 单页五段式：园区产业概况一页完成 材料→分类→链分析→建议→招商，
+# 侧栏各步骤为同页锚点链接；企业诊断辅导为独立页。
 NAV_SECTIONS = {
     "": [
         st.Page(home, title="首页", icon="🏠", default=True),
         st.Page("pages/7_园区产业概况.py", title="园区产业概况", icon="🏭",
                 url_path="园区产业概况"),
-        st.Page("pages/8_产业链分析.py", title="产业链分析", icon="🧬",
-                url_path="产业链分析"),
-        st.Page("pages/9_产业发展建议.py", title="产业发展建议", icon="💡",
-                url_path="产业发展建议"),
-        st.Page("pages/10_产业招商推荐.py", title="产业招商推荐", icon="🎯",
-                url_path="产业招商推荐"),
         st.Page("pages/6_企业诊断辅导.py", title="企业诊断辅导", icon="🩺", url_path="企业诊断辅导"),
     ],
 }
@@ -285,22 +279,23 @@ from engine.auth import require_auth, render_auth_controls
 
 
 def render_sidebar_nav() -> None:
-    """自定义侧边栏扁平导航（替代 st.navigation 默认侧栏，支持当前模块高亮）。
+    """自定义侧边栏导航（替代 st.navigation 默认侧栏，支持当前模块高亮）。
 
+    园区产业概况为单页五段式，侧栏 ②–④ 项是同页锚点链接（滚动定位，不跳新页面）。
     在 nav.run() 之后调用：页面脚本已把自身 _page_id 写入 session_state。
     """
     current = st.session_state.get("_page_id", "home")
     items = [
         ("home", "🏠 首页", "首页"),
         ("overview", "🏭 园区产业概况", "园区产业概况"),
-        ("chain", "🧬 产业链分析", "产业链分析"),
-        ("advice", "💡 产业发展建议", "产业发展建议"),
-        ("invest", "🎯 产业招商推荐", "产业招商推荐"),
+        ("chain", "🧬 产业链分析", "园区产业概况#ia-sec-chain"),
+        ("advice", "💡 产业发展建议", "园区产业概况#ia-sec-paths"),
+        ("invest", "🎯 产业招商推荐", "园区产业概况#ia-sec-invest"),
         ("diag", "🩺 企业诊断辅导", "企业诊断辅导"),
     ]
     with st.sidebar:
         for pid, label, url in items:
-            if pid == current:
+            if pid == current or (current == "overview" and pid in ("chain", "advice", "invest")):
                 st.markdown(
                     f'<div style="padding:0.3rem 0.6rem;border-radius:8px;'
                     f'background:var(--apple-blue-light);font-weight:600;font-size:0.9rem">'

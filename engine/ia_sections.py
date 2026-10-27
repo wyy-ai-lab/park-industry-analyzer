@@ -1,11 +1,11 @@
 """
 园区产业梳理 · 共享渲染模块
 ============================
-「园区产业概况 / 产业链分析 / 产业发展建议 / 产业招商推荐」
-四个模块页共用的渲染逻辑：样式、工具函数、KPI 条、产业分类、
+「园区产业概况」单页共用的渲染逻辑：样式、工具函数、KPI 条、产业分类、
 产业链图谱 + 优势/薄弱/缺失诊断卡、发展路径、招商目标、产业资源、报告导出。
 
-分析结果经 st.session_state["industry_analysis_result"] 在模块页之间共享。
+五个步骤（填入材料 → 分类 → 链分析 → 建议 → 招商）在同一页面内经锚点定位，
+分析结果经 st.session_state["industry_analysis_result"] 共享。
 """
 
 import streamlit as st
@@ -182,6 +182,16 @@ def inject_ia_css() -> None:
 .ia-tcard .tc-k { display: inline-block; font-size: 0.72rem; font-weight: 600;
     color: var(--td-muted); background: var(--td-bg); border-radius: 5px;
     padding: 0.05rem 0.45rem; margin-right: 0.4rem; }
+
+/* 同页步骤条（锚点导航，不跳新页面） */
+.ia-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;
+    margin: 0.9rem 0 1.1rem; }
+.ia-steps a { display: inline-block; padding: 0.4rem 0.95rem; border-radius: 999px;
+    background: #fff; border: 1px solid var(--td-border); color: var(--td-text);
+    font-size: 0.84rem; font-weight: 600; text-decoration: none; transition: all .2s ease; }
+.ia-steps a:hover { border-color: var(--td-brand); color: var(--td-brand);
+    background: var(--td-brand-light); }
+.ia-steps-sep { color: var(--td-muted); font-size: 0.8rem; }
 
 @media (max-width: 900px) {
     .ia-kpi-grid, .ia-gap-grid { grid-template-columns: repeat(2, 1fr); }
