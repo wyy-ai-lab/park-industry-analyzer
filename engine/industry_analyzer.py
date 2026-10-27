@@ -495,7 +495,7 @@ def to_markdown(result: Dict[str, Any]) -> str:
     lines.append("")
 
     # 环节梳理
-    lines.append("## 二、上中下游环节梳理")
+    lines.append("## 二、产业链上下游分析")
     for layer in ("上游", "中游", "下游"):
         lines.append(f"### {layer}")
         segs = [s for s in result["chain_map"].get("segments", []) if s.get("layer") == layer]
@@ -507,7 +507,7 @@ def to_markdown(result: Dict[str, Any]) -> str:
     lines.append("")
 
     # 路径建议
-    lines.append("## 三、强链补链延链路径")
+    lines.append("## 三、产业发展建议（强链 · 补链 · 延链）")
     paths = result.get("paths", {})
     for title, key in (("🔧 强链", "strengthen"), ("🧩 补链", "complete"), ("➡️ 延链", "extend")):
         lines.append(f"### {title}")

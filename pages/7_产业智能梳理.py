@@ -13,6 +13,7 @@
 """
 
 import streamlit as st
+from datetime import datetime
 
 from engine.ui_helpers import inject_apple_theme
 from engine.auth import require_auth
@@ -232,26 +233,6 @@ st.markdown("""
 
 # ---------------------------------------------------------------- 工具函数
 
-def render_stepbar(current: int):
-    """渲染五阶段流程步骤条；current 为当前进行到的阶段（1-5，6 表示全部完成）"""
-    steps = [("①", "提供材料"), ("②", "产业分类"), ("③", "环节诊断"),
-             ("④", "优化路径"), ("⑤", "招商与资源")]
-    parts = ['<div class="ia-stepbar">']
-    for i, (num, label) in enumerate(steps, start=1):
-        state = "done" if (current == 6 or i < current) else "current" if i == current else ""
-        icon = "✓" if (current == 6 or i < current) else num
-        parts.append(
-            f'<div class="ia-step {state}">'
-            f'<div class="ia-step-num">{icon}</div>'
-            f'<div class="ia-step-label">{label}</div></div>'
-        )
-        if i < len(steps):
-            line_done = "done" if (current == 6 or i < current) else ""
-            parts.append(f'<div class="ia-step-line {line_done}"></div>')
-    parts.append("</div>")
-    st.markdown("".join(parts), unsafe_allow_html=True)
-
-
 def esc(s) -> str:
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
@@ -387,9 +368,115 @@ def render_target_cards(targets):
                     unsafe_allow_html=True)
 
 
+def render_input_panel(run_label: str):
+    """材料输入面板：输入页与报告页「重新梳理」共用。
+    返回 (material, run_clicked, focus_hint, region, park_level, park_city, local_only)"""
+    input_col, opt_col = st.columns([3, 1], gap="large")
+    with input_col:
+        st.markdown('<div class="ia-card">', unsafe_allow_html=True)
+        st.markdown('<div class="ia-card-title">📄 园区材料</div>'
+                    '<div class="ia-card-desc">粘贴企业目录、园区介绍等文字材料，或上传文件</div>',
+                    unsafe_allow_html=True)
+        tab_text, tab_file = st.tabs(["📝 粘贴文本", "📎 上传文件"])
+
+        with tab_text:
+            material = st.text_area(
+                "企业目录 / 园区介绍 / 文字材料",
+                height=210,
+                key="industry_material",
+                label_visibility="collapsed",
+                placeholder="每行一家企业最佳（企业名——主营产品），也支持整段文字材料",
+            )
+        with tab_file:
+            up = st.file_uploader(
+                "上传 .txt / .csv / .xlsx / .pdf / .docx 文件",
+                type=["txt", "csv", "xlsx", "pdf", "docx"],
+                label_visibility="collapsed")
+            st.caption("图片（JPG / PNG）材料请直接粘贴图中文字。")
+            if up is not None:
+                # 同一文件只处理一次，避免上传器在 rerun 后重复触发
+                _fid = getattr(up, "file_id", up.name)
+                if st.session_state.get("_processed_upload") != _fid:
+                    st.session_state["_processed_upload"] = _fid
+                    try:
+                        if up.name.endswith(".txt"):
+                            uploaded_text = up.read().decode("utf-8", errors="ignore")
+                        elif up.name.endswith(".pdf"):
+                            from pypdf import PdfReader
+                            _reader = PdfReader(up)
+                            uploaded_text = "\n".join(
+                                (_pg.extract_text() or "") for _pg in _reader.pages)
+                        elif up.name.endswith(".docx"):
+                            from docx import Document
+                            _doc = Document(up)
+                            uploaded_text = "\n".join(
+                                _p.text for _p in _doc.paragraphs if _p.text.strip())
+                        else:
+                            import pandas as pd
+                            df = pd.read_csv(up) if up.name.endswith(".csv") else pd.read_excel(up)
+                            uploaded_text = df.to_string(index=False)
+                        if not (uploaded_text or "").strip():
+                            st.error("未能从文件中提取到文字内容，请尝试粘贴文本或换个文件")
+                            uploaded_text = ""
+                        # 组件已渲染，不能直写其 key：置标志位后 rerun，由脚本前置位统一填入
+                        st.session_state["_uploaded_text"] = uploaded_text
+                        st.session_state["_fill_upload"] = True
+                        st.session_state["_notice"] = f"已读取 {up.name}（{len(uploaded_text)} 字符），内容已填入左侧文本域"
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"文件读取失败:{e}")
+                        material = st.session_state.get("industry_material", "")
+                else:
+                    material = st.session_state.get("industry_material", "")
+            else:
+                material = st.session_state.get("industry_material", "")
+
+        _q = analyze_material_quality(material or "")
+        if _q["enterprises"]:
+            _q_parts = [f"已识别约 {_q['enterprises']} 家企业"]
+            if _q["with_scale"]:
+                _q_parts.append(f"{_q['with_scale']} 家含规模信息")
+            if _q["with_qualification"]:
+                _q_parts.append(f"{_q['with_qualification']} 家含资质信息")
+            st.caption("✅ " + "，".join(_q_parts) +
+                       ("。" if (_q["with_scale"] or _q["with_qualification"]) else
+                        "，建议补充产值 / 员工数 / 资质，报告会更准。"))
+
+        btn_col, tip_col = st.columns([1, 2])
+        with btn_col:
+            run_clicked = st.button(run_label, type="primary", use_container_width=True)
+        with tip_col:
+            if st.button("📋 填入示例材料", use_container_width=True):
+                st.session_state["_fill_example"] = True
+                st.rerun()
+
+        with st.expander("📋 支持什么材料？三档规范（材料越全，报告越准）"):
+            st.markdown(MATERIAL_GUIDE)
+            st.download_button("⬇ 下载企业清单模板（CSV）", TEMPLATE_CSV,
+                               "企业清单模板.csv", "text/csv",
+                               use_container_width=True)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with opt_col:
+        with st.expander("⚙️ 园区背景（可选）", expanded=not result_exists()):
+            st.caption("提供背景可让分类与招商建议更贴合园区实际。")
+            park_city = st.text_input("所在城市", placeholder="如：合肥")
+            park_level = st.selectbox("园区级别",
+                                      ["未指定", "国家级", "省级", "市级", "区县级"])
+            focus_hint = st.text_input("产业方向提示", placeholder="如：锂电新材料")
+            region = st.text_input("目标招商区域", placeholder="如：长三角 / 不限")
+            local_only = st.checkbox("🔒 敏感材料本地处理", value=False,
+                                     help="开启后完全禁止调用外部 LLM，材料零出域；"
+                                          "结果为本地规则生成（分类/环节归位可用，AI 补全类内容不生成）")
+    return material, run_clicked, focus_hint, region, park_level, park_city, local_only
+
+
+def result_exists() -> bool:
+    return bool(st.session_state.get("industry_analysis_result"))
+
+
 # ---------------------------------------------------------------- 标题区
 result = st.session_state.get("industry_analysis_result")
-current_stage = 6 if result else 1
 
 _mode_llm = bool(result and result.get("mode") == "llm" and not result.get("llm_error"))
 _badge_cls = "ia-mode-llm" if _mode_llm else "ia-mode-tpl"
@@ -425,85 +512,22 @@ _notice = st.session_state.pop("_notice", None)
 if _notice:
     st.success(_notice)
 
-render_stepbar(current_stage)
-
-# ---------------------------------------------------------------- 第一步：材料输入
-input_col, opt_col = st.columns([3, 1], gap="large")
-
-with input_col:
-    st.markdown('<div class="ia-card">', unsafe_allow_html=True)
-    st.markdown('<div class="ia-card-title">📄 园区材料</div>'
-                '<div class="ia-card-desc">粘贴企业目录、园区介绍等文字材料，或上传文件</div>',
+# ---------------------------------------------------------------- 两阶段结构：输入页 / 报告页
+if result:
+    # 报告页顶部：材料摘要 + 重新梳理入口
+    _mat = st.session_state.get("industry_analysis_material", "")
+    _qq = analyze_material_quality(_mat)
+    _gen = st.session_state.get("industry_analysis_time", "")
+    _summ = f"📄 本次材料：{len(_mat)} 字符 · 约 {_qq['enterprises']} 家企业"
+    if _gen:
+        _summ += f" · 生成于 {_gen}"
+    st.markdown(f'<div class="ia-tip"><span>{_summ}</span></div>',
                 unsafe_allow_html=True)
-    tab_text, tab_file = st.tabs(["📝 粘贴文本", "📎 上传文件"])
-
-    with tab_text:
-        material = st.text_area(
-            "企业目录 / 园区介绍 / 文字材料",
-            height=210,
-            key="industry_material",
-            label_visibility="collapsed",
-            placeholder="每行一家企业最佳（企业名——主营产品），也支持整段文字材料",
-        )
-    with tab_file:
-        up = st.file_uploader("上传 .txt / .csv / .xlsx 文件", type=["txt", "csv", "xlsx"],
-                              label_visibility="collapsed")
-        if up is not None:
-            try:
-                if up.name.endswith(".txt"):
-                    uploaded_text = up.read().decode("utf-8", errors="ignore")
-                else:
-                    import pandas as pd
-                    df = pd.read_csv(up) if up.name.endswith(".csv") else pd.read_excel(up)
-                    uploaded_text = df.to_string(index=False)
-                # 组件已渲染，不能直写其 key：置标志位后 rerun，由脚本前置位统一填入
-                st.session_state["_uploaded_text"] = uploaded_text
-                st.session_state["_fill_upload"] = True
-                st.session_state["_notice"] = f"已读取 {up.name}（{len(uploaded_text)} 字符），内容已填入左侧文本域"
-                st.rerun()
-            except Exception as e:
-                st.error(f"文件读取失败:{e}")
-                material = st.session_state.get("industry_material", "")
-        else:
-            material = st.session_state.get("industry_material", "")
-
-    _q = analyze_material_quality(material or "")
-    if _q["enterprises"]:
-        _q_parts = [f"已识别约 {_q['enterprises']} 家企业"]
-        if _q["with_scale"]:
-            _q_parts.append(f"{_q['with_scale']} 家含规模信息")
-        if _q["with_qualification"]:
-            _q_parts.append(f"{_q['with_qualification']} 家含资质信息")
-        st.caption("✅ " + "，".join(_q_parts) +
-                   ("。" if (_q["with_scale"] or _q["with_qualification"]) else
-                    "，建议补充产值 / 员工数 / 资质，报告会更准。"))
-
-    btn_col, tip_col = st.columns([1, 2])
-    with btn_col:
-        run_clicked = st.button("🚀 开始产业梳理", type="primary", use_container_width=True)
-    with tip_col:
-        if st.button("📋 填入示例材料", use_container_width=True):
-            st.session_state["_fill_example"] = True
-            st.rerun()
-
-    with st.expander("📋 支持什么材料？三档规范（材料越全，报告越准）"):
-        st.markdown(MATERIAL_GUIDE)
-        st.download_button("⬇ 下载企业清单模板（CSV）", TEMPLATE_CSV,
-                           "企业清单模板.csv", "text/csv",
-                           use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with opt_col:
-    with st.expander("⚙️ 园区背景（可选）", expanded=False):
-        st.caption("提供背景可让分类与招商建议更贴合园区实际。")
-        park_city = st.text_input("所在城市", placeholder="如：合肥")
-        park_level = st.selectbox("园区级别",
-                                  ["未指定", "国家级", "省级", "市级", "区县级"])
-        focus_hint = st.text_input("产业方向提示", placeholder="如：锂电新材料")
-        region = st.text_input("目标招商区域", placeholder="如：长三角 / 不限")
-        local_only = st.checkbox("🔒 敏感材料本地处理", value=False,
-                                 help="开启后完全禁止调用外部 LLM，材料零出域；"
-                                      "结果为本地规则生成（分类/环节归位可用，AI 补全类内容不生成）")
+    with st.expander("⚙️ 修改材料 / 调整背景，重新梳理"):
+        _panel = render_input_panel("🔄 重新梳理")
+else:
+    _panel = render_input_panel("🚀 开始产业梳理")
+material, run_clicked, focus_hint, region, park_level, park_city, local_only = _panel
 
 # ---------------------------------------------------------------- 运行分析
 if run_clicked:
@@ -523,14 +547,14 @@ if run_clicked:
                                            region_ctx, local_only=local_only)
             status.update(label="梳理完成", state="complete")
         st.session_state["industry_analysis_result"] = result
+        st.session_state["industry_analysis_material"] = material.strip()
+        st.session_state["industry_analysis_time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
         st.rerun()
 
 if not result:
     st.markdown('<div class="ia-tip">👆 提供材料后点击「开始产业梳理」。可点「📋 填入示例材料」快速体验完整流程。</div>',
                 unsafe_allow_html=True)
     st.stop()
-
-render_stepbar(6)
 
 # ---------------------------------------------------------------- KPI 摘要
 all_ents = [e for g in result["classification"].get("industries", [])
@@ -553,9 +577,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ---------------------------------------------------------------- ① 产业分类明细
-st.markdown('<div class="ia-section"><span class="ia-section-num">①</span>'
-            '<span class="ia-section-title">产业分类明细</span>'
+# ---------------------------------------------------------------- 一、产业分类
+st.markdown('<div class="ia-section"><span class="ia-section-num">一</span>'
+            '<span class="ia-section-title">产业分类</span>'
             '<span class="ia-section-note">企业逐一归类</span></div>',
             unsafe_allow_html=True)
 for group in result["classification"].get("industries", []):
@@ -565,9 +589,9 @@ for group in result["classification"].get("industries", []):
                  "核心技术": e.get("tech", ""), "规模": e.get("scale", "")} for e in ents]
         st.dataframe(rows, use_container_width=True, hide_index=True)
 
-# ---------------------------------------------------------------- ② 产业链图谱
-st.markdown('<div class="ia-section"><span class="ia-section-num">②</span>'
-            '<span class="ia-section-title">产业链图谱</span>'
+# ---------------------------------------------------------------- 二、产业链上下游分析
+st.markdown('<div class="ia-section"><span class="ia-section-num">二</span>'
+            '<span class="ia-section-title">产业链上下游分析</span>'
             '<span class="ia-section-note">上中下游环节分布 · 缺失环节已标红</span></div>',
             unsafe_allow_html=True)
 if gaps.get("is_template"):
@@ -575,17 +599,17 @@ if gaps.get("is_template"):
                 unsafe_allow_html=True)
 render_chain_map(result["chain_map"], gaps)
 
-# ---------------------------------------------------------------- ③ 优化路径
-st.markdown('<div class="ia-section"><span class="ia-section-num">③</span>'
-            '<span class="ia-section-title">强链 · 补链 · 延链路径</span>'
-            '<span class="ia-section-note">基于强弱缺失诊断生成</span></div>',
+# ---------------------------------------------------------------- 三、产业发展建议
+st.markdown('<div class="ia-section"><span class="ia-section-num">三</span>'
+            '<span class="ia-section-title">产业发展建议</span>'
+            '<span class="ia-section-note">强链 · 补链 · 延链</span></div>',
             unsafe_allow_html=True)
 render_path_cards(result.get("paths", {}))
 
-# ---------------------------------------------------------------- ④ 招商目标清单
-st.markdown('<div class="ia-section"><span class="ia-section-num">④</span>'
-            '<span class="ia-section-title">招商目标企业清单</span>'
-            f'<span class="ia-section-note">{"目标区域偏好：" + esc(result.get("region")) if result.get("region") else ""}</span></div>',
+# ---------------------------------------------------------------- 四、产业招商推荐
+st.markdown('<div class="ia-section"><span class="ia-section-num">四</span>'
+            '<span class="ia-section-title">产业招商推荐</span>'
+            '<span class="ia-section-note">目标企业 · 研究院/协会资源</span></div>',
             unsafe_allow_html=True)
 if result.get("targets"):
     n_kb = sum(1 for t in result["targets"] if t.get("source") == "知识库")
@@ -601,13 +625,11 @@ else:
                 '维护已核实目标企业（按「产业 → 环节 → 企业」），或启用智能模式由 AI 自动补全。</div>',
                 unsafe_allow_html=True)
 
-# ---------------------------------------------------------------- ⑤ 产业资源
-st.markdown('<div class="ia-section"><span class="ia-section-num">⑤</span>'
-            '<span class="ia-section-title">研究院 / 协会资源</span>'
-            '<span class="ia-section-note">产学研与行业组织对接线索</span></div>',
-            unsafe_allow_html=True)
+# 研究院 / 协会资源（产业招商推荐的配套对接线索）
 res = result.get("resources", {})
 if res:
+    st.markdown('<div style="font-size:0.95rem;font-weight:700;margin:1.1rem 0 0.6rem">'
+                '🏛️ 配套资源：研究院 / 协会</div>', unsafe_allow_html=True)
     rc = st.columns(2)
     with rc[0]:
         st.markdown('<div class="ia-card"><div class="ia-card-title">🔬 研究机构</div>', unsafe_allow_html=True)

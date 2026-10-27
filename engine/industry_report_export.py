@@ -98,7 +98,7 @@ def build_industry_word_report(result: Dict[str, Any]) -> io.BytesIO:
                 p.add_run(f"：{desc}")
 
     # 二、上中下游环节梳理
-    doc.add_heading("二、上中下游环节梳理", level=1)
+    doc.add_heading("二、产业链上下游分析", level=1)
     for layer in ("上游", "中游", "下游"):
         doc.add_heading(layer, level=2)
         segs = [s for s in result["chain_map"].get("segments", [])
@@ -112,7 +112,7 @@ def build_industry_word_report(result: Dict[str, Any]) -> io.BytesIO:
             p.add_run(f"：{names}")
 
     # 三、强链补链延链路径
-    doc.add_heading("三、强链 · 补链 · 延链路径", level=1)
+    doc.add_heading("三、产业发展建议", level=1)
     paths = result.get("paths", {})
     for title, key in (("强链", "strengthen"), ("补链", "complete"), ("延链", "extend")):
         doc.add_heading(title, level=2)
@@ -235,7 +235,7 @@ def build_industry_pdf_report(result: Dict[str, Any]) -> io.BytesIO:
 
     # 二、上中下游环节梳理
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "二、上中下游环节梳理", ln=True)
+    pdf.cell(0, 10, "二、产业链上下游分析", ln=True)
     pdf.ln(1)
     for layer in ("上游", "中游", "下游"):
         pdf.set_font("cn", "B", 12)
@@ -252,7 +252,7 @@ def build_industry_pdf_report(result: Dict[str, Any]) -> io.BytesIO:
 
     # 三、强链补链延链路径
     pdf.set_font("cn", "B", 16)
-    pdf.cell(0, 10, "三、强链 · 补链 · 延链路径", ln=True)
+    pdf.cell(0, 10, "三、产业发展建议", ln=True)
     pdf.ln(1)
     paths = result.get("paths", {})
     for title, key in (("强链", "strengthen"), ("补链", "complete"), ("延链", "extend")):
