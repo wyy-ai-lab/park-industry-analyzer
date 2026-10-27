@@ -206,107 +206,52 @@ a.home-entry-link:hover .home-entry {
 
 
 def home():
-    """首页：主入口大卡片 + 核心指标 + 演示模块快速入口"""
-    from engine.park_metrics import load_park_enterprises, compute_metrics
+    """首页：一句话价值主张 + 一个主入口 + 两个次要入口。"""
+    # Hero
+    st.markdown(textwrap.dedent("""
+    <div class="home-hero">
+        <div class="home-hero-title">🏭 园区产业分析智能体</div>
+        <div class="home-hero-subtitle">
+            粘贴一份园区企业材料，自动完成产业分类、上中下游环节诊断、强链补链延链路径与招商资源梳理。
+        </div>
+    </div>
+    """), unsafe_allow_html=True)
 
-    # 加载园区指标，用于首页数据看板
-    try:
-        park_data = load_park_enterprises()
-        park_metrics = compute_metrics(park_data) if park_data else {}
-    except Exception:
-        park_data = {}
-        park_metrics = {}
-
-    has_park_data = bool(park_data and park_data.get("enterprises"))
-
-    if has_park_data:
-        stat_enterprise = f"{park_metrics.get('total_enterprises', 0)}"
-        stat_completeness = f"{park_metrics.get('completeness_score', 0):.1f}"
-        stat_support = f"{park_metrics.get('local_support_rate', 0):.1f}%"
-    else:
-        stat_enterprise = "—"
-        stat_completeness = "—"
-        stat_support = "—"
-
-    # 主入口大卡片
+    # 主入口
     st.markdown(textwrap.dedent("""
     <a href="产业智能梳理" class="home-entry-link">
         <div class="home-entry">
             <div class="home-entry-title">🧭 产业智能梳理 <span style="font-size:0.8rem;font-weight:500;opacity:0.85">主入口</span></div>
             <div class="home-entry-desc">上传企业目录、园区介绍等基础材料，自动完成产业分类 → 上中下游分环节梳理 →
             强弱缺失诊断 → 强链补链延链路径 → 招商目标企业清单 + 研究院/协会资源。</div>
-            <div class="home-entry-cta">进入梳理 →</div>
+            <div class="home-entry-cta">开始梳理 →</div>
         </div>
     </a>
     """), unsafe_allow_html=True)
 
-    # Hero
-    st.markdown(textwrap.dedent("""
-    <div class="home-hero">
-        <div class="home-hero-title">🏭 园区产业分析智能体</div>
-        <div class="home-hero-subtitle">
-            看清园区产业全局 · 识别产业链强弱 · 下钻企业诊断<br>
-            为园区管委会提供数据驱动的产业洞察与招商培育建议
-        </div>
-    </div>
-    """), unsafe_allow_html=True)
-
-    # 核心数据条（演示园区）
-    st.markdown(textwrap.dedent(f"""
-    <div class="home-stats">
-        <div class="home-stat-card">
-            <div class="home-stat-value">{stat_enterprise}</div>
-            <div class="home-stat-label">演示园区企业</div>
-        </div>
-        <div class="home-stat-card">
-            <div class="home-stat-value">7</div>
-            <div class="home-stat-label">分析模块</div>
-        </div>
-        <div class="home-stat-card">
-            <div class="home-stat-value">{stat_completeness}</div>
-            <div class="home-stat-label">产业链完整度</div>
-        </div>
-        <div class="home-stat-card">
-            <div class="home-stat-value">{stat_support}</div>
-            <div class="home-stat-label">本地配套率</div>
-        </div>
-    </div>
-    """), unsafe_allow_html=True)
-
-    if not has_park_data:
-        st.info("📦 演示数据已关闭，上方为「未接入数据」状态。打开左侧开关「载入演示数据」，即可查看演示园区的完整分析。")
-
-    st.divider()
-
-    # 演示模块快速入口
-    st.subheader("📊 演示园区 · 示例数据（新能源汽车主题，50 家企业）")
-    st.caption("以下模块基于内置演示数据运行，用于展示分析能力；实际项目请从「产业智能梳理」上传真实材料。")
-
-    quick_links = [
-        ("🏞️", "园区概览", "园区概览", "核心经济指标、产业分布、头部企业一览"),
-        ("🗺️", "产业地图", "产业地图", "梯队金字塔、产业链层级、创新密度"),
-        ("🕸️", "产业链图谱", "产业链图谱", "完整度、本地配套率、强弱缺失分析"),
-        ("💡", "发展建议", "发展建议", "LLM / 模板生成招商补链与培育建议"),
-        ("🔍", "企业透视", "企业透视", "演示企业搜索、筛选、下钻诊断"),
-        ("🩺", "企业诊断辅导", "企业诊断辅导", "单企业画像、政策诊断、报告导出"),
-    ]
-
-    rows = [quick_links[i:i+3] for i in range(0, len(quick_links), 3)]
-    for row in rows:
-        cols = st.columns(len(row))
-        for col, (icon, href, title, desc) in zip(cols, row):
-            with col:
-                st.markdown(textwrap.dedent(f"""
-                <a href="{href}" class="home-card-link">
-                    <div class="home-card">
-                        <div class="home-card-icon">{icon}</div>
-                        <div class="home-card-title">{title}</div>
-                        <div class="home-card-desc">{desc}</div>
-                    </div>
-                </a>
-                """), unsafe_allow_html=True)
-
-    st.divider()
+    # 两个次要入口
+    sec_col1, sec_col2 = st.columns(2)
+    with sec_col1:
+        st.markdown(textwrap.dedent("""
+        <a href="园区概览" class="home-card-link">
+            <div class="home-card">
+                <div class="home-card-icon">🚗</div>
+                <div class="home-card-title">演示园区 · 示例数据</div>
+                <div class="home-card-desc">内置合肥高新区新能源汽车产业园 50 家示例企业，
+                体验园区概览、产业地图、产业链图谱、发展建议与企业透视等分析模块。</div>
+            </div>
+        </a>
+        """), unsafe_allow_html=True)
+    with sec_col2:
+        st.markdown(textwrap.dedent("""
+        <a href="企业诊断辅导" class="home-card-link">
+            <div class="home-card">
+                <div class="home-card-icon">🩺</div>
+                <div class="home-card-title">企业诊断辅导</div>
+                <div class="home-card-desc">针对单个企业做政策匹配诊断：画像 → 政策诊断 → 报告导出 → 培育路线图。</div>
+            </div>
+        </a>
+        """), unsafe_allow_html=True)
 
     # Footer
     st.markdown(textwrap.dedent("""

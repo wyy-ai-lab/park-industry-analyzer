@@ -42,6 +42,28 @@ EXAMPLE_MATERIAL = """园区企业目录（示例 · 锂电新材料方向）
 10. 合肥新能物流有限公司——危化品仓储与运输
 """
 
+# 企业清单模板（CSV，带 BOM 保证 Excel 打开不乱码）：用户照着填即可
+TEMPLATE_CSV = (
+    "企业名称,主营产品,年产值(亿元),员工数,资质,核心技术\n"
+    "合肥星恒电芯制造有限公司,磷酸铁锂电芯,5.2,300,高新技术企业,磷酸铁锂快充工艺\n"
+).encode("utf-8-sig")
+
+MATERIAL_GUIDE = """
+**🟢 最低可用** —— 每行一家企业：名称 + 主营产品
+```
+合肥星恒电芯制造有限公司——磷酸铁锂电芯
+```
+产出：产业分类、环节归位、强弱缺失诊断、优化路径。
+
+**🟡 标准材料**（推荐）—— 加上规模与资质
+在企业行中补充：年产值、员工数、资质（高企/专精特新/无）。
+额外产出：链主识别、企业梯队分层、重点培育建议。
+
+**🔵 最佳材料** —— 企业清单（Excel 最佳）+ 右侧「园区背景」
+在「⚙️ 园区背景」中填写所在城市、园区级别、目标招商区域，
+招商推荐将结合区位与园区定位生成，而不是泛泛列名单。
+"""
+
 # ---------------------------------------------------------------- 页面级 CSS
 st.markdown("""
 <style>
@@ -211,20 +233,20 @@ st.markdown("""
 # ---------------------------------------------------------------- 工具函数
 
 def render_stepbar(current: int):
-    """渲染六阶段流程步骤条；current 为当前进行到的阶段（1-6，0 表示未开始）"""
-    steps = [("①", "提供材料"), ("②", "产业分类"), ("③", "环节梳理"),
-             ("④", "优化路径"), ("⑤", "招商清单"), ("⑥", "产业资源")]
+    """渲染五阶段流程步骤条；current 为当前进行到的阶段（1-5，6 表示全部完成）"""
+    steps = [("①", "提供材料"), ("②", "产业分类"), ("③", "环节诊断"),
+             ("④", "优化路径"), ("⑤", "招商与资源")]
     parts = ['<div class="ia-stepbar">']
     for i, (num, label) in enumerate(steps, start=1):
-        state = "done" if (current == 7 or i < current) else "current" if i == current else ""
-        icon = "✓" if (current == 7 or i < current) else num
+        state = "done" if (current == 6 or i < current) else "current" if i == current else ""
+        icon = "✓" if (current == 6 or i < current) else num
         parts.append(
             f'<div class="ia-step {state}">'
             f'<div class="ia-step-num">{icon}</div>'
             f'<div class="ia-step-label">{label}</div></div>'
         )
         if i < len(steps):
-            line_done = "done" if (current == 7 or i < current) else ""
+            line_done = "done" if (current == 6 or i < current) else ""
             parts.append(f'<div class="ia-step-line {line_done}"></div>')
     parts.append("</div>")
     st.markdown("".join(parts), unsafe_allow_html=True)
@@ -232,6 +254,26 @@ def render_stepbar(current: int):
 
 def esc(s) -> str:
     return str(s).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def analyze_material_quality(text: str) -> dict:
+    """粗略检测材料结构：企业行数、含规模信息/资质信息的行数，用于给出补充建议"""
+    import re
+    out = {"enterprises": 0, "with_scale": 0, "with_qualification": 0}
+    if not text:
+        return out
+    for line in text.splitlines():
+        line = line.strip()
+        if len(line) < 6:
+            continue
+        if not re.search(r"(公司|集团|工厂|研究院|研究所|中心|大学)", line):
+            continue
+        out["enterprises"] += 1
+        if re.search(r"(亿元|万元|万人|员工|产值|营收|\d+\s*人)", line):
+            out["with_scale"] += 1
+        if re.search(r"(高新|专精特新|小巨人|上市)", line):
+            out["with_qualification"] += 1
+    return out
 
 
 def render_chain_map(chain_map, gaps):
@@ -300,26 +342,27 @@ def render_path_cards(paths):
 
 # ---------------------------------------------------------------- 标题区
 result = st.session_state.get("industry_analysis_result")
-current_stage = 7 if result else 1
+current_stage = 6 if result else 1
+
+_mode_llm = bool(result and result.get("mode") == "llm" and not result.get("llm_error"))
+_badge_cls = "ia-mode-llm" if _mode_llm else "ia-mode-tpl"
+_badge_txt = ("🔒 本地模式 · 材料不出本机" if result and result.get("local_only")
+              else ("🟢 智能模式" if _mode_llm else "⚪ 本地模式"))
 
 st.markdown(f"""
 <div class="ia-page-header">
     <div>
         <div class="ia-title">🧭 产业智能梳理</div>
-        <div class="ia-subtitle">提供企业目录、园区介绍等基础材料，自动完成产业分类、上中下游分环节梳理、
-        强弱缺失诊断与强链补链延链路径规划，并输出招商目标企业清单与研究院/协会资源。</div>
+        <div class="ia-subtitle">粘贴一份园区企业材料，自动生成产业分类、上中下游环节诊断、
+        强链补链延链路径、招商目标企业清单与研究院/协会资源。</div>
     </div>
-    <div class="ia-mode-badge {'ia-mode-llm' if result and result.get('mode') == 'llm' else 'ia-mode-tpl'}">
-        {('🔒 本地模式 · 材料零出域' if result and result.get('local_only')
-          else ('🟢 LLM 智能模式' if result and result.get('mode') == 'llm'
-                else '🟡 模板模式 · 配置 API Key 解锁全链路'))}
-    </div>
+    <div class="ia-mode-badge {_badge_cls}">{_badge_txt}</div>
 </div>
 """, unsafe_allow_html=True)
 
-# LLM 已配置但调用失败 → 显式提示降级原因（不再静默退回模板模式）
+# 智能模式调用失败 → 明确告知本次由本地引擎兜底（不静默）
 if result and result.get("llm_error"):
-    st.warning(f"⚠️ LLM 调用失败，本次结果为模板模式兜底：{result['llm_error']}")
+    st.warning(f"⚠️ 智能模式本次调用失败，已改用本地引擎生成：{result['llm_error']}")
 
 # 会话写入须在文本域等组件创建之前完成（Streamlit 禁止对已实例化组件的 key 赋值）：
 # 用标志位 + rerun 的方式，在脚本最前置位应用填入内容
@@ -342,6 +385,9 @@ input_col, opt_col = st.columns([3, 1], gap="large")
 
 with input_col:
     st.markdown('<div class="ia-card">', unsafe_allow_html=True)
+    st.markdown('<div class="ia-card-title">📄 园区材料</div>'
+                '<div class="ia-card-desc">粘贴企业目录、园区介绍等文字材料，或上传文件</div>',
+                unsafe_allow_html=True)
     tab_text, tab_file = st.tabs(["📝 粘贴文本", "📎 上传文件"])
 
     with tab_text:
@@ -374,6 +420,17 @@ with input_col:
         else:
             material = st.session_state.get("industry_material", "")
 
+    _q = analyze_material_quality(material or "")
+    if _q["enterprises"]:
+        _q_parts = [f"已识别约 {_q['enterprises']} 家企业"]
+        if _q["with_scale"]:
+            _q_parts.append(f"{_q['with_scale']} 家含规模信息")
+        if _q["with_qualification"]:
+            _q_parts.append(f"{_q['with_qualification']} 家含资质信息")
+        st.caption("✅ " + "，".join(_q_parts) +
+                   ("。" if (_q["with_scale"] or _q["with_qualification"]) else
+                    "，建议补充产值 / 员工数 / 资质，报告会更准。"))
+
     btn_col, tip_col = st.columns([1, 2])
     with btn_col:
         run_clicked = st.button("🚀 开始产业梳理", type="primary", use_container_width=True)
@@ -381,43 +438,42 @@ with input_col:
         if st.button("📋 填入示例材料", use_container_width=True):
             st.session_state["_fill_example"] = True
             st.rerun()
+
+    with st.expander("📋 支持什么材料？三档规范（材料越全，报告越准）"):
+        st.markdown(MATERIAL_GUIDE)
+        st.download_button("⬇ 下载企业清单模板（CSV）", TEMPLATE_CSV,
+                           "企业清单模板.csv", "text/csv",
+                           use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 with opt_col:
-    st.markdown('<div class="ia-card">', unsafe_allow_html=True)
-    st.markdown('<div class="ia-card-title">辅助信息</div>'
-                '<div class="ia-card-desc">让分类与招商建议更贴合园区实际</div>',
-                unsafe_allow_html=True)
-    focus_hint = st.text_input("产业方向提示", placeholder="如：锂电新材料")
-    region = st.text_input("目标招商区域", placeholder="如：长三角 / 不限")
-    local_only = st.checkbox("🔒 敏感材料本地处理", value=False,
-                             help="开启后完全禁止调用外部 LLM，材料零出域；"
-                                  "结果为本地规则生成（分类/环节归位可用，AI 补全类内容不生成）")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    st.markdown('<div class="ia-card" style="margin-top:0.9rem">', unsafe_allow_html=True)
-    st.markdown('<div class="ia-card-title">💡 这个页面能做什么</div>', unsafe_allow_html=True)
-    st.markdown(
-        '<div style="font-size:0.83rem;color:var(--td-muted);line-height:1.8">'
-        "识别材料中的企业并归类产业方向<br>"
-        "归位到上中下游具体环节<br>"
-        "诊断薄弱与缺失环节<br>"
-        "生成强链 / 补链 / 延链路径<br>"
-        "输出招商目标企业清单¹<br>"
-        "梳理研究院 / 协会资源¹<br>"
-        '<span style="font-size:0.75rem;opacity:0.8">¹ 需配置 API Key</span></div>',
-        unsafe_allow_html=True,
-    )
-    st.markdown('</div>', unsafe_allow_html=True)
+    with st.expander("⚙️ 园区背景（可选）", expanded=False):
+        st.caption("提供背景可让分类与招商建议更贴合园区实际。")
+        park_city = st.text_input("所在城市", placeholder="如：合肥")
+        park_level = st.selectbox("园区级别",
+                                  ["未指定", "国家级", "省级", "市级", "区县级"])
+        focus_hint = st.text_input("产业方向提示", placeholder="如：锂电新材料")
+        region = st.text_input("目标招商区域", placeholder="如：长三角 / 不限")
+        local_only = st.checkbox("🔒 敏感材料本地处理", value=False,
+                                 help="开启后完全禁止调用外部 LLM，材料零出域；"
+                                      "结果为本地规则生成（分类/环节归位可用，AI 补全类内容不生成）")
 
 # ---------------------------------------------------------------- 运行分析
 if run_clicked:
     if not (material or "").strip():
         st.warning("请先粘贴材料或上传文件")
     else:
+        _bg = []
+        if park_level and park_level != "未指定":
+            _bg.append(f"{park_level}园区")
+        if (park_city or "").strip():
+            _bg.append("位于" + park_city.strip())
+        if (region or "").strip():
+            _bg.append("招商目标区域：" + region.strip())
+        region_ctx = "；".join(_bg)
         with st.status("正在进行产业梳理，请稍候…", expanded=True) as status:
             result = run_industry_analysis(material.strip(), focus_hint.strip(),
-                                           region.strip(), local_only=local_only)
+                                           region_ctx, local_only=local_only)
             status.update(label="梳理完成", state="complete")
         st.session_state["industry_analysis_result"] = result
         st.rerun()
@@ -427,7 +483,7 @@ if not result:
                 unsafe_allow_html=True)
     st.stop()
 
-render_stepbar(7)
+render_stepbar(6)
 
 # ---------------------------------------------------------------- KPI 摘要
 all_ents = [e for g in result["classification"].get("industries", [])
@@ -450,16 +506,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ---------------------------------------------------------------- ② 产业链图谱
-st.markdown('<div class="ia-section"><span class="ia-section-num">②</span>'
-            '<span class="ia-section-title">产业链图谱</span>'
-            '<span class="ia-section-note">上中下游环节分布 · 缺失环节已标红</span></div>',
-            unsafe_allow_html=True)
-if gaps.get("is_template"):
-    st.markdown('<div class="ia-tip">模板模式按关键词归位，环节较粗；配置 API Key 后输出细化环节（如"正极材料""电芯"级）并判定真实缺失环节。</div>',
-                unsafe_allow_html=True)
-render_chain_map(result["chain_map"], gaps)
-
 # ---------------------------------------------------------------- ① 产业分类明细
 st.markdown('<div class="ia-section"><span class="ia-section-num">①</span>'
             '<span class="ia-section-title">产业分类明细</span>'
@@ -472,15 +518,25 @@ for group in result["classification"].get("industries", []):
                  "核心技术": e.get("tech", ""), "规模": e.get("scale", "")} for e in ents]
         st.dataframe(rows, use_container_width=True, hide_index=True)
 
-# ---------------------------------------------------------------- ④ 优化路径
-st.markdown('<div class="ia-section"><span class="ia-section-num">④</span>'
+# ---------------------------------------------------------------- ② 产业链图谱
+st.markdown('<div class="ia-section"><span class="ia-section-num">②</span>'
+            '<span class="ia-section-title">产业链图谱</span>'
+            '<span class="ia-section-note">上中下游环节分布 · 缺失环节已标红</span></div>',
+            unsafe_allow_html=True)
+if gaps.get("is_template"):
+    st.markdown('<div class="ia-tip">本地模式按关键词归位，环节较粗；智能模式下输出细化环节（如"正极材料""电芯"级）并判定真实缺失环节。</div>',
+                unsafe_allow_html=True)
+render_chain_map(result["chain_map"], gaps)
+
+# ---------------------------------------------------------------- ③ 优化路径
+st.markdown('<div class="ia-section"><span class="ia-section-num">③</span>'
             '<span class="ia-section-title">强链 · 补链 · 延链路径</span>'
             '<span class="ia-section-note">基于强弱缺失诊断生成</span></div>',
             unsafe_allow_html=True)
 render_path_cards(result.get("paths", {}))
 
-# ---------------------------------------------------------------- ⑤ 招商目标清单
-st.markdown('<div class="ia-section"><span class="ia-section-num">⑤</span>'
+# ---------------------------------------------------------------- ④ 招商目标清单
+st.markdown('<div class="ia-section"><span class="ia-section-num">④</span>'
             '<span class="ia-section-title">招商目标企业清单</span>'
             f'<span class="ia-section-note">{"目标区域偏好：" + esc(result.get("region")) if result.get("region") else ""}</span></div>',
             unsafe_allow_html=True)
@@ -499,14 +555,12 @@ if result.get("targets"):
     st.caption(f"共 {len(result['targets'])} 家目标企业：知识库已核实 {n_kb} 家"
                + (f"，AI 生成待核实 {n_ai} 家" if n_ai else ""))
 else:
-    st.markdown('<div class="ia-tip">未命中本地招商知识库，且未配置 API Key。'
-                '可在 <code>data/invest_targets.json</code> 中按「产业 → 环节 → 企业」维护已核实目标企业，'
-                '或在 <code>.streamlit/secrets.toml</code> / 环境变量中配置 '
-                'ANTHROPIC_API_KEY / OPENAI_API_KEY 后由 AI 自动补全。</div>',
+    st.markdown('<div class="ia-tip">本次未生成招商目标清单。可在 <code>data/invest_targets.json</code> 中'
+                '维护已核实目标企业（按「产业 → 环节 → 企业」），或启用智能模式由 AI 自动补全。</div>',
                 unsafe_allow_html=True)
 
-# ---------------------------------------------------------------- ⑥ 产业资源
-st.markdown('<div class="ia-section"><span class="ia-section-num">⑥</span>'
+# ---------------------------------------------------------------- ⑤ 产业资源
+st.markdown('<div class="ia-section"><span class="ia-section-num">⑤</span>'
             '<span class="ia-section-title">研究院 / 协会资源</span>'
             '<span class="ia-section-note">产学研与行业组织对接线索</span></div>',
             unsafe_allow_html=True)
@@ -534,7 +588,7 @@ if res:
         st.markdown('</div>', unsafe_allow_html=True)
 else:
     st.markdown('<div class="ia-tip">未命中本地产业资源知识库。可在 <code>data/industry_resources.json</code> 中按产业维护'
-                '已核实的研究院、协会与联盟，或配置 API Key 后由 AI 自动梳理该产业有影响力的机构。</div>',
+                '已核实的研究院、协会与联盟，或启用智能模式由 AI 自动梳理该产业有影响力的机构。</div>',
                 unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 导出
