@@ -1,13 +1,19 @@
 """
-访问控制与数据安全提示
-======================
-内部部署用简易口令门：
+访问控制、部署模式与数据安全提示
+================================
+一套代码支持两种部署形态（ Secrets 不同即可）：
 
-- 在 `.streamlit/secrets.toml` 或环境变量中配置 APP_PASSWORD 即启用；
-  未配置时应用完全放行（并给出一次性提示，避免误以为已加锁）。
-- 每个页面顶部调用 require_auth()，直接访问子页面 URL 也会被拦下。
-- render_auth_controls() 在侧边栏显示登录状态与退出按钮，以及
-  「LLM 模式材料外发」的数据安全提示。
+- demo（公开演示版，默认）：无口令，客户打开即用；建议 Cloud Secrets
+  配置 LLM Key，让访客体验完整智能梳理链路。
+- internal（内部使用版）：配置 APP_PASSWORD 启用口令门 + 内部知识库；
+  未配置 APP_PASSWORD 时侧边栏会警告"内部版未加锁"。
+
+部署模式判定：显式 APP_MODE=demo/internal，或按"是否配置 APP_PASSWORD"推断。
+
+- 每个页面顶部调用 require_auth()，直接访问子页面 URL 也会被拦下
+  （仅当配置了 APP_PASSWORD 时启用）。
+- render_auth_controls() 在侧边栏显示部署模式徽标、登录状态/退出按钮，
+  以及「LLM 模式材料外发」的数据安全提示。
 """
 
 import hmac
@@ -21,6 +27,14 @@ def _password() -> str:
     return (_read_config("APP_PASSWORD") or "").strip()
 
 
+def get_app_mode() -> str:
+    """返回部署模式：demo（公开演示）/ internal（内部使用）。"""
+    mode = (_read_config("APP_MODE") or "").strip().lower()
+    if mode in ("demo", "internal"):
+        return mode
+    return "internal" if _password() else "demo"
+
+
 def is_auth_enabled() -> bool:
     return bool(_password())
 
@@ -30,14 +44,18 @@ def is_authed() -> bool:
 
 
 def require_auth() -> None:
-    """页面级口令门：未登录时渲染登录框并 st.stop()。app.py 与所有 pages 均需调用。"""
+    """页面级口令门：未登录时渲染登录框并 st.stop()。app.py 与所有 pages 均需调用。
+
+    仅当配置了 APP_PASSWORD 时启用；演示版（demo 模式）默认无口令。
+    """
     pwd = _password()
     if not pwd:
-        # 未配置口令：功能放行，但提醒管理员（每个 session 提示一次）
-        if not st.session_state.pop("_auth_off_notice_shown", False):
+        # 内部版未配置口令：警告管理员（每个 session 提示一次），演示版静默放行
+        if get_app_mode() == "internal" and \
+                not st.session_state.pop("_auth_off_notice_shown", False):
             st.session_state["_auth_off_notice_shown"] = True
-            st.sidebar.info("🔓 访问控制未启用：在 Secrets/环境变量中设置 APP_PASSWORD 后，"
-                            "内部人员需凭口令进入。")
+            st.sidebar.warning("🔓 内部版未设置 APP_PASSWORD：任何知道链接的人都能访问，"
+                               "请在 Secrets/环境变量中配置访问口令。")
         return
 
     if is_authed():
@@ -58,10 +76,16 @@ def require_auth() -> None:
 
 
 def render_auth_controls() -> None:
-    """侧边栏：登录状态 / 退出按钮 + 数据出域安全提示。"""
+    """侧边栏：部署模式徽标 + 登录状态/退出按钮 + 数据出域安全提示。"""
+    # 部署模式徽标
+    if get_app_mode() == "internal":
+        st.sidebar.markdown("🔒 **内部版** · 凭口令访问")
+    else:
+        st.sidebar.markdown("🎬 **演示版** · 对外演示，请勿录入真实敏感材料")
+
     if is_auth_enabled():
         if is_authed():
-            st.sidebar.success("🔒 已登录（内部访问）")
+            st.sidebar.success("已登录")
             if st.sidebar.button("退出登录", use_container_width=True):
                 st.session_state["_app_authed"] = False
                 st.rerun()
@@ -75,5 +99,5 @@ def render_auth_controls() -> None:
         "· LLM 智能模式下，材料文本会发送至所配置的模型服务商"
         "（Anthropic / OpenAI / 国内模型）\n\n"
         "· 请勿粘贴涉密的企业经营数据、未公开政策文件\n\n"
-        "· 模板/演示模式全部在本地处理，不发生任何外发"
+        "· 「🔒 敏感材料本地处理」开关开启后完全本地计算，零外发"
     )

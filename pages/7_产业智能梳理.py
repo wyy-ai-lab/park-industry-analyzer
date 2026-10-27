@@ -15,7 +15,7 @@
 import streamlit as st
 
 from engine.ui_helpers import inject_apple_theme
-from engine.auth import require_auth
+from engine.auth import require_auth, get_app_mode
 from engine.industry_analyzer import run_industry_analysis, to_markdown
 from engine.industry_report_export import build_industry_word_report, build_industry_pdf_report
 
@@ -323,6 +323,9 @@ if st.session_state.pop("_fill_example", None):
     st.session_state["_notice"] = "已填入示例材料，可直接点击「开始产业梳理」"
 if st.session_state.pop("_fill_upload", None):
     st.session_state["industry_material"] = st.session_state.pop("_uploaded_text", "")
+# 演示版：首次进入自动填入示例材料，客户零输入、一键体验完整链路
+if get_app_mode() == "demo" and "industry_material" not in st.session_state:
+    st.session_state["industry_material"] = EXAMPLE_MATERIAL
 _notice = st.session_state.pop("_notice", None)
 if _notice:
     st.success(_notice)

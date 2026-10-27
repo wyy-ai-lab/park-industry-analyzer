@@ -89,6 +89,36 @@ python -m streamlit run app.py
 - **企业角色**：链主企业 3 家、骨干企业 7 家、高新技术企业 16 家、科技型中小企业 14 家、配套服务企业 10 家
 - **产业链层级**：上游原材料/核心材料、中游核心制造/关键平台、下游终端应用/运营服务
 
+## 双部署架构（一套代码，两种形态）
+
+同一仓库可部署两个 Streamlit Cloud 应用，代码完全一致，仅 Secrets 不同：
+
+| | 🎬 演示版（对外） | 🔒 内部版（同事使用） |
+|---|---|---|
+| `APP_MODE` | `demo`（可省略，默认） | `internal` |
+| `APP_PASSWORD` | 不配置（任何人可访问） | **必配**（凭口令进入） |
+| `ANTHROPIC_API_KEY` | 配置后访客可体验完整 LLM 链路 | 按内部政策配置 |
+| `LLM_BASE_URL` 等 | 可选 | 接 DeepSeek/通义等国内模型时配置 |
+| 适用场景 | 给客户演示、公开体验 | 处理真实园区材料 |
+
+侧边栏会显示当前实例的形态徽标；「产业智能梳理」页在演示版下会自动填入示例材料，客户零输入、点一次按钮即可看到完整分析。
+
+**内部版 Secrets 示例**：
+
+```toml
+APP_MODE = "internal"
+APP_PASSWORD = "your-internal-password"
+ANTHROPIC_API_KEY = "your-key"
+```
+
+**演示版 Secrets 示例**：
+
+```toml
+ANTHROPIC_API_KEY = "your-key"
+```
+
+> 内部版若漏配 `APP_PASSWORD`，侧边栏会常驻警告，避免"以为加锁了其实没有"。
+
 ## 访问控制与数据安全（内部部署建议配置）
 
 在 Secrets / 环境变量中设置 `APP_PASSWORD` 后，所有页面（含直接访问子页面 URL）都需要输入口令：
