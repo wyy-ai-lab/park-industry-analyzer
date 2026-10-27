@@ -361,9 +361,12 @@ def kb_resources(industry: str, corpus_text: str = "") -> Dict[str, Any]:
 # ---------------------------------------------------------------- 主编排
 
 def run_industry_analysis(material: str, focus_hint: str = "",
-                          region: str = "") -> Dict[str, Any]:
+                          region: str = "", local_only: bool = False) -> Dict[str, Any]:
     """
     运行完整产业梳理流程。
+
+    local_only=True 时强制本地模板模式：不调用任何外部 LLM，
+    材料不会发生出域，适用于涉密/敏感材料场景。
 
     返回结构：
     {
@@ -376,7 +379,7 @@ def run_industry_analysis(material: str, focus_hint: str = "",
       "resources": {...},           # 阶段6（模板模式为空）
     }
     """
-    llm_on = _llm_available() is not None
+    llm_on = not local_only and _llm_available() is not None
     clear_llm_error()
 
     # 阶段1：产业分类
@@ -407,7 +410,7 @@ def run_industry_analysis(material: str, focus_hint: str = "",
     )
     targets = kb_targets(industry_main, corpus_text)
     seen_names = {t["name"] for t in targets}
-    if _llm_available():
+    if llm_on:
         for t in (_targets_llm(industry_main, region, gaps) or []):
             if t.get("name") and t["name"] not in seen_names:
                 seen_names.add(t["name"])
@@ -415,7 +418,7 @@ def run_industry_analysis(material: str, focus_hint: str = "",
 
     # 阶段6：产业资源——知识库优先，LLM 补充库外产业
     resources = kb_resources(industry_main, corpus_text)
-    if not resources and _llm_available():
+    if not resources and llm_on:
         resources = _resources_llm(industry_main) or {}
 
     result = {
@@ -428,6 +431,7 @@ def run_industry_analysis(material: str, focus_hint: str = "",
         "resources": resources or {},
         "focus_hint": focus_hint,
         "region": region,
+        "local_only": local_only,
     }
     # LLM 已配置但各阶段均未能产出 → 页面需要显式提示降级原因
     if llm_on and get_llm_error():

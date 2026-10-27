@@ -5,6 +5,7 @@ import pandas as pd
 import streamlit as st
 
 from engine.ui_helpers import inject_apple_theme
+from engine.auth import require_auth
 from engine.park_metrics import load_park_enterprises, compute_metrics
 from engine.park_llm import generate_diagnosis
 from engine.park_charts import (
@@ -15,6 +16,8 @@ from engine.park_charts import (
 )
 
 inject_apple_theme()
+
+require_auth()
 
 # 汇报模式切换
 presentation_mode = st.toggle("🎤 汇报模式", key="park_presentation_mode")

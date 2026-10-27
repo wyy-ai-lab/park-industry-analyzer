@@ -6,6 +6,7 @@ import streamlit as st
 import plotly.graph_objects as go
 
 from engine.ui_helpers import inject_apple_theme
+from engine.auth import require_auth
 from engine.matcher import load_json, load_policies
 from engine.diagnosis import run_enhanced_diagnosis, get_api_config
 from engine.dashboard import compute_dashboard_metrics, sort_results_for_display
@@ -26,6 +27,8 @@ from engine.cultivation_roadmap import (
 from engine.llm_scorer import generate_material_outline
 
 inject_apple_theme()
+
+require_auth()
 
 st.markdown("""
 <style>

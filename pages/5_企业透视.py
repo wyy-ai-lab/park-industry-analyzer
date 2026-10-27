@@ -2,10 +2,13 @@ import pandas as pd
 import streamlit as st
 
 from engine.ui_helpers import inject_apple_theme
+from engine.auth import require_auth
 from engine.park_metrics import load_park_enterprises
 from engine.industry_classifier import classify
 
 inject_apple_theme()
+
+require_auth()
 
 st.markdown("""
 <style>

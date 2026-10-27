@@ -338,6 +338,10 @@ NAV_SECTIONS = {
     ],
 }
 
+from engine.auth import require_auth, render_auth_controls
+
 nav = st.navigation(NAV_SECTIONS)
+require_auth()
+render_auth_controls()
 render_demo_controls()
 nav.run()

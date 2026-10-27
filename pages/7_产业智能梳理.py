@@ -15,10 +15,13 @@
 import streamlit as st
 
 from engine.ui_helpers import inject_apple_theme
+from engine.auth import require_auth
 from engine.industry_analyzer import run_industry_analysis, to_markdown
 from engine.industry_report_export import build_industry_word_report, build_industry_pdf_report
 
 inject_apple_theme()
+
+require_auth()
 
 # 示例材料：锂电新材料园区企业目录（演示模板模式/供 LLM 模式试用）
 EXAMPLE_MATERIAL = """园区企业目录（示例 · 锂电新材料方向）
@@ -302,7 +305,9 @@ st.markdown(f"""
         强弱缺失诊断与强链补链延链路径规划，并输出招商目标企业清单与研究院/协会资源。</div>
     </div>
     <div class="ia-mode-badge {'ia-mode-llm' if result and result.get('mode') == 'llm' else 'ia-mode-tpl'}">
-        {'🟢 LLM 智能模式' if result and result.get('mode') == 'llm' else '🟡 模板模式 · 配置 API Key 解锁全链路'}
+        {('🔒 本地模式 · 材料零出域' if result and result.get('local_only')
+          else ('🟢 LLM 智能模式' if result and result.get('mode') == 'llm'
+                else '🟡 模板模式 · 配置 API Key 解锁全链路'))}
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -377,6 +382,9 @@ with opt_col:
                 unsafe_allow_html=True)
     focus_hint = st.text_input("产业方向提示", placeholder="如：锂电新材料")
     region = st.text_input("目标招商区域", placeholder="如：长三角 / 不限")
+    local_only = st.checkbox("🔒 敏感材料本地处理", value=False,
+                             help="开启后完全禁止调用外部 LLM，材料零出域；"
+                                  "结果为本地规则生成（分类/环节归位可用，AI 补全类内容不生成）")
     st.markdown('</div>', unsafe_allow_html=True)
 
     st.markdown('<div class="ia-card" style="margin-top:0.9rem">', unsafe_allow_html=True)
@@ -400,7 +408,8 @@ if run_clicked:
         st.warning("请先粘贴材料或上传文件")
     else:
         with st.status("正在进行产业梳理，请稍候…", expanded=True) as status:
-            result = run_industry_analysis(material.strip(), focus_hint.strip(), region.strip())
+            result = run_industry_analysis(material.strip(), focus_hint.strip(),
+                                           region.strip(), local_only=local_only)
             status.update(label="梳理完成", state="complete")
         st.session_state["industry_analysis_result"] = result
         st.rerun()
