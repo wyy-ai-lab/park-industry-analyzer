@@ -15,7 +15,12 @@
 import streamlit as st
 
 from engine.ui_helpers import inject_apple_theme
-from engine.auth import require_auth, get_app_mode
+from engine.auth import require_auth
+try:  # 兼容部署环境中尚未热更新的旧版 auth 模块（缺 get_app_mode 时降级为演示模式）
+    from engine.auth import get_app_mode
+except ImportError:
+    def get_app_mode() -> str:
+        return "demo"
 from engine.industry_analyzer import run_industry_analysis, to_markdown
 from engine.industry_report_export import build_industry_word_report, build_industry_pdf_report
 
