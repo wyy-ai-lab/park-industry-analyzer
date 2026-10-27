@@ -512,6 +512,23 @@ _notice = st.session_state.pop("_notice", None)
 if _notice:
     st.success(_notice)
 
+# 侧边栏二级目录：输入页显示步骤说明，报告页显示可点击的报告结构
+with st.sidebar:
+    if result:
+        st.markdown("**📋 报告结构**")
+        st.markdown(
+            '<div style="font-size:0.85rem;line-height:2">'
+            '<a href="#ia-sec-classify">一、产业分类</a><br>'
+            '<a href="#ia-sec-chain">二、产业链上下游分析</a><br>'
+            '<a href="#ia-sec-advice">三、产业发展建议</a><br>'
+            '<a href="#ia-sec-invest">四、产业招商推荐</a><br>'
+            '<a href="#ia-export">导出报告</a></div>',
+            unsafe_allow_html=True)
+    else:
+        st.markdown("**📋 梳理步骤**\n\n"
+                    "1. 提供园区材料\n2. 产业分类\n3. 产业链上下游分析\n"
+                    "4. 产业发展建议\n5. 产业招商推荐")
+
 # ---------------------------------------------------------------- 两阶段结构：输入页 / 报告页
 if result:
     # 报告页顶部：材料摘要 + 重新梳理入口
@@ -578,6 +595,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 一、产业分类
+st.markdown('<div id="ia-sec-classify"></div>', unsafe_allow_html=True)
 st.markdown('<div class="ia-section"><span class="ia-section-num">一</span>'
             '<span class="ia-section-title">产业分类</span>'
             '<span class="ia-section-note">企业逐一归类</span></div>',
@@ -590,6 +608,7 @@ for group in result["classification"].get("industries", []):
         st.dataframe(rows, use_container_width=True, hide_index=True)
 
 # ---------------------------------------------------------------- 二、产业链上下游分析
+st.markdown('<div id="ia-sec-chain"></div>', unsafe_allow_html=True)
 st.markdown('<div class="ia-section"><span class="ia-section-num">二</span>'
             '<span class="ia-section-title">产业链上下游分析</span>'
             '<span class="ia-section-note">上中下游环节分布 · 缺失环节已标红</span></div>',
@@ -600,6 +619,7 @@ if gaps.get("is_template"):
 render_chain_map(result["chain_map"], gaps)
 
 # ---------------------------------------------------------------- 三、产业发展建议
+st.markdown('<div id="ia-sec-advice"></div>', unsafe_allow_html=True)
 st.markdown('<div class="ia-section"><span class="ia-section-num">三</span>'
             '<span class="ia-section-title">产业发展建议</span>'
             '<span class="ia-section-note">强链 · 补链 · 延链</span></div>',
@@ -607,6 +627,7 @@ st.markdown('<div class="ia-section"><span class="ia-section-num">三</span>'
 render_path_cards(result.get("paths", {}))
 
 # ---------------------------------------------------------------- 四、产业招商推荐
+st.markdown('<div id="ia-sec-invest"></div>', unsafe_allow_html=True)
 st.markdown('<div class="ia-section"><span class="ia-section-num">四</span>'
             '<span class="ia-section-title">产业招商推荐</span>'
             '<span class="ia-section-note">目标企业 · 研究院/协会资源</span></div>',
@@ -656,6 +677,7 @@ else:
                 unsafe_allow_html=True)
 
 # ---------------------------------------------------------------- 导出
+st.markdown('<div id="ia-export"></div>', unsafe_allow_html=True)
 st.divider()
 st.markdown('<div class="ia-section"><span class="ia-section-title">导出完整梳理报告</span>'
             '<span class="ia-section-note">Markdown / Word / PDF 三种格式</span></div>',
