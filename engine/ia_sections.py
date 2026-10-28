@@ -8,12 +8,26 @@
 分析结果经 st.session_state["industry_analysis_result"] 共享。
 """
 
+import json
+
 import streamlit as st
 
 from engine.industry_analyzer import to_markdown
 from engine.industry_report_export import build_industry_word_report, build_industry_pdf_report
 
 RESULT_KEY = "industry_analysis_result"
+
+
+def scroll_to_anchor() -> None:
+    """消费滚动目标：上一轮（如侧栏步骤按钮）请求定位到某锚点时，平滑滚过去。"""
+    target = st.session_state.pop("_scroll_target", None)
+    if target:
+        import streamlit.components.v1 as components
+        components.html(
+            "<script>var el = window.parent.document.getElementById("
+            + json.dumps(target) + ");"
+            "if (el) { el.scrollIntoView({behavior:'smooth', block:'start'}); }</script>",
+            height=0)
 
 
 # ---------------------------------------------------------------- 基础工具
@@ -192,6 +206,9 @@ def inject_ia_css() -> None:
 .ia-steps a:hover { border-color: var(--td-brand); color: var(--td-brand);
     background: var(--td-brand-light); }
 .ia-steps-sep { color: var(--td-muted); font-size: 0.8rem; }
+
+/* 锚点滚动时避开顶部固定区域 */
+[id^="ia-"] { scroll-margin-top: 4.5rem; }
 
 @media (max-width: 900px) {
     .ia-kpi-grid, .ia-gap-grid { grid-template-columns: repeat(2, 1fr); }

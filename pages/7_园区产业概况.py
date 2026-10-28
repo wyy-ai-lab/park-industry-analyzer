@@ -22,7 +22,7 @@ from engine.ia_sections import (
     inject_ia_css, render_ia_header, render_kpi_strip,
     render_classification, render_chain_analysis, render_paths_section,
     render_targets_section, render_resources_subsection, render_export_block,
-    analyze_material_quality, RESULT_KEY,
+    analyze_material_quality, scroll_to_anchor, RESULT_KEY,
 )
 
 st.set_page_config(page_title="园区产业概况", page_icon="🏭", layout="wide")
@@ -248,11 +248,11 @@ with st.sidebar:
 if result:
     st.markdown("""
     <div class="ia-steps">
-        <a href="?ia_step=2#ia-input">① 填入基本信息</a><span class="ia-steps-sep">→</span>
-        <a href="?ia_step=2#ia-sec-class">② 产业分类</a><span class="ia-steps-sep">→</span>
-        <a href="?ia_step=3#ia-sec-chain">③ 产业链分析</a><span class="ia-steps-sep">→</span>
-        <a href="?ia_step=4#ia-sec-paths">④ 产业发展建议</a><span class="ia-steps-sep">→</span>
-        <a href="?ia_step=5#ia-sec-invest">⑤ 产业招商推荐</a>
+        <a href="#ia-input">① 填入基本信息</a><span class="ia-steps-sep">→</span>
+        <a href="#ia-sec-class">② 产业分类</a><span class="ia-steps-sep">→</span>
+        <a href="#ia-sec-chain">③ 产业链分析</a><span class="ia-steps-sep">→</span>
+        <a href="#ia-sec-paths">④ 产业发展建议</a><span class="ia-steps-sep">→</span>
+        <a href="#ia-sec-invest">⑤ 产业招商推荐</a>
     </div>
     """, unsafe_allow_html=True)
 else:
@@ -394,4 +394,7 @@ if result:
         render_targets_section(result)
         render_resources_subsection(result)
         render_export_block(result)
+
+# ---------------------------------------------------------------- 侧栏步骤按钮触发的滚动定位（无刷新）
+scroll_to_anchor()
 
