@@ -194,31 +194,6 @@ a.home-entry-link:hover .home-entry {
     border-top: 1px solid var(--apple-border);
 }
 
-/* 侧栏导航按钮（🧬💡🎯 步骤项）：扁平化为与导航行一致的样式，点击不刷新页面 */
-section[data-testid="stSidebar"] div[data-testid="stButton"] button {
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.9rem;
-    font-weight: 400;
-    color: inherit;
-    min-height: 0;
-}
-section[data-testid="stSidebar"] div[data-testid="stButton"] button:hover {
-    background: var(--apple-blue-light);
-    color: var(--apple-blue);
-}
-section[data-testid="stSidebar"] div[data-testid="stButton"] button:active {
-    background: var(--apple-blue-light);
-    color: var(--apple-blue);
-}
-section[data-testid="stSidebar"] div[data-testid="stButton"] button:focus {
-    box-shadow: none;
-}
-
 @media (max-width: 768px) {
     .home-hero-title { font-size: 2.2rem; }
     .home-hero-subtitle { font-size: 1rem; }
@@ -301,49 +276,23 @@ NAV_SECTIONS = {
 }
 
 from engine.auth import require_auth, render_auth_controls
-from engine.ia_sections import RESULT_KEY
-
-# 步骤项 → （展开步数, 锚点）：点击侧栏按钮时原地展开并滚动定位（不刷新页面）
-_STEP_NAV = {
-    "chain": (3, "ia-sec-chain"),
-    "advice": (4, "ia-sec-paths"),
-    "invest": (5, "ia-sec-invest"),
-}
 
 
 def render_sidebar_nav() -> None:
-    """自定义侧边栏导航（替代 st.navigation 默认侧栏，支持当前模块高亮）。
+    """自定义侧边栏导航：只列两大功能（园区产业分析 / 企业诊断辅导）。
 
-    园区产业概况为单页五段式。🧬💡🎯 三项是【按钮】：点击在当前页原地展开
-    对应部分并滚动过去，不触发浏览器整页刷新；其余项为页面链接。
-    在 nav.run() 之后调用：页面脚本已把自身 _page_id 写入 session_state。
+    园区产业分析为单页五段式，步骤导航由页内步骤条与「下一步」按钮承担，
+    无需在侧栏重复列出；在 nav.run() 之后调用以读取页面 _page_id 做高亮。
     """
     current = st.session_state.get("_page_id", "home")
     items = [
         ("home", "🏠 首页", "首页"),
-        ("overview", "① 园区产业概况", None),
-        ("chain", "② 产业链分析", None),
-        ("advice", "③ 产业发展建议", None),
-        ("invest", "④ 产业招商推荐", None),
+        ("overview", "园区产业分析", "园区产业概况"),
         ("diag", "企业诊断辅导", "企业诊断辅导"),
     ]
     with st.sidebar:
         for pid, label, url in items:
-            if pid in _STEP_NAV:
-                _step, _anchor = _STEP_NAV[pid]
-                if st.button(label, key=f"ia_nav_{pid}"):
-                    if st.session_state.get(RESULT_KEY):
-                        st.session_state["ia_step"] = max(
-                            _step, st.session_state.get("ia_step") or 2)
-                        st.session_state["_scroll_target"] = _anchor
-                    else:
-                        st.session_state["_notice"] = \
-                            "请先在 🏭 园区产业概况 填入材料并运行梳理，再查看各步骤"
-                    if current == "overview":
-                        st.rerun()
-                    else:
-                        st.switch_page("pages/7_园区产业概况.py")
-            elif pid == current:
+            if pid == current:
                 st.markdown(
                     f'<div style="padding:0.3rem 0.6rem;border-radius:8px;'
                     f'background:var(--apple-blue-light);font-weight:600;font-size:0.9rem">'
