@@ -22,8 +22,13 @@ from engine.ia_sections import (
     inject_ia_css, render_ia_header, render_kpi_strip,
     render_classification, render_chain_analysis, render_paths_section,
     render_targets_section, render_resources_subsection, render_export_block,
-    analyze_material_quality, scroll_to_anchor, RESULT_KEY,
+    analyze_material_quality, RESULT_KEY,
 )
+try:  # 滚动定位为增强功能：部署缓存中偶发旧版模块时降级为空操作，不影响主流程
+    from engine.ia_sections import scroll_to_anchor
+except ImportError:  # pragma: no cover
+    def scroll_to_anchor() -> None:
+        pass
 
 st.set_page_config(page_title="园区产业概况", page_icon="🏭", layout="wide")
 inject_apple_theme()

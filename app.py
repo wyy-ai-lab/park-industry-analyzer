@@ -321,11 +321,11 @@ def render_sidebar_nav() -> None:
     current = st.session_state.get("_page_id", "home")
     items = [
         ("home", "🏠 首页", "首页"),
-        ("overview", "🏭 园区产业概况", "园区产业概况"),
-        ("chain", "🧬 产业链分析", None),
-        ("advice", "💡 产业发展建议", None),
-        ("invest", "🎯 产业招商推荐", None),
-        ("diag", "🩺 企业诊断辅导", "企业诊断辅导"),
+        ("overview", "① 园区产业概况", None),
+        ("chain", "② 产业链分析", None),
+        ("advice", "③ 产业发展建议", None),
+        ("invest", "④ 产业招商推荐", None),
+        ("diag", "企业诊断辅导", "企业诊断辅导"),
     ]
     with st.sidebar:
         for pid, label, url in items:
