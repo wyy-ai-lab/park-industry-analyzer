@@ -89,7 +89,6 @@ def render_input_panel(run_label: str, has_result: bool):
     """材料输入面板。返回 (material, run_clicked, focus_hint, region, park_level, park_city, local_only)"""
     input_col, opt_col = st.columns([3, 1], gap="large")
     with input_col:
-        st.markdown('<div class="ia-card">', unsafe_allow_html=True)
         st.markdown('<div class="ia-card-title">📄 园区材料</div>'
                     '<div class="ia-card-desc">粘贴企业目录、园区介绍等文字材料，或上传文件</div>',
                     unsafe_allow_html=True)
@@ -175,7 +174,6 @@ def render_input_panel(run_label: str, has_result: bool):
             st.download_button("⬇ 下载企业清单模板（CSV）", TEMPLATE_CSV,
                                "企业清单模板.csv", "text/csv",
                                use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with opt_col:
         with st.expander("⚙️ 园区背景（可选）", expanded=not has_result):
