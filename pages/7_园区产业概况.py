@@ -199,6 +199,9 @@ if not result:
         st.session_state[RESULT_KEY] = _latest["result"]
         st.session_state["industry_analysis_material"] = _latest.get("material", "")
         st.session_state["industry_analysis_time"] = _latest.get("saved_at", "")
+        # 记录是完整成果：直接恢复全部分区全景，不必从②步重走
+        st.session_state["ia_step"] = 5
+        st.session_state["ia_current"] = 2
         result = _latest["result"]
 
 render_ia_header(
@@ -214,6 +217,7 @@ if _qp_step and result:
     try:
         st.session_state["ia_step"] = max(int(_qp_step),
                                           st.session_state.get("ia_step") or 2)
+        st.session_state["ia_current"] = int(_qp_step)
     except (TypeError, ValueError):
         pass
 
@@ -225,6 +229,7 @@ def _render_advance(next_step: int, label: str) -> None:
         if st.button(f"下一步：{label} →", key=f"ia_adv_{next_step}", type="primary",
                      use_container_width=True):
             st.session_state["ia_step"] = next_step
+            st.session_state["ia_current"] = next_step
             st.rerun()
     with c2:
         if st.button("⤵ 一次展开全部", key=f"ia_adv_all_{next_step}",
@@ -249,38 +254,68 @@ with st.sidebar:
     else:
         st.caption("暂无记录，运行梳理后自动保存")
 
-# ---------------------------------------------------------------- 步骤条（分段控件：点击必触发，锚点滚动由 _scroll_target 完成）
-_STEP_NAV = {
-    "① 填入基本信息": (None, "ia-input", True),
-    "② 产业分类": (2, "ia-sec-class", False),
-    "③ 产业链分析": (3, "ia-sec-chain", False),
-    "④ 产业发展建议": (4, "ia-sec-paths", False),
-    "⑤ 产业招商推荐": (5, "ia-sec-invest", False),
-}
+# ---------------------------------------------------------------- 状态化步骤条
+# 状态模型：ia_step = 已解锁到的最大步（门控渲染）；ia_current = 正在查看的位置（高亮）
+# 每步三态：✓ 已完成（可点，滚回查看）/ ● 当前（主按钮高亮）/ 未解锁（置灰不可点）
+_STEP_ITEMS = [
+    (1, "① 填入基本信息", "ia-input"),
+    (2, "② 产业分类", "ia-sec-class"),
+    (3, "③ 产业链分析", "ia-sec-chain"),
+    (4, "④ 产业发展建议", "ia-sec-paths"),
+    (5, "⑤ 产业招商推荐", "ia-sec-invest"),
+]
 
 
-def _on_stepbar_change():
-    """步骤条选择回调：在 rerun 前应用导航（回调中允许改写控件自身的 key）。"""
-    _pick = st.session_state.get("ia_stepbar")
-    if not _pick:
-        return
-    _step, _anchor, _open_edit = _STEP_NAV[_pick]
-    if _step:
-        st.session_state["ia_step"] = max(
-            _step, st.session_state.get("ia_step") or 2)
-    if _open_edit:
-        st.session_state["_edit_mode"] = True
-    st.session_state["_scroll_target"] = _anchor
-    st.session_state["ia_stepbar"] = None  # 清除选中态，保持纯导航语义
+def _open_edit() -> None:
+    """展开①输入编辑区，并记住当前查看位置以便收起时还原。"""
+    if st.session_state.get("ia_current", 2) != 1:
+        st.session_state["_ia_prev_current"] = \
+            st.session_state.get("ia_current") or 2
+    st.session_state["_edit_mode"] = True
+    st.session_state["ia_current"] = 1
+    st.session_state["_scroll_target"] = "ia-input"
+    st.rerun()
+
+
+def _close_edit() -> None:
+    """收起输入编辑区，还原到展开前查看的步骤。"""
+    st.session_state["_edit_mode"] = False
+    st.session_state["ia_current"] = st.session_state.pop("_ia_prev_current", None) or 2
+    st.rerun()
 
 
 if result:
-    st.segmented_control(
-        "步骤导航",
-        options=list(_STEP_NAV),
-        key="ia_stepbar", label_visibility="collapsed",
-        on_change=_on_stepbar_change,
-    )
+    _ia_step = st.session_state.get("ia_step") or 2
+    _ia_cur = st.session_state.get("ia_current") or 2
+    _in_edit = bool(st.session_state.get("_edit_mode"))
+    _sb_cols = st.columns(5)
+    for (_no, _label, _anchor), _col in zip(_STEP_ITEMS, _sb_cols):
+        with _col:
+            if _no == 1:
+                # 输入步：编辑中为「当前」，否则视为已完成
+                _is_cur = _in_edit
+                if st.button(("● " if _is_cur else "✓ ") + _label,
+                             key="ia_sb_1",
+                             type="primary" if _is_cur else "secondary",
+                             use_container_width=True):
+                    _open_edit()
+            elif _no > _ia_step:
+                st.button(_label, key=f"ia_sb_{_no}", disabled=True,
+                          use_container_width=True)
+            else:
+                _is_cur = (_no == _ia_cur) and not _in_edit
+                if st.button(("● " if _is_cur else "✓ ") + _label,
+                             key=f"ia_sb_{_no}",
+                             type="primary" if _is_cur else "secondary",
+                             use_container_width=True):
+                    st.session_state["ia_current"] = _no
+                    st.session_state["_scroll_target"] = _anchor
+                    st.rerun()
+    _done_n = 1 + sum(1 for _n, _, _ in _STEP_ITEMS
+                      if _n >= 2 and _n <= _ia_step)
+    st.caption(f"进度：已完成 {_done_n}/5 步 · "
+             + ("正在修改①材料" if _in_edit
+                else f"当前位于 {_STEP_ITEMS[_ia_cur - 1][1]}"))
 else:
     st.markdown('<div class="ia-tip">👇 在下方填入园区材料并运行梳理，'
                 '②–⑤ 各部分报告将在<b>本页面内</b>依次生成；'
@@ -318,15 +353,13 @@ if result:
 # 编辑模式（步骤条「① 填入基本信息」或下方按钮触发）：展开输入区供修改重跑
 if result and not st.session_state.get("_edit_mode"):
     if st.button("⚙️ 修改材料 / 调整背景，重新梳理", key="ia_open_input"):
-        st.session_state["_edit_mode"] = True
-        st.rerun()
+        _open_edit()
     _panel = ("", False, "", "", "未指定", "", False)
 else:
     _panel = render_input_panel("🔄 重新梳理" if result else "🚀 开始产业梳理",
                                 has_result=bool(result))
     if result and st.button("✖ 收起输入区", key="ia_collapse_input"):
-        st.session_state["_edit_mode"] = False
-        st.rerun()
+        _close_edit()
 material, run_clicked, focus_hint, region, park_level, park_city, local_only = _panel
 
 # ---------------------------------------------------------------- 运行分析
@@ -350,7 +383,9 @@ if run_clicked:
         st.session_state["industry_analysis_material"] = material.strip()
         st.session_state["industry_analysis_time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
         st.session_state["ia_step"] = 2  # 分步呈现：先出 ② 产业分类
+        st.session_state["ia_current"] = 2
         st.session_state["_edit_mode"] = False  # 收起输入区，直接展示新结果
+        st.session_state.pop("_ia_prev_current", None)
         # 自动保存为历史记录（同名覆盖；默认以城市命名，便于多园区管理）
         _rec_name = (park_city.strip() + "产业园区") if (park_city or "").strip() \
             else f"梳理记录 {st.session_state['industry_analysis_time']}"
@@ -367,7 +402,10 @@ if _load_clicked and _sel:
         st.session_state["industry_analysis_material"] = _rec.get("material", "")
         st.session_state["industry_analysis_time"] = _rec.get("saved_at", "")
         st.session_state["ia_record_name"] = _sel
-        st.session_state["ia_step"] = 2
+        # 记录是完整成果：直接展开全部，不必从②步逐个点「下一步」
+        st.session_state["ia_step"] = 5
+        st.session_state["ia_current"] = 2
+        st.session_state["_edit_mode"] = False
         st.session_state["_notice"] = f"已载入记录「{_sel}」（{_rec.get('saved_at', '')}）"
         st.rerun()
 if _del_clicked and _sel:
@@ -375,7 +413,8 @@ if _del_clicked and _sel:
     st.session_state["_notice"] = f"已删除记录「{_sel}」"
     if st.session_state.get("ia_record_name") == _sel:
         for _k in (RESULT_KEY, "industry_analysis_material",
-                   "industry_analysis_time", "ia_record_name"):
+                   "industry_analysis_time", "ia_record_name",
+                   "ia_step", "ia_current", "_edit_mode", "_ia_prev_current"):
             st.session_state.pop(_k, None)
     st.rerun()
 
