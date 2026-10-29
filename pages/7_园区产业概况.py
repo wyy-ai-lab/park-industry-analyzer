@@ -89,7 +89,6 @@ def render_input_panel(run_label: str, has_result: bool):
     """材料输入面板。返回 (material, run_clicked, focus_hint, region, park_level, park_city, local_only)"""
     input_col, opt_col = st.columns([3, 1], gap="large")
     with input_col:
-        st.markdown('<div class="ia-card">', unsafe_allow_html=True)
         st.markdown('<div class="ia-card-title">📄 园区材料</div>'
                     '<div class="ia-card-desc">粘贴企业目录、园区介绍等文字材料，或上传文件</div>',
                     unsafe_allow_html=True)
@@ -175,7 +174,6 @@ def render_input_panel(run_label: str, has_result: bool):
             st.download_button("⬇ 下载企业清单模板（CSV）", TEMPLATE_CSV,
                                "企业清单模板.csv", "text/csv",
                                use_container_width=True)
-        st.markdown('</div>', unsafe_allow_html=True)
 
     with opt_col:
         with st.expander("⚙️ 园区背景（可选）", expanded=not has_result):
@@ -202,6 +200,7 @@ if not result:
         # 记录是完整成果：直接恢复全部分区全景，不必从②步重走
         st.session_state["ia_step"] = 5
         st.session_state["ia_current"] = 2
+        st.session_state["ia_view"] = "all"
         result = _latest["result"]
 
 render_ia_header(
@@ -235,6 +234,7 @@ def _render_advance(next_step: int, label: str) -> None:
         if st.button("⤵ 一次展开全部", key=f"ia_adv_all_{next_step}",
                      use_container_width=True):
             st.session_state["ia_step"] = 5
+            st.session_state["ia_view"] = "all"
             st.rerun()
 
 # ---------------------------------------------------------------- 侧栏：梳理记录（历史保存 / 载入 / 删除）
@@ -309,13 +309,29 @@ if result:
                              type="primary" if _is_cur else "secondary",
                              use_container_width=True):
                     st.session_state["ia_current"] = _no
-                    st.session_state["_scroll_target"] = _anchor
+                    # 全景视图需滚动定位；聚焦视图内容就地切换，无需滚动
+                    if st.session_state.get("ia_view", "focus") == "all":
+                        st.session_state["_scroll_target"] = _anchor
                     st.rerun()
     _done_n = 1 + sum(1 for _n, _, _ in _STEP_ITEMS
                       if _n >= 2 and _n <= _ia_step)
-    st.caption(f"进度：已完成 {_done_n}/5 步 · "
-             + ("正在修改①材料" if _in_edit
-                else f"当前位于 {_STEP_ITEMS[_ia_cur - 1][1]}"))
+    _vc1, _vc2 = st.columns([4, 1])
+    with _vc1:
+        st.caption(f"进度：已完成 {_done_n}/5 步 · "
+                 + ("正在修改①材料" if _in_edit
+                    else f"当前位于 {_STEP_ITEMS[_ia_cur - 1][1]}"))
+    with _vc2:
+        # 双视图切换：聚焦（单步就地切换）↔ 全景（长页对照审阅）
+        if st.session_state.get("ia_view", "focus") == "all":
+            if st.button("⤢ 聚焦单步", key="ia_view_focus",
+                         use_container_width=True):
+                st.session_state["ia_view"] = "focus"
+                st.rerun()
+        else:
+            if st.button("⤢ 展开全部", key="ia_view_all",
+                         use_container_width=True):
+                st.session_state["ia_view"] = "all"
+                st.rerun()
 else:
     st.markdown('<div class="ia-tip">👇 在下方填入园区材料并运行梳理，'
                 '②–⑤ 各部分报告将在<b>本页面内</b>依次生成；'
@@ -384,6 +400,7 @@ if run_clicked:
         st.session_state["industry_analysis_time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
         st.session_state["ia_step"] = 2  # 分步呈现：先出 ② 产业分类
         st.session_state["ia_current"] = 2
+        st.session_state["ia_view"] = "focus"  # 新结果从聚焦视图一步步走起
         st.session_state["_edit_mode"] = False  # 收起输入区，直接展示新结果
         st.session_state.pop("_ia_prev_current", None)
         # 自动保存为历史记录（同名覆盖；默认以城市命名，便于多园区管理）
@@ -402,9 +419,10 @@ if _load_clicked and _sel:
         st.session_state["industry_analysis_material"] = _rec.get("material", "")
         st.session_state["industry_analysis_time"] = _rec.get("saved_at", "")
         st.session_state["ia_record_name"] = _sel
-        # 记录是完整成果：直接展开全部，不必从②步逐个点「下一步」
+        # 记录是完整成果：直接展开全部供审阅，不必从②步逐个点「下一步」
         st.session_state["ia_step"] = 5
         st.session_state["ia_current"] = 2
+        st.session_state["ia_view"] = "all"
         st.session_state["_edit_mode"] = False
         st.session_state["_notice"] = f"已载入记录「{_sel}」（{_rec.get('saved_at', '')}）"
         st.rerun()
@@ -414,7 +432,8 @@ if _del_clicked and _sel:
     if st.session_state.get("ia_record_name") == _sel:
         for _k in (RESULT_KEY, "industry_analysis_material",
                    "industry_analysis_time", "ia_record_name",
-                   "ia_step", "ia_current", "_edit_mode", "_ia_prev_current"):
+                   "ia_step", "ia_current", "ia_view", "_edit_mode",
+                   "_ia_prev_current"):
             st.session_state.pop(_k, None)
     st.rerun()
 
@@ -422,48 +441,55 @@ if _del_clicked and _sel:
 if result:
     render_kpi_strip(result)
     step = st.session_state.get("ia_step") or 2
+    _view = st.session_state.get("ia_view", "focus")
+    _cur = st.session_state.get("ia_current") or 2
 
-    st.markdown('<div id="ia-sec-class"></div>', unsafe_allow_html=True)
-    render_classification(result)
-    # 产业梳理 → 企业诊断 打通：选择园区内企业一键送入诊断
-    _ent_rows = [(g.get("industry", ""), e)
-                 for g in result["classification"].get("industries", [])
-                 for e in g.get("enterprises", [])]
-    if _ent_rows:
-        _d1, _d2 = st.columns([3, 1])
-        with _d1:
-            _pick = st.selectbox("🩺 选择园区内企业，直接进行政策诊断",
-                                 options=[""] + [e.get("name", "") for _, e in _ent_rows],
-                                 format_func=lambda x: x or "（选择企业）")
-        with _d2:
-            st.write("")
-            _go_diag = st.button("进入诊断 →", key="ia_go_diag",
-                                 use_container_width=True, disabled=not _pick)
-        if _go_diag and _pick:
-            _ind, _ent = next((i, e) for i, e in _ent_rows if e.get("name") == _pick)
-            st.session_state["pending_diag_profile"] = {
-                "name": _ent.get("name", ""),
-                "industry": _ind,
-                "sub_industry": _ind,
-                "core_product": _ent.get("products", ""),
-            }
-            st.switch_page("pages/6_企业诊断辅导.py")
-    if step == 2:
+    def _show(n: int) -> bool:
+        """聚焦视图只渲染当前步（就地切换）；全景视图渲染全部已解锁步骤。"""
+        return step >= n and (_view == "all" or n == _cur)
+
+    if _show(2):
+        st.markdown('<div id="ia-sec-class"></div>', unsafe_allow_html=True)
+        render_classification(result)
+        # 产业梳理 → 企业诊断 打通：选择园区内企业一键送入诊断
+        _ent_rows = [(g.get("industry", ""), e)
+                     for g in result["classification"].get("industries", [])
+                     for e in g.get("enterprises", [])]
+        if _ent_rows:
+            _d1, _d2 = st.columns([3, 1])
+            with _d1:
+                _pick = st.selectbox("🩺 选择园区内企业，直接进行政策诊断",
+                                     options=[""] + [e.get("name", "") for _, e in _ent_rows],
+                                     format_func=lambda x: x or "（选择企业）")
+            with _d2:
+                st.write("")
+                _go_diag = st.button("进入诊断 →", key="ia_go_diag",
+                                     use_container_width=True, disabled=not _pick)
+            if _go_diag and _pick:
+                _ind, _ent = next((i, e) for i, e in _ent_rows if e.get("name") == _pick)
+                st.session_state["pending_diag_profile"] = {
+                    "name": _ent.get("name", ""),
+                    "industry": _ind,
+                    "sub_industry": _ind,
+                    "core_product": _ent.get("products", ""),
+                }
+                st.switch_page("pages/6_企业诊断辅导.py")
+    if step == 2 and _show(2):
         _render_advance(3, "③ 产业链分析")
 
-    if step >= 3:
+    if _show(3):
         st.markdown('<div id="ia-sec-chain"></div>', unsafe_allow_html=True)
         render_chain_analysis(result)
         if step == 3:
             _render_advance(4, "④ 产业发展建议")
 
-    if step >= 4:
+    if _show(4):
         st.markdown('<div id="ia-sec-paths"></div>', unsafe_allow_html=True)
         render_paths_section(result)
         if step == 4:
             _render_advance(5, "⑤ 产业招商推荐")
 
-    if step >= 5:
+    if _show(5):
         st.markdown('<div id="ia-sec-invest"></div>', unsafe_allow_html=True)
         render_targets_section(result)
         render_resources_subsection(result)
