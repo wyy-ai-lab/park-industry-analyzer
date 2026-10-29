@@ -197,9 +197,9 @@ if not result:
         st.session_state[RESULT_KEY] = _latest["result"]
         st.session_state["industry_analysis_material"] = _latest.get("material", "")
         st.session_state["industry_analysis_time"] = _latest.get("saved_at", "")
-        # 记录是完整成果：直接恢复全部分区全景，不必从②步重走
+        # 记录是完整成果：直接恢复全部分区全景，不必从②步重走；定位在①
         st.session_state["ia_step"] = 5
-        st.session_state["ia_current"] = 2
+        st.session_state["ia_current"] = 1
         result = _latest["result"]
 
 render_ia_header(
@@ -290,8 +290,8 @@ if result:
     for (_no, _label, _anchor), _col in zip(_STEP_ITEMS, _sb_cols):
         with _col:
             if _no == 1:
-                # 输入步：编辑中为「当前」，否则视为已完成
-                _is_cur = _in_edit
+                # 输入步：编辑中或刚进入页面定位在①时为「当前」，否则视为已完成
+                _is_cur = _in_edit or _ia_cur == 1
                 if st.button(("● " if _is_cur else "✓ ") + _label,
                              key="ia_sb_1",
                              type="primary" if _is_cur else "secondary",
@@ -400,9 +400,9 @@ if _load_clicked and _sel:
         st.session_state["industry_analysis_material"] = _rec.get("material", "")
         st.session_state["industry_analysis_time"] = _rec.get("saved_at", "")
         st.session_state["ia_record_name"] = _sel
-        # 记录是完整成果：直接展开全部，不必从②步逐个点「下一步」
+        # 记录是完整成果：直接展开全部，不必从②步逐个点「下一步」；定位在①
         st.session_state["ia_step"] = 5
-        st.session_state["ia_current"] = 2
+        st.session_state["ia_current"] = 1
         st.session_state["_edit_mode"] = False
         st.session_state["_notice"] = f"已载入记录「{_sel}」（{_rec.get('saved_at', '')}）"
         st.rerun()

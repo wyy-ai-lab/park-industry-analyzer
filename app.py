@@ -220,7 +220,7 @@ def home():
 
     # 主入口
     st.markdown(textwrap.dedent("""
-    <a href="园区产业概况" class="home-entry-link">
+    <a href="/园区产业概况" class="home-entry-link">
         <div class="home-entry">
             <div class="home-entry-title">🏭 园区产业概况 <span style="font-size:0.8rem;font-weight:500;opacity:0.85">主入口</span></div>
             <div class="home-entry-desc">填入企业目录、园区介绍等基础材料，自动完成产业分类 → 上中下游分环节梳理 →
@@ -234,7 +234,7 @@ def home():
     sec_col1, sec_col2 = st.columns(2)
     with sec_col1:
         st.markdown(textwrap.dedent("""
-        <a href="园区概览" class="home-card-link">
+        <a href="/园区概览" class="home-card-link">
             <div class="home-card">
                 <div class="home-card-icon">🚗</div>
                 <div class="home-card-title">演示园区 · 示例数据</div>
@@ -245,7 +245,7 @@ def home():
         """), unsafe_allow_html=True)
     with sec_col2:
         st.markdown(textwrap.dedent("""
-        <a href="企业诊断辅导" class="home-card-link">
+        <a href="/企业诊断辅导" class="home-card-link">
             <div class="home-card">
                 <div class="home-card-icon">🩺</div>
                 <div class="home-card-title">企业诊断辅导</div>
@@ -272,6 +272,12 @@ NAV_SECTIONS = {
         st.Page("pages/7_园区产业概况.py", title="园区产业概况", icon="🏭",
                 url_path="园区产业概况"),
         st.Page("pages/6_企业诊断辅导.py", title="企业诊断辅导", icon="🩺", url_path="企业诊断辅导"),
+        # 演示园区五个示例页：默认导航隐藏、自定义侧栏不列出，仅首页卡片进入
+        st.Page("pages/1_园区概览.py", title="园区概览", icon="🚗", url_path="园区概览"),
+        st.Page("pages/2_产业地图.py", title="产业地图", icon="🗺️", url_path="产业地图"),
+        st.Page("pages/3_产业链图谱.py", title="产业链图谱", icon="🔗", url_path="产业链图谱"),
+        st.Page("pages/4_发展建议.py", title="发展建议", icon="📈", url_path="发展建议"),
+        st.Page("pages/5_企业透视.py", title="企业透视", icon="🔍", url_path="企业透视"),
     ],
 }
 
@@ -286,9 +292,9 @@ def render_sidebar_nav() -> None:
     """
     current = st.session_state.get("_page_id", "home")
     items = [
-        ("home", "🏠 首页", "首页"),
-        ("overview", "园区产业分析", "园区产业概况"),
-        ("diag", "企业诊断辅导", "企业诊断辅导"),
+        ("home", "🏠 首页", "/"),
+        ("overview", "园区产业分析", "/园区产业概况"),
+        ("diag", "企业诊断辅导", "/企业诊断辅导"),
     ]
     with st.sidebar:
         for pid, label, url in items:
