@@ -204,7 +204,7 @@ if not result:
 render_ia_header(
     "🏭 园区产业概况",
     "单页完成全流程：填入园区材料并运行梳理，产业分类、产业链分析、发展建议与"
-    "招商推荐依次在本页生成，可点左侧导航或下方步骤条定位。",
+    "招商推荐依次在本页生成，可点上方步骤条回到任意步骤修改。",
     result,
 )
 
@@ -249,21 +249,42 @@ with st.sidebar:
     else:
         st.caption("暂无记录，运行梳理后自动保存")
 
-# ---------------------------------------------------------------- 步骤条（同页锚点）
+# ---------------------------------------------------------------- 步骤条（分段控件：点击必触发，锚点滚动由 _scroll_target 完成）
+_STEP_NAV = {
+    "① 填入基本信息": (None, "ia-input", True),
+    "② 产业分类": (2, "ia-sec-class", False),
+    "③ 产业链分析": (3, "ia-sec-chain", False),
+    "④ 产业发展建议": (4, "ia-sec-paths", False),
+    "⑤ 产业招商推荐": (5, "ia-sec-invest", False),
+}
+
+
+def _on_stepbar_change():
+    """步骤条选择回调：在 rerun 前应用导航（回调中允许改写控件自身的 key）。"""
+    _pick = st.session_state.get("ia_stepbar")
+    if not _pick:
+        return
+    _step, _anchor, _open_edit = _STEP_NAV[_pick]
+    if _step:
+        st.session_state["ia_step"] = max(
+            _step, st.session_state.get("ia_step") or 2)
+    if _open_edit:
+        st.session_state["_edit_mode"] = True
+    st.session_state["_scroll_target"] = _anchor
+    st.session_state["ia_stepbar"] = None  # 清除选中态，保持纯导航语义
+
+
 if result:
-    st.markdown("""
-    <div class="ia-steps">
-        <a href="#ia-input">① 填入基本信息</a><span class="ia-steps-sep">→</span>
-        <a href="#ia-sec-class">② 产业分类</a><span class="ia-steps-sep">→</span>
-        <a href="#ia-sec-chain">③ 产业链分析</a><span class="ia-steps-sep">→</span>
-        <a href="#ia-sec-paths">④ 产业发展建议</a><span class="ia-steps-sep">→</span>
-        <a href="#ia-sec-invest">⑤ 产业招商推荐</a>
-    </div>
-    """, unsafe_allow_html=True)
+    st.segmented_control(
+        "步骤导航",
+        options=list(_STEP_NAV),
+        key="ia_stepbar", label_visibility="collapsed",
+        on_change=_on_stepbar_change,
+    )
 else:
     st.markdown('<div class="ia-tip">👇 在下方填入园区材料并运行梳理，'
                 '②–⑤ 各部分报告将在<b>本页面内</b>依次生成；'
-                '左侧导航与本步骤条只做页内定位，不会跳转新页面。</div>',
+                '完成后可点上方步骤条回到任意步骤修改。</div>',
                 unsafe_allow_html=True)
 
 # 会话写入须在文本域等组件创建之前完成（Streamlit 禁止对已实例化组件的 key 赋值）：
@@ -283,7 +304,7 @@ _notice = st.session_state.pop("_notice", None)
 if _notice:
     st.success(_notice)
 
-# ---------------------------------------------------------------- ① 填入基本信息（已有结果时收进折叠面板，便于修改重跑）
+# ---------------------------------------------------------------- ① 填入基本信息（已有结果时默认收起，经「修改材料」按钮或步骤条①展开）
 st.markdown('<div id="ia-input"></div>', unsafe_allow_html=True)
 if result:
     _mat = st.session_state.get("industry_analysis_material", "")
@@ -294,10 +315,18 @@ if result:
         _summ += f" · 生成于 {_gen}"
     st.markdown(f'<div class="ia-tip"><span>{_summ}</span></div>',
                 unsafe_allow_html=True)
-    with st.expander("⚙️ 修改材料 / 调整背景，重新梳理"):
-        _panel = render_input_panel("🔄 重新梳理", has_result=True)
+# 编辑模式（步骤条「① 填入基本信息」或下方按钮触发）：展开输入区供修改重跑
+if result and not st.session_state.get("_edit_mode"):
+    if st.button("⚙️ 修改材料 / 调整背景，重新梳理", key="ia_open_input"):
+        st.session_state["_edit_mode"] = True
+        st.rerun()
+    _panel = ("", False, "", "", "未指定", "", False)
 else:
-    _panel = render_input_panel("🚀 开始产业梳理", has_result=False)
+    _panel = render_input_panel("🔄 重新梳理" if result else "🚀 开始产业梳理",
+                                has_result=bool(result))
+    if result and st.button("✖ 收起输入区", key="ia_collapse_input"):
+        st.session_state["_edit_mode"] = False
+        st.rerun()
 material, run_clicked, focus_hint, region, park_level, park_city, local_only = _panel
 
 # ---------------------------------------------------------------- 运行分析
@@ -321,6 +350,7 @@ if run_clicked:
         st.session_state["industry_analysis_material"] = material.strip()
         st.session_state["industry_analysis_time"] = datetime.now().strftime("%Y-%m-%d %H:%M")
         st.session_state["ia_step"] = 2  # 分步呈现：先出 ② 产业分类
+        st.session_state["_edit_mode"] = False  # 收起输入区，直接展示新结果
         # 自动保存为历史记录（同名覆盖；默认以城市命名，便于多园区管理）
         _rec_name = (park_city.strip() + "产业园区") if (park_city or "").strip() \
             else f"梳理记录 {st.session_state['industry_analysis_time']}"
